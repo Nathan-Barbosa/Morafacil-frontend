@@ -1,6 +1,6 @@
 const Login = () => {
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
+    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow w-full">
       <h2 className="text-2xl font-semibold mb-4">Login</h2>
       <form>
         <div className="mb-4">
@@ -25,9 +25,16 @@ const Login = () => {
             placeholder="********"
           />
         </div>
-        <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">
-          Entrar
-        </button>
+        <div className="flex gap-2">
+          <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">
+            Entrar
+          </button>
+          
+          <button type="button" className="w-full bg-blue-600 text-white p-2 rounded">
+            Cadastrar
+          </button>
+        </div>
+
       </form>
     </div>
   );
