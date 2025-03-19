@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply h-screen w-screen overflow-hidden bg-gray1 font-inter text-base font-normal text-black;
+  }
+
+  input {
+    @apply outline-0;
+  }
+
+  button {
+    @apply duration-300;
+  }
+
+  #root {
+    @apply flex h-full w-full;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-lg bg-primary;
+  }
+}
+@layer utilities {
+  .scrollbar-none::-webkit-scrollbar {
+    @apply hidden;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
