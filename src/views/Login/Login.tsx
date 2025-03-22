@@ -1,4 +1,8 @@
+import { useNavigate } from 'react-router-dom';
+
 const Login = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow w-full">
       <h2 className="text-2xl font-semibold mb-4">Login</h2>
@@ -29,12 +33,15 @@ const Login = () => {
           <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">
             Entrar
           </button>
-          
-          <button type="button" className="w-full bg-blue-600 text-white p-2 rounded">
+
+          <button
+            type="button"
+            onClick={() => navigate('/register')}
+            className="w-full bg-blue-600 text-white p-2 rounded"
+          >
             Cadastrar
           </button>
         </div>
-
       </form>
     </div>
   );

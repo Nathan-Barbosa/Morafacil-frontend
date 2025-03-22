@@ -1,16 +1,20 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
-import { Home, Login} from "../views";
-import { BaseLayout } from "../layout";
-import { ProtectedRoute } from "./ProtectedRoute";
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { Home, Login, Register } from '../views';
+import { BaseLayout } from '../layout';
+import { ProtectedRoute } from './ProtectedRoute';
 
 const routes = createBrowserRouter([
   {
-    path: "/login",
+    path: '/login',
     element: <Login />,
   },
   {
-    path: "/",
-    element: <ProtectedRoute />, // Protege todas as rotas dentro deste grupo
+    path: '/register',
+    element: <Register />,
+  },
+  {
+    path: '/',
+    element: <ProtectedRoute />,
     children: [
       {
         element: <BaseLayout />,
@@ -18,13 +22,13 @@ const routes = createBrowserRouter([
           {
             index: true,
             element: <Home />,
-          }
+          },
         ],
       },
     ],
   },
   {
-    path: "*",
+    path: '*',
     element: <Navigate to="/" replace />,
   },
 ]);
