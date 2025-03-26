@@ -24,14 +24,10 @@ const Register = () => {
   };
 
   const onSubmit = (data: RegisterFormData) => {
-    // Dispara a mutation
     mutate(data, {
       onSuccess: () => {
         console.log('Cadastro realizado com sucesso');
         navigate('/login');
-      },
-      onError: (error: any) => {
-        console.error('Erro no cadastro:', error);
       },
     });
   };
