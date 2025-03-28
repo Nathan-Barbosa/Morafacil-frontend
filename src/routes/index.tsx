@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ConfirmedEmail, ForgotPassword, Home, Login, Register } from '../views';
 import { BaseLayout } from '../layout';
-import { ProtectedRoute } from './ProtectedRoute';
+import { ProtectedRoute } from '../components';
 
 const routes = createBrowserRouter([
   {
@@ -21,10 +21,10 @@ const routes = createBrowserRouter([
     element: <ConfirmedEmail />,
   },
   {
-    path: '/',
     element: <ProtectedRoute />,
     children: [
       {
+        path: '/',
         element: <BaseLayout />,
         children: [
           {
