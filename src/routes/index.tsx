@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { ForgotPassword, Home, Login, Register } from '../views';
+import { ConfirmedEmail, ForgotPassword, Home, Login, Register } from '../views';
 import { BaseLayout } from '../layout';
 import { ProtectedRoute } from './ProtectedRoute';
 
@@ -15,6 +15,10 @@ const routes = createBrowserRouter([
   {
     path: '/forgotPassword',
     element: <ForgotPassword />,
+  },
+  {
+    path: '/emailConfirmed',
+    element: <ConfirmedEmail />,
   },
   {
     path: '/',
