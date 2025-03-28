@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { ConfirmedEmail, ForgotPassword, Home, Login, Register } from '../views';
+import { ConfirmedEmail, ForgotPassword, Home, Login, Register, Users } from '../views';
 import { BaseLayout } from '../layout';
 import { ProtectedRoute } from '../components';
 
@@ -30,6 +30,10 @@ const routes = createBrowserRouter([
           {
             index: true,
             element: <Home />,
+          },
+          {
+            path: 'users',
+            element: <Users />,
           },
         ],
       },
