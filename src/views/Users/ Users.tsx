@@ -22,6 +22,12 @@ const users: User[] = [
     role: 'Admin',
     residence: 2,
   },
+  {
+    id: 3,
+    name: 'Fernanda Fernandes',
+    role: 'Admin',
+    residence: 3,
+  },
 ];
 
 export function Users() {
@@ -32,82 +38,103 @@ export function Users() {
   const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">Usuários</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Usuários</h1>
           <p className="text-gray-600">Lista de usuários cadastrados</p>
         </div>
-        <input placeholder="Buscar por role..." {...register('role')} className="w-64" />
+        <input
+          placeholder="Buscar por role..."
+          {...register('role')}
+          className="w-64 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
 
-      <table className="w-full border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border p-2">ID</th>
-            <th className="border p-2">Nome</th>
-            <th className="border p-2">Residência</th>
-            <th className="border p-2">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users?.map((user) => (
-            <tr key={user.id} className="border">
-              <td className="p-2">{user.id}</td>
-              <td className="p-2">{user.name}</td>
-              <td className="p-2">{user.residence || 'Não definida'}</td>
-              <td className="p-2 flex space-x-2 w-full">
-                <button
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setOpenResidenceModal(true);
-                  }}
-                  className=" bg-blue-300 rounded p-2"
-                >
-                  Residência
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setOpenRoleModal(true);
-                  }}
-                  className=" bg-blue-300 rounded p-2"
-                >
-                  Role
-                </button>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nome</th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">
+                Residência
+              </th>
+              <th className="px-4 py-2"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {users?.map((user) => (
+              <tr key={user.id} className="hover:bg-gray-100 transition">
+                <td className="px-4 py-2 text-gray-600">{user.id}</td>
+                <td className="px-4 py-2 text-gray-600">{user.name}</td>
+                <td className="px-4 py-2 text-gray-600">{user.residence || 'Não definida'}</td>
+                <td className="px-4 py-2">
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setOpenResidenceModal(true);
+                      }}
+                      className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+                    >
+                      Residência
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setOpenRoleModal(true);
+                      }}
+                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                    >
+                      Role
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <Dialog open={openResidenceModal} onOpenChange={setOpenResidenceModal}>
-        <DialogContent className="bg-white">
+        <DialogContent className="bg-white p-6 rounded shadow-lg">
           <DialogHeader>
-            <DialogTitle>Definir Residência</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">Definir Residência</DialogTitle>
           </DialogHeader>
-          <p>Definir residência para {selectedUser?.name}</p>
+          <p className="text-gray-700">Definir residência para {selectedUser?.name}</p>
           <input
             placeholder="Nova residência"
-            className="mt-2 border border-gray-600 rounded px-2"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <div className="flex gap-2">
-            <button className="mt-4 w-full bg-blue-500 rounded py-1">Cancelar</button>
-            <button className="mt-4 w-full bg-blue-500 rounded py-1">Salvar</button>
+          <div className="flex gap-2 mt-2">
+            <button className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition">
+              Cancelar
+            </button>
+            <button className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition">
+              Salvar
+            </button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={openRoleModal} onOpenChange={setOpenRoleModal}>
-        <DialogContent className="bg-white">
+        <DialogContent className="bg-white p-6 rounded shadow-lg">
           <DialogHeader>
-            <DialogTitle>Definir Role</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">Definir Role</DialogTitle>
           </DialogHeader>
-          <p>Definir role para {selectedUser?.name}</p>
-          <input placeholder="Nova role" className="mt-2 border border-gray-600 rounded px-2" />
-          <div className="flex gap-2">
-            <button className="mt-4 w-full bg-blue-500 rounded py-1">Cancelar</button>
-            <button className="mt-4 w-full bg-blue-500 rounded py-1">Salvar</button>
+          <p className=" text-gray-700">Definir role para {selectedUser?.name}</p>
+          <input
+            placeholder="Nova role"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="flex gap-2 mt-2">
+            <button className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition">
+              Cancelar
+            </button>
+            <button className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition">
+              Salvar
+            </button>
           </div>
         </DialogContent>
       </Dialog>
