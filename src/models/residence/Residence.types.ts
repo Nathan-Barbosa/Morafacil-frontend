@@ -14,6 +14,6 @@ type ResidenceResponseDTO = {
     ativo: boolean;
   };
   usuariosIds: number[];
-}[];
+};
 
 export type { ResidenceResponseDTO };

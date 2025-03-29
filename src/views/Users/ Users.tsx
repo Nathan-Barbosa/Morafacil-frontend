@@ -1,19 +1,22 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
-import { useGetUsersListQuery } from "../../services/UsersService";
-import { ResidenceResponseDTO, UserResponseDTO } from "../../models";
-import { useDebounce } from "use-debounce";
-import { MagnifyingGlass } from "@phosphor-icons/react";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
-} from "@radix-ui/react-select";
+  SelectTrigger,
+  SelectValue,
+} from "../../components";
+import { useGetUsersListQuery } from "../../services/UsersService";
+import { ResidenceResponseDTO, RoleResponseDTO, UserResponseDTO } from "../../models";
+import { useDebounce } from "use-debounce";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
-const residences: ResidenceResponseDTO = [
+const residences: ResidenceResponseDTO[] = [
   {
     id: 1,
     endereco: "aaa",
@@ -50,17 +53,37 @@ const residences: ResidenceResponseDTO = [
   },
 ];
 
+const roles: RoleResponseDTO[] = ["Admin"];
+
 export function Users() {
   const [filterRole, setFilterRole] = useState<string | undefined>(undefined);
   const [searchfilterRole] = useDebounce(filterRole, 1000);
 
-  const { data: users } = useGetUsersListQuery(searchfilterRole || "");
-
-  const { register } = useForm();
-
   const [openResidenceModal, setOpenResidenceModal] = useState(false);
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
+
+  const { data: users } = useGetUsersListQuery(searchfilterRole || "");
+
+  const {
+    register: registerResidence,
+    handleSubmit: handleSubmitResidence,
+    setValue: setValueResidence,
+  } = useForm();
+  const {
+    register: searchRoleRegister,
+    register: registerRole,
+    handleSubmit: handleSubmitRole,
+    setValue: setValueRole,
+  } = useForm();
+
+  const onSubmitResidence = (data: any) => {
+    console.log("Dados da residência", data);
+  };
+
+  const onSubmitRole = (data: any) => {
+    console.log("Dados da role", data);
+  };
 
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
@@ -72,7 +95,7 @@ export function Users() {
         <input
           type="text"
           placeholder="Buscar por role..."
-          {...register("role")}
+          {...searchRoleRegister("role")}
           onChange={(e) => setFilterRole(e.target.value)}
           className="w-64 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -138,28 +161,39 @@ export function Users() {
             <DialogTitle className="text-lg font-semibold">Definir Residência</DialogTitle>
           </DialogHeader>
           <p className="text-gray-700">Definir residência para {selectedUser?.name}</p>
-          <Select>
-            <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <SelectValue placeholder="Selecione a residência" />
-            </SelectTrigger>
+          <form onSubmit={handleSubmitResidence(onSubmitResidence)}>
+            <Select
+              {...registerResidence("residence")}
+              onValueChange={(value) => setValueResidence("residence", value)}
+            >
+              <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded ">
+                <SelectValue placeholder="Selecione a residência" />
+              </SelectTrigger>
 
-            <SelectContent className="bg-white rounded shadow-lg z-50">
-              {residences?.map((residence) => (
-                <SelectItem value={residence.id.toString()} key={residence.id}>
-                  {residence.numero}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+              <SelectContent className="bg-white rounded shadow-lg">
+                {residences?.map((residence) => (
+                  <SelectItem value={residence.numero.toString()} key={residence.id}>
+                    {residence.numero}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <div className="flex gap-2 mt-2">
-            <button className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition">
-              Cancelar
-            </button>
-            <button className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition">
-              Salvar
-            </button>
-          </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                type="button"
+                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
+              >
+                Salvar
+              </button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -169,18 +203,39 @@ export function Users() {
             <DialogTitle className="text-lg font-semibold">Definir Role</DialogTitle>
           </DialogHeader>
           <p className=" text-gray-700">Definir role para {selectedUser?.name}</p>
-          <input
-            placeholder="Nova role"
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <div className="flex gap-2 mt-2">
-            <button className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition">
-              Cancelar
-            </button>
-            <button className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition">
-              Salvar
-            </button>
-          </div>
+          <form onSubmit={handleSubmitRole(onSubmitRole)}>
+            <Select
+              {...registerRole("role")}
+              onValueChange={(value) => setValueRole("role", value)}
+            >
+              <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded ">
+                <SelectValue placeholder="Selecione o perfil do usuário" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-white rounded shadow-lg z-50">
+                {roles?.map((role, index) => (
+                  <SelectItem value={role} key={index}>
+                    {role}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex gap-2 mt-2">
+              <button
+                type="button"
+                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
+              >
+                Salvar
+              </button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
