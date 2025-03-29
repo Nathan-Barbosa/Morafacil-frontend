@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../providers";
-import { UserCircle } from "@phosphor-icons/react";
+import { UserCircle, House } from "@phosphor-icons/react";
 const Sidebar = () => {
   const { user } = useAuth();
 
@@ -25,18 +25,32 @@ const Sidebar = () => {
             </NavLink>
           </li>
           {roles?.find((r) => r === "Admin") && (
-            <li>
-              <NavLink
-                to="/users"
-                className={({ isActive }) =>
-                  `block p-3 rounded-md ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
-                }
-              >
-                <div className="flex gap-2 items-center">
-                  <UserCircle size={16} /> Usuários
-                </div>
-              </NavLink>
-            </li>
+            <ul className="flex flex-col gap-2">
+              <li>
+                <NavLink
+                  to="/users"
+                  className={({ isActive }) =>
+                    `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
+                  }
+                >
+                  <div className="flex gap-2 items-center">
+                    <UserCircle size={16} /> Usuários
+                  </div>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/condominium"
+                  className={({ isActive }) =>
+                    `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
+                  }
+                >
+                  <div className="flex gap-2 items-center">
+                    <House size={16} /> Condomínios
+                  </div>
+                </NavLink>
+              </li>
+            </ul>
           )}
         </ul>
       </nav>
