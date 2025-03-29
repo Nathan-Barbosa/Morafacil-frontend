@@ -8,7 +8,7 @@ class APIError extends Error {
 
   public static defaultErrorObj = {
     statusCode: 500,
-    message: "Ocorreu um erro. Tente novamente mais tarde"
+    message: "Ocorreu um erro. Tente novamente mais tarde",
   };
 
   constructor({ message, statusCode }: APIErrorProps) {
@@ -23,9 +23,9 @@ class APIError extends Error {
       error.response?.data
         ? {
             message: error.response.data.errors[0],
-            statusCode: error.response.status
+            statusCode: error.response.status,
           }
-        : APIError.defaultErrorObj
+        : APIError.defaultErrorObj,
     );
   }
 }

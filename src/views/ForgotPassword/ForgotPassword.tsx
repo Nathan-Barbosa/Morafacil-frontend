@@ -1,17 +1,17 @@
 // ForgotPassword.jsx
-import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ForgotPasswordFormData } from './ForgotPassword.types';
-import { forgotPasswordSchema } from './ForgotPassword.schemas';
-import { useNavigate } from 'react-router-dom';
-import { usePostForgotPasswordMutation } from '../../services';
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ForgotPasswordFormData } from "./ForgotPassword.types";
+import { forgotPasswordSchema } from "./ForgotPassword.schemas";
+import { useNavigate } from "react-router-dom";
+import { usePostForgotPasswordMutation } from "../../services";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
 
   const methods = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const { handleSubmit, reset, control } = methods;
@@ -20,14 +20,14 @@ const ForgotPassword = () => {
 
   const handleCancel = () => {
     reset();
-    navigate('/login');
+    navigate("/login");
   };
 
   const onSubmit = (data: ForgotPasswordFormData) => {
     mutate(data, {
       onSuccess: () => {
-        console.log('Email de recuperação enviado com sucesso');
-        navigate('/login');
+        console.log("Email de recuperação enviado com sucesso");
+        navigate("/login");
       },
     });
   };
@@ -45,11 +45,11 @@ const ForgotPassword = () => {
               <Controller
                 control={control}
                 name="email"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="email"
-                    value={value || ''}
+                    value={value || ""}
                     onChange={onChange}
                     placeholder="Insira seu email"
                   />

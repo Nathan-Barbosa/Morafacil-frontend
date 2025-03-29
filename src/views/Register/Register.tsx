@@ -1,17 +1,17 @@
 // Register.jsx
-import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterFormData } from './Register.types';
-import { registerSchema } from './Register.schemas';
-import { useNavigate } from 'react-router-dom';
-import { usePostRegisterMutation } from '../../services';
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RegisterFormData } from "./Register.types";
+import { registerSchema } from "./Register.schemas";
+import { useNavigate } from "react-router-dom";
+import { usePostRegisterMutation } from "../../services";
 
 const Register = () => {
   const navigate = useNavigate();
 
   const methods = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const {
@@ -26,20 +26,20 @@ const Register = () => {
 
   const handleCancel = () => {
     reset();
-    navigate('/login');
+    navigate("/login");
   };
 
   const onSubmit = (data: RegisterFormData) => {
     mutate(data, {
       onSuccess: () => {
-        console.log('Cadastro realizado com sucesso');
-        navigate('/login');
+        console.log("Cadastro realizado com sucesso");
+        navigate("/login");
       },
     });
   };
 
-  const password = watch('password');
-  const confirmPassword = watch('confirm_password');
+  const password = watch("password");
+  const confirmPassword = watch("confirm_password");
 
   const passwordValidation = confirmPassword === password;
 
@@ -56,7 +56,7 @@ const Register = () => {
               <Controller
                 control={control}
                 name="name"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="text"
@@ -75,7 +75,7 @@ const Register = () => {
               <Controller
                 control={control}
                 name="email"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="email"
@@ -94,7 +94,7 @@ const Register = () => {
               <Controller
                 control={control}
                 name="cpf"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="text"
@@ -113,7 +113,7 @@ const Register = () => {
               <Controller
                 control={control}
                 name="birth_date"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="date"
@@ -132,7 +132,7 @@ const Register = () => {
               <Controller
                 control={control}
                 name="phone_number"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="text"
@@ -151,7 +151,7 @@ const Register = () => {
               <Controller
                 control={control}
                 name="password"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="password"
@@ -170,7 +170,7 @@ const Register = () => {
               <Controller
                 control={control}
                 name="confirm_password"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="password"

@@ -1,2 +1,2 @@
-export * from './ReactQueryProvider';
-export * from './ReactQueryProvider.types';
+export * from "./ReactQueryProvider";
+export * from "./ReactQueryProvider.types";

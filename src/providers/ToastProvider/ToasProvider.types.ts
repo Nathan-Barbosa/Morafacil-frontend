@@ -1,13 +1,13 @@
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
-type Variant = 'primary' | 'info' | 'warning' | 'success' | 'danger';
+type Variant = "primary" | "info" | "warning" | "success" | "danger";
 type Position =
-  | 'top-right'
-  | 'top-left'
-  | 'bottom-right'
-  | 'bottom-left'
-  | 'top-center'
-  | 'bottom-center';
+  | "top-right"
+  | "top-left"
+  | "bottom-right"
+  | "bottom-left"
+  | "top-center"
+  | "bottom-center";
 
 type IToast = {
   title: string;

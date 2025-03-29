@@ -1,4 +1,4 @@
-import { UserResponseDTO } from '../../models';
+import { UserResponseDTO } from "../../models";
 
 type AuthContextType = {
   user: UserResponseDTO | null;

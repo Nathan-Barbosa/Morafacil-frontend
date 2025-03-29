@@ -1,5 +1,5 @@
-import { CheckCircle } from '@phosphor-icons/react';
-import { useNavigate } from 'react-router-dom';
+import { CheckCircle } from "@phosphor-icons/react";
+import { useNavigate } from "react-router-dom";
 
 const ConfirmedEmail = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const ConfirmedEmail = () => {
         </p>
         <div className="flex justify-center">
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate("/login")}
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 transition-colors text-white font-semibold rounded-lg"
           >
             Fazer Login

@@ -4,12 +4,10 @@ const Home = () => {
       style={{
         display: "flex",
         justifyContent: "initial",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
-      <h1 style={{ fontSize: "2rem", marginLeft: "2rem", marginTop: "2rem" }}>
-        Seja bem vindo
-      </h1>
+      <h1 style={{ fontSize: "2rem", marginLeft: "2rem", marginTop: "2rem" }}>Seja bem vindo</h1>
     </div>
   );
 };

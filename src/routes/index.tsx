@@ -1,24 +1,24 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { ConfirmedEmail, ForgotPassword, Home, Login, Register, Users } from '../views';
-import { BaseLayout } from '../layout';
-import { ProtectedRoute } from '../components';
-import { AuthProvider } from '../providers';
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { ConfirmedEmail, ForgotPassword, Home, Login, Register, Users } from "../views";
+import { BaseLayout } from "../layout";
+import { ProtectedRoute } from "../components";
+import { AuthProvider } from "../providers";
 
 const routes = createBrowserRouter([
   {
-    path: '/login',
+    path: "/login",
     element: <Login />,
   },
   {
-    path: '/register',
+    path: "/register",
     element: <Register />,
   },
   {
-    path: '/forgotPassword',
+    path: "/forgotPassword",
     element: <ForgotPassword />,
   },
   {
-    path: '/emailConfirmed',
+    path: "/emailConfirmed",
     element: <ConfirmedEmail />,
   },
   {
@@ -29,7 +29,7 @@ const routes = createBrowserRouter([
     ),
     children: [
       {
-        path: '/',
+        path: "/",
         element: <BaseLayout />,
         children: [
           {
@@ -37,7 +37,7 @@ const routes = createBrowserRouter([
             element: <Home />,
           },
           {
-            path: 'users',
+            path: "users",
             element: <Users />,
           },
         ],
@@ -45,7 +45,7 @@ const routes = createBrowserRouter([
     ],
   },
   {
-    path: '*',
+    path: "*",
     element: <Navigate to="/" replace />,
   },
 ]);

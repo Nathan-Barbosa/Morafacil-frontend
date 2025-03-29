@@ -1,5 +1,5 @@
-import { AxiosError } from 'axios';
-import { APIError, ErrorResponseDTO } from '../models';
+import { AxiosError } from "axios";
+import { APIError, ErrorResponseDTO } from "../models";
 
 const apiErrorHandler = async <T>(axiosRequestFunction: () => Promise<T>) => {
   try {

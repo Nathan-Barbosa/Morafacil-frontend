@@ -1,9 +1,9 @@
 // ReactQueryProvider.tsx
-import { useCallback, useMemo } from 'react';
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryProviderProps } from './ReactQueryProvider.types';
-import { APIError } from '../../models';
-import { useToast } from '../ToastProvider';
+import { useCallback, useMemo } from "react";
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryProviderProps } from "./ReactQueryProvider.types";
+import { APIError } from "../../models";
+import { useToast } from "../ToastProvider";
 
 const fiveMinutes = 1000 * 60 * 5;
 
@@ -14,9 +14,9 @@ const ReactQueryProvider = ({ children }: ReactQueryProviderProps) => {
     (error: Error) => {
       if (!(error instanceof APIError)) return;
       toast({
-        title: 'Erro',
+        title: "Erro",
         description: error.message,
-        variant: 'danger',
+        variant: "danger",
       });
     },
     [toast],

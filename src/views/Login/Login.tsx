@@ -1,15 +1,15 @@
-import { useNavigate } from 'react-router-dom';
-import { usePostLoginMutation } from '../../services/loginService';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginFormData } from './Login.types';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
-import { loginSchema } from './Login.schemas';
-import { useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
+import { usePostLoginMutation } from "../../services/loginService";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginFormData } from "./Login.types";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { loginSchema } from "./Login.schemas";
+import { useEffect } from "react";
 
 const clearAllCookies = () => {
-  document.cookie.split(';').forEach((cookie) => {
+  document.cookie.split(";").forEach((cookie) => {
     document.cookie = cookie
-      .replace(/^ +/, '')
+      .replace(/^ +/, "")
       .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
   });
 };
@@ -29,8 +29,8 @@ const Login = () => {
     mutate(data, {
       onSuccess: (response) => {
         if (response.code === 200) {
-          console.log('Login realizado com sucesso vou redirecionar');
-          navigate('/');
+          console.log("Login realizado com sucesso vou redirecionar");
+          navigate("/");
         }
       },
     });
@@ -40,8 +40,8 @@ const Login = () => {
     clearAllCookies(); // 🔥 Limpa cookies ao montar componente
   }, []);
 
-  console.log('form', watch());
-  
+  console.log("form", watch());
+
   return (
     <div className="flex items-center justify-center h-full w-full">
       <div className="max-w-md mx-auto p-6 border rounded shadow w-full">
@@ -55,11 +55,11 @@ const Login = () => {
               <Controller
                 control={control}
                 name="email"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="email"
-                    value={value || ''}
+                    value={value || ""}
                     onChange={onChange}
                     placeholder="Insira o email"
                   />
@@ -73,11 +73,11 @@ const Login = () => {
               <Controller
                 control={control}
                 name="password"
-                render={({ field: { value = '', onChange } }) => (
+                render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="password"
-                    value={value || ''}
+                    value={value || ""}
                     onChange={onChange}
                     placeholder="Insira sua senha"
                   />
@@ -87,7 +87,7 @@ const Login = () => {
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => navigate('/register')}
+                onClick={() => navigate("/register")}
                 className="w-full bg-blue-600 text-white p-2 rounded"
               >
                 Cadastrar
@@ -117,7 +117,7 @@ const Login = () => {
               </div>
               <button
                 className="cursor-pointer hover:text-blue-500 text-sm font-medium text-gray-700"
-                onClick={() => navigate('/forgotPassword')}
+                onClick={() => navigate("/forgotPassword")}
               >
                 lembrar senha
               </button>

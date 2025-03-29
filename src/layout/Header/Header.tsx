@@ -1,6 +1,6 @@
-import { Bell, User, SignOut } from '@phosphor-icons/react';
-import { usePostLogoutMutation } from '../../services';
-import { useNavigate } from 'react-router-dom';
+import { Bell, User, SignOut } from "@phosphor-icons/react";
+import { usePostLogoutMutation } from "../../services";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();

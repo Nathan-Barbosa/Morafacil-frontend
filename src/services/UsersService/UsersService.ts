@@ -1,9 +1,9 @@
-import { ResponseDTO, UserResponseDTO } from '../../models';
-import { apiErrorHandler } from '../../utils';
-import { api } from '../api.ts';
+import { ResponseDTO, UserResponseDTO } from "../../models";
+import { apiErrorHandler } from "../../utils";
+import { api } from "../api.ts";
 
 class UsersService {
-  public static readonly url = '/v1/identity/users';
+  public static readonly url = "/v1/identity/users";
 
   public static async getUsers(role: string): Promise<ResponseDTO<UserResponseDTO[]>> {
     return apiErrorHandler(() =>

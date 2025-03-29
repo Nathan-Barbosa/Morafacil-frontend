@@ -1,2 +1,2 @@
-export * from './logoutSerice.queries';
-export * from './logoutService';
+export * from "./logoutSerice.queries";
+export * from "./logoutService";

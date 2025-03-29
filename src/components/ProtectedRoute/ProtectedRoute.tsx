@@ -1,15 +1,14 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../../providers';
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../providers";
 
 const ProtectedRoute = () => {
   const { authenticated, loading } = useAuth();
-  const location = useLocation();
 
   if (loading) {
     return <div>Carregando...</div>;
   }
 
-  return authenticated ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
+  return authenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export { ProtectedRoute };

@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
-import { APIError, ResponseDTO, UserResponseDTO } from '../../models';
-import { UsersService } from './UsersService';
+import { APIError, ResponseDTO, UserResponseDTO } from "../../models";
+import { UsersService } from "./UsersService";
 
 const usersKeys = {
-  all: ['users'] as const,
-  lists: () => [...usersKeys.all, 'list'] as const,
+  all: ["users"] as const,
+  lists: () => [...usersKeys.all, "list"] as const,
   list: (role: string) => [...usersKeys.lists(), role] as const,
 };
 

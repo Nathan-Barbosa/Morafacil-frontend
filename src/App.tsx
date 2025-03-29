@@ -1,9 +1,9 @@
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider } from "react-router-dom";
 
-import './styles/tailwind.css';
-import { routes } from './routes';
-import { ReactQueryProvider } from './providers';
-import { ToastProvider } from './providers/ToastProvider';
+import "./styles/tailwind.css";
+import { routes } from "./routes";
+import { ReactQueryProvider } from "./providers";
+import { ToastProvider } from "./providers/ToastProvider";
 
 function App() {
   return (

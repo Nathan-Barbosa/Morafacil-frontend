@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { AuthContext } from './useAuth';
-import { UserResponseDTO } from '../../models';
+import React, { useEffect, useState } from "react";
+import { AuthContext } from "./useAuth";
+import { UserResponseDTO } from "../../models";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserResponseDTO | null>(null);
@@ -10,8 +10,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        const res = await fetch('http://localhost:5068/v1/identity/me', {
-          credentials: 'include',
+        const res = await fetch("http://localhost:5068/v1/identity/me", {
+          credentials: "include",
         });
         const json = await res.json();
 
@@ -23,7 +23,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setAuthenticated(false);
         }
       } catch (error) {
-        console.error('Erro ao verificar autenticação:', error);
+        console.error("Erro ao verificar autenticação:", error);
         setUser(null);
         setAuthenticated(false);
       } finally {

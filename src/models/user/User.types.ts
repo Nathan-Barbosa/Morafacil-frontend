@@ -1,4 +1,4 @@
-import { RoleResponseDTO } from '../role';
+import { RoleResponseDTO } from "../role";
 
 type UserResponseDTO = {
   id: number;

@@ -1,3 +1,3 @@
-export * from './PasswordService';
-export * from './PasswordService.queries';
-export * from './PasswordService.types';
+export * from "./PasswordService";
+export * from "./PasswordService.queries";
+export * from "./PasswordService.types";

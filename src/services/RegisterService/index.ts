@@ -1,3 +1,3 @@
-export * from './RegisterService';
-export * from './RegisterService.queries';
-export * from './RegisterService.types';
+export * from "./RegisterService";
+export * from "./RegisterService.queries";
+export * from "./RegisterService.types";
