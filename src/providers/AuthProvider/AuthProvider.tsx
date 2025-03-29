@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { User } from './AuthProvider.types';
 import { AuthContext } from './useAuth';
+import { UserResponseDTO } from '../../models';
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserResponseDTO | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
