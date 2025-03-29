@@ -14,7 +14,13 @@ const Register = () => {
     mode: 'onChange',
   });
 
-  const { handleSubmit, reset, control } = methods;
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { isValid },
+    watch,
+  } = methods;
 
   const { mutate } = usePostRegisterMutation();
 
@@ -31,6 +37,11 @@ const Register = () => {
       },
     });
   };
+
+  const password = watch('password');
+  const confirmPassword = watch('confirm_password');
+
+  const passwordValidation = confirmPassword === password;
 
   return (
     <div className="flex items-center justify-center h-full w-full">
@@ -49,13 +60,14 @@ const Register = () => {
                   <input
                     className="mt-1 block w-full border p-2 rounded"
                     type="text"
-                    value={value || ''}
+                    value={value}
                     onChange={onChange}
-                    placeholder="Insira o nome de usuário"
+                    placeholder="Insira seu nome"
                   />
                 )}
               />
             </div>
+
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
@@ -66,14 +78,72 @@ const Register = () => {
                 render={({ field: { value = '', onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
-                    type="text"
-                    value={value || ''}
+                    type="email"
+                    value={value}
                     onChange={onChange}
-                    placeholder="Insira o nome de usuário"
+                    placeholder="Insira seu email"
                   />
                 )}
               />
             </div>
+
+            <div className="mb-4">
+              <label htmlFor="cpf" className="block text-sm font-medium text-gray-700">
+                CPF
+              </label>
+              <Controller
+                control={control}
+                name="cpf"
+                render={({ field: { value = '', onChange } }) => (
+                  <input
+                    className="mt-1 block w-full border p-2 rounded"
+                    type="text"
+                    value={value}
+                    onChange={onChange}
+                    placeholder="Insira seu CPF"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="birth_date" className="block text-sm font-medium text-gray-700">
+                Data de Nascimento
+              </label>
+              <Controller
+                control={control}
+                name="birth_date"
+                render={({ field: { value = '', onChange } }) => (
+                  <input
+                    className="mt-1 block w-full border p-2 rounded"
+                    type="date"
+                    value={value}
+                    onChange={onChange}
+                    placeholder="YYYY-MM-DD"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700">
+                Telefone
+              </label>
+              <Controller
+                control={control}
+                name="phone_number"
+                render={({ field: { value = '', onChange } }) => (
+                  <input
+                    className="mt-1 block w-full border p-2 rounded"
+                    type="text"
+                    value={value}
+                    onChange={onChange}
+                    placeholder="Insira seu telefone"
+                  />
+                )}
+              />
+            </div>
+
             <div className="mb-4">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
@@ -84,32 +154,34 @@ const Register = () => {
                 render={({ field: { value = '', onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
-                    type="text"
-                    value={value || ''}
+                    type="password"
+                    value={value}
                     onChange={onChange}
-                    placeholder="Insira o nome de usuário"
+                    placeholder="Insira sua senha"
                   />
                 )}
               />
             </div>
+
             <div className="mb-4">
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                Telefone
+              <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700">
+                Confirmar Senha
               </label>
               <Controller
                 control={control}
-                name="phoneNumber"
+                name="confirm_password"
                 render={({ field: { value = '', onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
-                    type="text"
-                    value={value || ''}
+                    type="password"
+                    value={value}
                     onChange={onChange}
-                    placeholder="Insira o nome de usuário"
+                    placeholder="Confirme sua senha"
                   />
                 )}
               />
             </div>
+
             <div className="flex gap-2">
               <button
                 type="button"
@@ -120,7 +192,8 @@ const Register = () => {
               </button>
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white p-2 rounded hover:text-white hover:bg-blue-700"
+                className="w-full bg-blue-600 text-white p-2 rounded hover:text-white hover:bg-blue-700 disabled:bg-gray-400"
+                disabled={!isValid || !passwordValidation}
               >
                 Cadastrar
               </button>

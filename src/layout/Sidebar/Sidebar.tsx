@@ -10,7 +10,7 @@ const Sidebar = () => {
     <aside className="bg-blue-900 text-white w-64 h-screen p-6">
       <h2 className="text-xl font-bold h-10 flex justify-center">MoraFacil</h2>
 
-      <h4 className="text-xs font-bold h-10 flex justify-center">{user?.roles[0]}</h4>
+      <h4 className="text-xs font-bold h-10 flex justify-center">{roles ?? ''}</h4>
 
       <nav>
         <ul className="space-y-4">

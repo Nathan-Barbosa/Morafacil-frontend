@@ -4,7 +4,7 @@ type UserResponseDTO = {
   id: number;
   name: string;
   email?: string;
-  role?: RoleResponseDTO[];
+  roles: RoleResponseDTO[];
   residence: number;
 };
 

@@ -1,7 +1,9 @@
 type PostRegisterRequestDTO = {
   name: string;
   email: string;
-  phoneNumber: string;
+  cpf: string;
+  birth_date: string;
+  phone_number: string;
   password: string;
 };
 
