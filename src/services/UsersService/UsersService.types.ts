@@ -1,5 +1,5 @@
-type GetUsersServiceRequestDTO = {
+type GetUsersRequestDTO = {
   role?: string;
 };
 
-export type { GetUsersServiceRequestDTO };
+export type { GetUsersRequestDTO };

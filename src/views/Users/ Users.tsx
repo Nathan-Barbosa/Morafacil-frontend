@@ -12,46 +12,47 @@ import {
   SelectValue,
 } from "../../components";
 import { useGetUsersListQuery } from "../../services/UsersService";
-import { ResidenceResponseDTO, RoleResponseDTO, UserResponseDTO } from "../../models";
+import { RoleResponseDTO, UserResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import { useGetResidencesListQuery } from "../../services";
 
-const residences: ResidenceResponseDTO[] = [
-  {
-    id: 1,
-    endereco: "aaa",
-    numero: 10,
-    situacao: 1,
-    bloco: "2",
-    unidade: "rj",
-    condominioId: 1,
-    condominio: {
-      id: 1,
-      nome: "Fazenda do ceu",
-      endereco: "Rua Alameda dos Anjos, 600",
-      tipo: 1,
-      ativo: true,
-    },
-    usuariosIds: [1],
-  },
-  {
-    id: 2,
-    endereco: "bbbb",
-    numero: 12,
-    situacao: 1,
-    bloco: "1",
-    unidade: "rj",
-    condominioId: 1,
-    condominio: {
-      id: 1,
-      nome: "Fazenda do ceu",
-      endereco: "Rua Alameda dos Anjos, 600",
-      tipo: 1,
-      ativo: true,
-    },
-    usuariosIds: [2],
-  },
-];
+// const residences: ResidenceResponseDTO[] = [
+//   {
+//     id: 1,
+//     endereco: "aaa",
+//     numero: 10,
+//     situacao: 1,
+//     bloco: "2",
+//     unidade: "rj",
+//     condominioId: 1,
+//     condominio: {
+//       id: 1,
+//       nome: "Fazenda do ceu",
+//       endereco: "Rua Alameda dos Anjos, 600",
+//       tipo: 1,
+//       ativo: true,
+//     },
+//     usuariosIds: [1],
+//   },
+//   {
+//     id: 2,
+//     endereco: "bbbb",
+//     numero: 12,
+//     situacao: 1,
+//     bloco: "1",
+//     unidade: "rj",
+//     condominioId: 1,
+//     condominio: {
+//       id: 1,
+//       nome: "Fazenda do ceu",
+//       endereco: "Rua Alameda dos Anjos, 600",
+//       tipo: 1,
+//       ativo: true,
+//     },
+//     usuariosIds: [2],
+//   },
+// ];
 
 const roles: RoleResponseDTO[] = ["Admin"];
 
@@ -64,7 +65,12 @@ export function Users() {
   const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
 
   const { data: users } = useGetUsersListQuery(searchfilterRole || "");
+  const { data: residences } = useGetResidencesListQuery({
+    pageNumber: 1,
+    pageSize: 10,
+  });
 
+  console.log(residences?.data);
   const {
     register: registerResidence,
     handleSubmit: handleSubmitResidence,
@@ -171,7 +177,7 @@ export function Users() {
               </SelectTrigger>
 
               <SelectContent className="bg-white rounded shadow-lg">
-                {residences?.map((residence) => (
+                {residences?.data?.map((residence) => (
                   <SelectItem value={residence.numero.toString()} key={residence.id}>
                     {residence.numero}
                   </SelectItem>

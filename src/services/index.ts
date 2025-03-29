@@ -3,3 +3,4 @@ export * from "./RegisterService";
 export * from "./passwordService";
 export * from "./loginService";
 export * from "./logoutService";
+export * from "./residenceService";
