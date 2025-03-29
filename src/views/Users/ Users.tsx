@@ -1,102 +1,92 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components';
-
-type User = {
-  id: number;
-  name: string;
-  role: string;
-  residence: number;
-};
-
-const users: User[] = [
-  {
-    id: 1,
-    name: 'Nathan Barbosa',
-    role: 'Admin',
-    residence: 1,
-  },
-  {
-    id: 2,
-    name: 'Pedro Souza',
-    role: 'Admin',
-    residence: 2,
-  },
-  {
-    id: 3,
-    name: 'Fernanda Fernandes',
-    role: 'Admin',
-    residence: 3,
-  },
-];
+import { useGetUsersListQuery } from '../../services/UsersService';
+import { UserResponseDTO } from '../../models';
+import { useDebounce } from 'use-debounce';
+import { MagnifyingGlass } from '@phosphor-icons/react';
 
 export function Users() {
+  const [filterRole, setFilterRole] = useState<string | undefined>(undefined);
+  const [searchfilterRole] = useDebounce(filterRole, 1000);
+
+  const { data: users } = useGetUsersListQuery(searchfilterRole || '');
+
   const { register } = useForm();
 
   const [openResidenceModal, setOpenResidenceModal] = useState(false);
   const [openRoleModal, setOpenRoleModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | undefined>(undefined);
+  const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 h-full w-full flex flex-col">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Usuários</h1>
           <p className="text-gray-600">Lista de usuários cadastrados</p>
         </div>
         <input
+          type="text"
           placeholder="Buscar por role..."
           {...register('role')}
+          onChange={(e) => setFilterRole(e.target.value)}
           className="w-64 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
-              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nome</th>
-              <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">
-                Residência
-              </th>
-              <th className="px-4 py-2"></th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {users?.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-100 transition">
-                <td className="px-4 py-2 text-gray-600">{user.id}</td>
-                <td className="px-4 py-2 text-gray-600">{user.name}</td>
-                <td className="px-4 py-2 text-gray-600">{user.residence || 'Não definida'}</td>
-                <td className="px-4 py-2">
-                  <div className="flex justify-end space-x-2">
-                    <button
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setOpenResidenceModal(true);
-                      }}
-                      className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
-                    >
-                      Residência
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setOpenRoleModal(true);
-                      }}
-                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
-                    >
-                      Role
-                    </button>
-                  </div>
-                </td>
+        {users?.data && (
+          <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nome</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">
+                  Residência
+                </th>
+                <th className="px-4 py-2"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {users?.data?.map((user) => (
+                <tr key={user.id} className="hover:bg-gray-100 transition">
+                  <td className="px-4 py-2 text-gray-600">{user.id}</td>
+                  <td className="px-4 py-2 text-gray-600">{user.name || user.email}</td>
+                  <td className="px-4 py-2 text-gray-600">{user.residence || 'Não definida'}</td>
+                  <td className="px-4 py-2">
+                    <div className="flex justify-end space-x-2">
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setOpenResidenceModal(true);
+                        }}
+                        className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+                      >
+                        Residência
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setOpenRoleModal(true);
+                        }}
+                        className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                      >
+                        Role
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
-
+      {!users?.data && (
+        <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
+          <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
+          <span className="mt-2 text-gray-600">Nenhum usuário encontrado</span>
+        </div>
+      )}
       <Dialog open={openResidenceModal} onOpenChange={setOpenResidenceModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
           <DialogHeader>

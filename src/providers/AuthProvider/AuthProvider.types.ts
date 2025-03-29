@@ -1,14 +1,10 @@
-type User = {
-  id: string;
-  email: string;
-  roles: string[];
-};
+import { UserResponseDTO } from '../../models';
 
 type AuthContextType = {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: UserResponseDTO | null;
+  setUser: (user: UserResponseDTO | null) => void;
   authenticated: boolean;
   loading: boolean;
 };
 
-export type { AuthContextType, User };
+export type { AuthContextType };
