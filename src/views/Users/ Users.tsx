@@ -15,7 +15,7 @@ import { useGetUsersListQuery } from "../../services/UsersService";
 import { RoleResponseDTO, UserResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import { useGetResidencesListQuery } from "../../services";
+import { useGetResidencesListQuery, usePatchAssociateUserMutation } from "../../services";
 
 // const residences: ResidenceResponseDTO[] = [
 //   {
@@ -70,7 +70,8 @@ export function Users() {
     pageSize: 10,
   });
 
-  console.log(residences?.data);
+  const { mutate: associateUser } = usePatchAssociateUserMutation();
+
   const {
     register: registerResidence,
     handleSubmit: handleSubmitResidence,
@@ -84,12 +85,24 @@ export function Users() {
   } = useForm();
 
   const onSubmitResidence = (data: any) => {
-    console.log("Dados da residência", data);
+    if (selectedUser && data.residence) {
+      const residenceId = Number(data.residence);
+
+      associateUser({
+        residenciaId: residenceId,
+        usuarioId: selectedUser.id,
+      });
+      setOpenResidenceModal(false);
+    } else {
+      console.error("Faltando usuário ou residência");
+    }
   };
 
   const onSubmitRole = (data: any) => {
     console.log("Dados da role", data);
   };
+
+  console.log("user", users);
 
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
@@ -178,7 +191,7 @@ export function Users() {
 
               <SelectContent className="bg-white rounded shadow-lg">
                 {residences?.data?.map((residence) => (
-                  <SelectItem value={residence.numero.toString()} key={residence.id}>
+                  <SelectItem value={residence.id.toString()} key={residence.id}>
                     {residence.numero}
                   </SelectItem>
                 ))}

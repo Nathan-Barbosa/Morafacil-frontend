@@ -3,4 +3,9 @@ type GetResidencesRequestDTO = {
   pageSize?: number;
 };
 
-export type { GetResidencesRequestDTO };
+type PatchAssociateUserRequestDTO = {
+  residenciaId: number;
+  usuarioId: number;
+};
+
+export type { GetResidencesRequestDTO, PatchAssociateUserRequestDTO };
