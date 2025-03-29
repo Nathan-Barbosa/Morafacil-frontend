@@ -12,49 +12,16 @@ import {
   SelectValue,
 } from "../../components";
 import { useGetUsersListQuery } from "../../services/UsersService";
-import { RoleResponseDTO, UserResponseDTO } from "../../models";
+import { UserResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import { useGetResidencesListQuery, usePatchAssociateUserMutation } from "../../services";
-
-// const residences: ResidenceResponseDTO[] = [
-//   {
-//     id: 1,
-//     endereco: "aaa",
-//     numero: 10,
-//     situacao: 1,
-//     bloco: "2",
-//     unidade: "rj",
-//     condominioId: 1,
-//     condominio: {
-//       id: 1,
-//       nome: "Fazenda do ceu",
-//       endereco: "Rua Alameda dos Anjos, 600",
-//       tipo: 1,
-//       ativo: true,
-//     },
-//     usuariosIds: [1],
-//   },
-//   {
-//     id: 2,
-//     endereco: "bbbb",
-//     numero: 12,
-//     situacao: 1,
-//     bloco: "1",
-//     unidade: "rj",
-//     condominioId: 1,
-//     condominio: {
-//       id: 1,
-//       nome: "Fazenda do ceu",
-//       endereco: "Rua Alameda dos Anjos, 600",
-//       tipo: 1,
-//       ativo: true,
-//     },
-//     usuariosIds: [2],
-//   },
-// ];
-
-const roles: RoleResponseDTO[] = ["Admin"];
+import {
+  useGetResidencesListQuery,
+  useGetRolesListQuery,
+  usePatchAssociateUserMutation,
+  usePostAssignRoleMutation,
+} from "../../services";
+import { useToast } from "../../hooks/use-toast";
 
 export function Users() {
   const [filterRole, setFilterRole] = useState<string | undefined>(undefined);
@@ -64,13 +31,18 @@ export function Users() {
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
 
+  const { toast } = useToast();
+
   const { data: users } = useGetUsersListQuery(searchfilterRole || "");
+  const { data: roles } = useGetRolesListQuery();
+
   const { data: residences } = useGetResidencesListQuery({
     pageNumber: 1,
     pageSize: 10,
   });
 
   const { mutate: associateUser } = usePatchAssociateUserMutation();
+  const { mutate: assignRole } = usePostAssignRoleMutation();
 
   const {
     register: registerResidence,
@@ -88,21 +60,46 @@ export function Users() {
     if (selectedUser && data.residence) {
       const residenceId = Number(data.residence);
 
-      associateUser({
-        residenciaId: residenceId,
-        usuarioId: selectedUser.id,
-      });
-      setOpenResidenceModal(false);
-    } else {
-      console.error("Faltando usuário ou residência");
+      associateUser(
+        {
+          residenciaId: residenceId,
+          usuarioId: selectedUser.id,
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Sucesso",
+              description: "Residência atribuída com sucesso!",
+              variant: "default",
+            });
+            setOpenResidenceModal(false);
+          },
+        },
+      );
     }
   };
 
   const onSubmitRole = (data: any) => {
-    console.log("Dados da role", data);
+    if (selectedUser && selectedUser.email && selectedUser.id) {
+      assignRole(
+        {
+          userEmail: selectedUser.email,
+          roleName: data.role,
+          action: "add",
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Sucesso",
+              description: "Perfil atribuído com sucesso!",
+              variant: "default",
+            });
+            setOpenRoleModal(false);
+          },
+        },
+      );
+    }
   };
-
-  console.log("user", users);
 
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
@@ -232,7 +229,7 @@ export function Users() {
               </SelectTrigger>
 
               <SelectContent className="bg-white rounded shadow-lg z-50">
-                {roles?.map((role, index) => (
+                {roles?.data?.map((role, index) => (
                   <SelectItem value={role} key={index}>
                     {role}
                   </SelectItem>

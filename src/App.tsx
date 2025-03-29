@@ -4,10 +4,12 @@ import "./styles/tailwind.css";
 import { routes } from "./routes";
 import { ReactQueryProvider } from "./providers";
 import { ToastProvider } from "./providers/ToastProvider";
+import { Toaster } from "./components/ui/toaster";
 
 function App() {
   return (
     <ToastProvider duration={import.meta.env.VITE_TOAST_DURATION}>
+      <Toaster />
       <ReactQueryProvider>
         <RouterProvider router={routes} />
       </ReactQueryProvider>
