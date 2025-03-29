@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ConfirmedEmail, ForgotPassword, Home, Login, Register, Users } from '../views';
 import { BaseLayout } from '../layout';
 import { ProtectedRoute } from '../components';
+import { AuthProvider } from '../providers';
 
 const routes = createBrowserRouter([
   {
@@ -21,7 +22,11 @@ const routes = createBrowserRouter([
     element: <ConfirmedEmail />,
   },
   {
-    element: <ProtectedRoute />,
+    element: (
+      <AuthProvider>
+        <ProtectedRoute />
+      </AuthProvider>
+    ),
     children: [
       {
         path: '/',

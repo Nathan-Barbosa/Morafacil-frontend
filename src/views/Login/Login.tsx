@@ -4,6 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LoginFormData } from './Login.types';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { loginSchema } from './Login.schemas';
+import { useEffect } from 'react';
+
+const clearAllCookies = () => {
+  document.cookie.split(';').forEach((cookie) => {
+    document.cookie = cookie
+      .replace(/^ +/, '')
+      .replace(/=.*/, `=;expires=${new Date().toUTCString()};path=/`);
+  });
+};
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,14 +29,19 @@ const Login = () => {
     mutate(data, {
       onSuccess: (response) => {
         if (response.code === 200) {
-          console.log('Login realizado com sucesso');
+          console.log('Login realizado com sucesso vou redirecionar');
           navigate('/');
         }
       },
     });
   };
 
+  useEffect(() => {
+    clearAllCookies(); // 🔥 Limpa cookies ao montar componente
+  }, []);
+
   console.log('form', watch());
+  
   return (
     <div className="flex items-center justify-center h-full w-full">
       <div className="max-w-md mx-auto p-6 border rounded shadow w-full">
@@ -47,7 +61,7 @@ const Login = () => {
                     type="email"
                     value={value || ''}
                     onChange={onChange}
-                    placeholder="Insira o nome de usuário"
+                    placeholder="Insira o email"
                   />
                 )}
               />
@@ -65,7 +79,7 @@ const Login = () => {
                     type="password"
                     value={value || ''}
                     onChange={onChange}
-                    placeholder="Insira o nome de usuário"
+                    placeholder="Insira sua senha"
                   />
                 )}
               />
