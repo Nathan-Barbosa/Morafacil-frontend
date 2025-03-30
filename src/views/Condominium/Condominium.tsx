@@ -3,12 +3,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { condoSchema } from "./Condominium.schemas";
 import { CondoFormData } from "./Condominium.types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components";
+import { useToast } from "../../hooks/use-toast";
+import {
+  PostCreateCondominiumRequestDTO,
+  Types,
+  usePostCreateCondominiumMutation,
+} from "../../services";
 
 const Condominium = () => {
   const methods = useForm<CondoFormData>({
     resolver: zodResolver(condoSchema),
     mode: "onChange",
   });
+
+  const { toast } = useToast();
 
   const {
     handleSubmit,
@@ -18,12 +26,43 @@ const Condominium = () => {
     setValue,
   } = methods;
 
-  const onSubmit = (data: CondoFormData) => {
-    console.log("Dados do condomínio:", data);
-  };
-
   const handleCancel = () => {
     reset();
+  };
+
+  const { mutate: createCondominium } = usePostCreateCondominiumMutation();
+
+  const onSubmit = (data: CondoFormData) => {
+    const formattedData: PostCreateCondominiumRequestDTO = {
+      nome: data.name,
+      endereco: data.address,
+      numero: data.number,
+      cep: data.zip,
+      bairro: data.neighborhood,
+      pais: data.country,
+      estado: data.state,
+      cnpj: data.cnpj,
+      tipo: data.type as Types, // Assegure que o enum Types esteja correto, por exemplo:
+      // enum Types {
+      //   CASA = "houses",
+      //   APARTAMENTO = "apartments"
+      // }
+      areasComuns: data.commonAreas ?? false,
+      situacao: 1, // Valor padrão (ajuste conforme necessário)
+      bloco: "A", // Valor padrão (ajuste conforme necessário)
+      unidade: "101", // Valor padrão (ajuste conforme necessário)
+      condominioId: 123, // Valor padrão ou obtido de outra forma
+    };
+
+    createCondominium(formattedData, {
+      onSuccess: () => {
+        toast({
+          title: "Sucesso",
+          description: "Condomínio atribuída com sucesso!",
+          variant: "default",
+        });
+      },
+    });
   };
 
   return (
