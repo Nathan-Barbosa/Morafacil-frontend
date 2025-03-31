@@ -16,4 +16,9 @@ type PostCreateCondominiumRequestDTO = {
   tipo: Types;
 };
 
-export type { PostCreateCondominiumRequestDTO };
+type GetCondominiumRequestDTO = {
+  pageNumber: number;
+  pageSize: number;
+};
+
+export type { PostCreateCondominiumRequestDTO, GetCondominiumRequestDTO };

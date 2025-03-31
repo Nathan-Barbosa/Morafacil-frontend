@@ -1,13 +1,30 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { APIError, PostCondominiumResponseDTO, ResponseDTO } from "../../models";
-import { PostCreateCondominiumRequestDTO } from "./CondominiumService.types";
+import {
+  APIError,
+  GetCondominiumResponseDTO,
+  PaginatedResponse,
+  PostCondominiumResponseDTO,
+  ResponseDTO,
+} from "../../models";
+import {
+  GetCondominiumRequestDTO,
+  PostCreateCondominiumRequestDTO,
+} from "./CondominiumService.types";
 import { CondominiumService } from "./CondominiumService";
 
-const residencesKeys = {
-  all: ["residences"] as const,
-  lists: () => [...residencesKeys.all, "list"] as const,
-  createUser: () => [...residencesKeys.all, "createUser"] as const,
+const condominiumKeys = {
+  all: ["condominium"] as const,
+  lists: () => [...condominiumKeys.all, "list"] as const,
+  list: (params: GetCondominiumRequestDTO) => [...condominiumKeys.lists(), params] as const,
+  createCondo: () => [...condominiumKeys.all, "createCondo"] as const,
+};
+
+const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
+  return useQuery<PaginatedResponse<GetCondominiumResponseDTO[]>, APIError>({
+    queryKey: condominiumKeys.list(params),
+    queryFn: () => CondominiumService.getCondos(params),
+  });
 };
 
 const usePostCreateCondominiumMutation = () => {
@@ -18,14 +35,14 @@ const usePostCreateCondominiumMutation = () => {
     APIError,
     PostCreateCondominiumRequestDTO
   >({
-    mutationKey: residencesKeys.createUser(),
+    mutationKey: condominiumKeys.createCondo(),
     mutationFn: (data: PostCreateCondominiumRequestDTO) =>
       CondominiumService.postCreateCondominium(data),
     onSuccess: () =>
       queryClient.invalidateQueries({
-        queryKey: residencesKeys.lists(),
+        queryKey: condominiumKeys.lists(),
       }),
   });
 };
 
-export { usePostCreateCondominiumMutation };
+export { usePostCreateCondominiumMutation, useGetCondosListQuery };
