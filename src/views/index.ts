@@ -5,3 +5,4 @@ export * from "./ForgotPassword";
 export * from "./EmailConfirmed";
 export * from "./Users";
 export * from "./Condominium";
+export * from "./Residence";

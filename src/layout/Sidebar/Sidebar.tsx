@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../providers";
-import { UserCircle, House } from "@phosphor-icons/react";
+import { UserCircle, House, HouseSimple } from "@phosphor-icons/react";
 const Sidebar = () => {
   const { user } = useAuth();
 
@@ -47,6 +47,18 @@ const Sidebar = () => {
                 >
                   <div className="flex gap-2 items-center">
                     <House size={16} /> Condomínios
+                  </div>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/residence"
+                  className={({ isActive }) =>
+                    `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
+                  }
+                >
+                  <div className="flex gap-2 items-center">
+                    <HouseSimple size={16} /> Residencias
                   </div>
                 </NavLink>
               </li>

@@ -10,6 +10,12 @@ type ResidenceResponseDTO = {
     id: number;
     nome: string;
     endereco: string;
+    numero: number;
+    cep: string;
+    bairro: string;
+    pais: string;
+    estado: string;
+    cnpj: string | null;
     tipo: number;
     ativo: boolean;
   };

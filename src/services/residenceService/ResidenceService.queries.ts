@@ -1,14 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { APIError, PaginatedResponse, ResidenceResponseDTO } from "../../models";
+import { APIError, PaginatedResponse, ResidenceResponseDTO, ResponseDTO } from "../../models";
 import { ResidenceService } from "./ResidenceService";
-import { GetResidencesRequestDTO, PatchAssociateUserRequestDTO } from "./ResidenceService.types";
+import {
+  GetResidencesRequestDTO,
+  PatchAssociateUserRequestDTO,
+  PostCreateResidenceRequestDTO,
+} from "./ResidenceService.types";
 
 const residencesKeys = {
   all: ["residences"] as const,
   lists: () => [...residencesKeys.all, "list"] as const,
   list: (params: GetResidencesRequestDTO) => [...residencesKeys.lists(), params] as const,
   associateUser: () => [...residencesKeys.all, "associateUser"] as const,
+  createResidence: () => [...residencesKeys.all, "createResidence"] as const,
 };
 
 const useGetResidencesListQuery = (params: GetResidencesRequestDTO) => {
@@ -31,4 +36,17 @@ const usePatchAssociateUserMutation = () => {
   });
 };
 
-export { useGetResidencesListQuery, usePatchAssociateUserMutation };
+const usePostCreateResidenceMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<ResidenceResponseDTO>, APIError, PostCreateResidenceRequestDTO>({
+    mutationKey: residencesKeys.createResidence(),
+    mutationFn: (data: PostCreateResidenceRequestDTO) => ResidenceService.postCreateResidence(data),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: residencesKeys.lists(),
+      }),
+  });
+};
+
+export { useGetResidencesListQuery, usePatchAssociateUserMutation, usePostCreateResidenceMutation };

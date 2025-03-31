@@ -8,4 +8,17 @@ type PatchAssociateUserRequestDTO = {
   usuarioId: number;
 };
 
-export type { GetResidencesRequestDTO, PatchAssociateUserRequestDTO };
+type PostCreateResidenceRequestDTO = {
+  endereco: string;
+  numero: number;
+  situacao: string;
+  bloco: string;
+  unidade: string;
+  condominioId: number;
+};
+
+export type {
+  GetResidencesRequestDTO,
+  PatchAssociateUserRequestDTO,
+  PostCreateResidenceRequestDTO,
+};

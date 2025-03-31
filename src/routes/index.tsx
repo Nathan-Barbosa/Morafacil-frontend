@@ -11,6 +11,7 @@ import {
 import { BaseLayout } from "../layout";
 import { ProtectedRoute } from "../components";
 import { AuthProvider } from "../providers";
+import { Residence } from "../views/Residence";
 
 const routes = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ const routes = createBrowserRouter([
           {
             path: "condominium",
             element: <Condominium />,
+          },
+          {
+            path: "residence",
+            element: <Residence />,
           },
         ],
       },

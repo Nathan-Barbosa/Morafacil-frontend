@@ -1,7 +1,11 @@
-import { PaginatedResponse, ResidenceResponseDTO } from "../../models";
+import { PaginatedResponse, ResidenceResponseDTO, ResponseDTO } from "../../models";
 import { apiErrorHandler } from "../../utils";
 import { api } from "../api.ts";
-import { GetResidencesRequestDTO, PatchAssociateUserRequestDTO } from "./ResidenceService.types.ts";
+import {
+  GetResidencesRequestDTO,
+  PatchAssociateUserRequestDTO,
+  PostCreateResidenceRequestDTO,
+} from "./ResidenceService.types.ts";
 
 class ResidenceService {
   public static readonly url = "/v1/residencia";
@@ -30,6 +34,16 @@ class ResidenceService {
           residenciaId,
           usuarioId,
         })
+        .then((response) => response.data),
+    );
+  }
+
+  public static async postCreateResidence(
+    data: PostCreateResidenceRequestDTO,
+  ): Promise<ResponseDTO<ResidenceResponseDTO>> {
+    return apiErrorHandler(() =>
+      api
+        .post<ResponseDTO<ResidenceResponseDTO>>(ResidenceService.url, data)
         .then((response) => response.data),
     );
   }
