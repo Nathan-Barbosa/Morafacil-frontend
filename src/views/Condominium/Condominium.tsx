@@ -42,16 +42,7 @@ const Condominium = () => {
       pais: data.country,
       estado: data.state,
       cnpj: data.cnpj,
-      tipo: data.type as Types, // Assegure que o enum Types esteja correto, por exemplo:
-      // enum Types {
-      //   CASA = "houses",
-      //   APARTAMENTO = "apartments"
-      // }
-      areasComuns: data.commonAreas ?? false,
-      situacao: 1, // Valor padrão (ajuste conforme necessário)
-      bloco: "A", // Valor padrão (ajuste conforme necessário)
-      unidade: "101", // Valor padrão (ajuste conforme necessário)
-      condominioId: 123, // Valor padrão ou obtido de outra forma
+      tipo: data.type as Types,
     };
 
     createCondominium(formattedData, {
@@ -112,6 +103,7 @@ const Condominium = () => {
                     name="number"
                     render={({ field }) => (
                       <input
+                        type="number"
                         className="mt-1 block w-full border p-2 rounded"
                         {...field}
                         placeholder="Número"
@@ -217,28 +209,15 @@ const Condominium = () => {
                             <SelectValue placeholder="Selecione o tipo do condomínio" />
                           </SelectTrigger>
                           <SelectContent className="bg-white rounded shadow-lg">
-                            <SelectItem value="houses">Condomínio de Casas</SelectItem>
-                            <SelectItem value="apartments">Condomínio de Apartamentos</SelectItem>
+                            <SelectItem value={Types.Residencial}>Condomínio Residencial</SelectItem>
+                            <SelectItem value={Types.Comercial}>Condomínio Comercial</SelectItem>
+                            <SelectItem value={Types.Misto}>Condomínio Misto</SelectItem>
                           </SelectContent>
                         </Select>
                       )}
                     />
 
                     {errors.type && <p className="text-red-500 text-sm">{errors.type.message}</p>}
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Controller
-                      control={control}
-                      name="commonAreas"
-                      render={({ field }) => (
-                        <input
-                          type="checkbox"
-                          checked={field.value}
-                          onChange={(e) => setValue("commonAreas", e.target.checked)}
-                        />
-                      )}
-                    />
-                    <label className="text-sm">Áreas Comuns</label>
                   </div>
                 </div>
 

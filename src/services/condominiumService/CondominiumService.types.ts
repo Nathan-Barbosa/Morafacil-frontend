@@ -1,23 +1,19 @@
 export enum Types {
-  CASA = "houses",
-  APARTAMENTO = "houses",
+  Residencial = "Residencial",
+  Comercial = "Comercial",
+  Misto = "Misto",
 }
 
 type PostCreateCondominiumRequestDTO = {
   nome: string;
   endereco: string;
-  numero: string;
+  numero: number;
   cep: string;
   bairro: string;
   pais: string;
   estado: string;
   cnpj?: string;
   tipo: Types;
-  areasComuns?: boolean;
-  situacao: number;
-  bloco: string;
-  unidade: string;
-  condominioId: number;
 };
 
 export type { PostCreateCondominiumRequestDTO };
