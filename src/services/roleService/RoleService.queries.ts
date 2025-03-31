@@ -10,10 +10,10 @@ const rolesKeys = {
   associateUser: () => [...rolesKeys.all, "associateUser"] as const,
 };
 
-const useGetRolesListQuery = () => {
+const useGetRolesListQuery = (email?: string) => {
   return useQuery<ResponseDTO<string[]>, APIError>({
     queryKey: rolesKeys.lists(),
-    queryFn: () => RoleService.getRoles(),
+    queryFn: () => RoleService.getRoles(email),
   });
 };
 

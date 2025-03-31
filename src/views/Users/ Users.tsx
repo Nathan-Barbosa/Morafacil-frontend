@@ -124,42 +124,52 @@ export function Users() {
               <tr>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nome</th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">
-                  Residência
-                </th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Bloco</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Unidade</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users?.data?.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-100 transition">
-                  <td className="px-4 py-2 text-gray-600">{user.id}</td>
-                  <td className="px-4 py-2 text-gray-600">{user.name || user.email}</td>
-                  <td className="px-4 py-2 text-gray-600">{user.residence || "Não definida"}</td>
-                  <td className="px-4 py-2">
-                    <div className="flex justify-end space-x-2">
-                      <button
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setOpenResidenceModal(true);
-                        }}
-                        className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
-                      >
-                        Residência
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setOpenRoleModal(true);
-                        }}
-                        className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
-                      >
-                        Role
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {users?.data?.map((user) => {
+                const userResidence = residences?.data?.find((residence) =>
+                  residence.usuariosIds.includes(user.id),
+                );
+                return (
+                  <tr key={user.id} className="hover:bg-gray-100 transition">
+                    <td className="px-4 py-2 text-gray-600">{user.id}</td>
+                    <td className="px-4 py-2 text-gray-600">{user.name || user.email}</td>
+                    <td className="px-4 py-2 text-gray-600">
+                      {userResidence ? userResidence.bloco : "Não definido"}
+                    </td>
+                    <td className="px-4 py-2 text-gray-600">
+                      {userResidence ? userResidence.unidade : "Não definido"}
+                    </td>
+
+                    <td className="px-4 py-2">
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setOpenResidenceModal(true);
+                          }}
+                          className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+                        >
+                          Residência
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setOpenRoleModal(true);
+                          }}
+                          className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                        >
+                          Role
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

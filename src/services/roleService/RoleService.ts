@@ -6,10 +6,11 @@ import { PostAssignRoleRequestDTO } from "./RoleService.types.ts";
 class RoleService {
   public static readonly url = "/v1/identity/roles";
 
-  public static async getRoles(): Promise<ResponseDTO<string[]>> {
+  public static async getRoles(email?: string): Promise<ResponseDTO<string[]>> {
     return apiErrorHandler(() =>
       api
         .get<ResponseDTO<string[]>>(RoleService.url, {
+          params: email ? email : undefined,
           withCredentials: true,
         })
         .then((response) => response.data),
