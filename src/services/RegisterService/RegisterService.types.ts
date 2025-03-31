@@ -2,9 +2,10 @@ type PostRegisterRequestDTO = {
   name: string;
   email: string;
   cpf: string;
-  birth_date: string;
-  phone_number: string;
+  birthdate: string;
+  phoneNumber: string;
   password: string;
+  condominioId: number;
 };
 
 export type { PostRegisterRequestDTO };

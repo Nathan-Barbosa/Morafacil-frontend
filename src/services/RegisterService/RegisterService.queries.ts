@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { PostRegisterRequestDTO } from "./RegisterService.types";
 import { RegisterService } from "./RegisterService";
-import { APIError } from "../../models";
+import { APIError, ResponseDTO } from "../../models";
 
 const registerKeys = {
   all: ["register"] as const,
@@ -9,7 +9,7 @@ const registerKeys = {
 };
 
 const usePostRegisterMutation = () => {
-  return useMutation<void, APIError, PostRegisterRequestDTO>({
+  return useMutation<ResponseDTO<string>, APIError, PostRegisterRequestDTO>({
     mutationKey: registerKeys.create(),
     mutationFn: (data: PostRegisterRequestDTO) => RegisterService.postRegister(data),
   });

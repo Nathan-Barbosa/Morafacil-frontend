@@ -43,7 +43,6 @@ const Condominium = () => {
   });
   const { mutate: createCondominium } = usePostCreateCondominiumMutation();
 
-  console.log(condos?.data);
   const onSubmit = (data: CondoFormData) => {
     const formattedData: PostCreateCondominiumRequestDTO = {
       nome: data.name,

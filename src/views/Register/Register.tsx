@@ -5,6 +5,7 @@ import { RegisterFormData } from "./Register.types";
 import { registerSchema } from "./Register.schemas";
 import { useNavigate } from "react-router-dom";
 import { usePostRegisterMutation } from "../../services";
+import { useToast } from "../../providers/ToastProvider";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const Register = () => {
   } = methods;
 
   const { mutate } = usePostRegisterMutation();
+  const { toast } = useToast();
 
   const handleCancel = () => {
     reset();
@@ -30,10 +32,22 @@ const Register = () => {
   };
 
   const onSubmit = (data: RegisterFormData) => {
-    mutate(data, {
-      onSuccess: () => {
-        console.log("Cadastro realizado com sucesso");
-        navigate("/login");
+    const { confirm_password, ...rest } = data;
+
+    const payload = {
+      ...rest,
+      condominioId: 1,
+    };
+    mutate(payload, {
+      onSuccess: (response) => {
+        if (response.code === 200) {
+          toast({
+            title: "Sucesso",
+            description: "Residência atribuída com sucesso!",
+            variant: "primary",
+          });
+          navigate("/login");
+        }
       },
     });
   };
@@ -107,12 +121,12 @@ const Register = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="birth_date" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700">
                 Data de Nascimento
               </label>
               <Controller
                 control={control}
-                name="birth_date"
+                name="birthdate"
                 render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
@@ -131,7 +145,7 @@ const Register = () => {
               </label>
               <Controller
                 control={control}
-                name="phone_number"
+                name="phoneNumber"
                 render={({ field: { value = "", onChange } }) => (
                   <input
                     className="mt-1 block w-full border p-2 rounded"
