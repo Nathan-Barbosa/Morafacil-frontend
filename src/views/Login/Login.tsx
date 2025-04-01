@@ -5,6 +5,7 @@ import { LoginFormData } from "./Login.types";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { loginSchema } from "./Login.schemas";
 import { useEffect } from "react";
+import imglogo from "../../assets/logo-morar-facil.png";
 
 const clearAllCookies = () => {
   document.cookie.split(";").forEach((cookie) => {
@@ -22,7 +23,6 @@ const Login = () => {
   });
 
   const { handleSubmit, control, watch } = methods;
-
   const { mutate } = usePostLoginMutation();
 
   const onSubmit = (data: LoginFormData) => {
@@ -45,9 +45,18 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center h-full w-full">
       <div className="max-w-md mx-auto p-6 border rounded shadow w-full">
+        <div className="flex justify-center mb-4">
+          <img
+            src={imglogo}
+            alt="Logo Morar Fácil"
+            className="h-34 w-auto"
+          />
+        </div>
+
         <FormProvider {...methods}>
-          <h2 className="text-2xl font-semibold mb-4">Login</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
           <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
+            {/* Campo Email */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
@@ -66,6 +75,8 @@ const Login = () => {
                 )}
               />
             </div>
+
+            {/* Campo Senha */}
             <div className="mb-4">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
@@ -84,6 +95,8 @@ const Login = () => {
                 )}
               />
             </div>
+
+            {/* Botões Entrar / Cadastrar */}
             <div className="flex gap-2">
               <button
                 type="button"
@@ -98,6 +111,7 @@ const Login = () => {
               </button>
             </div>
 
+            {/* Checkbox + Link de senha */}
             <div className="w-full flex justify-between p-1 ">
               <div className="flex gap-2">
                 <Controller
