@@ -4,3 +4,4 @@ export * from "./role";
 export * from "./user";
 export * from "./residence";
 export * from "./condominium";
+export * from "./noticeBoard";

@@ -6,3 +6,4 @@ export * from "./logoutService";
 export * from "./residenceService";
 export * from "./roleService";
 export * from "./condominiumService";
+export * from "./noticeBoard";

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
+import { useGetNoticesQuery } from "../../services";
 // import { useGetNoticesQuery, usePostNoticeMutation } from "../../services/NoticeService";
 // import { useToast } from "../../hooks/use-toast";
 
@@ -22,7 +23,7 @@ const notices = {
 const NoticeBoard = () => {
   const [openNoticeModal, setOpenNoticeModal] = useState(false);
   // const { toast } = useToast();
-  // const { data: notices, refetch: refetchNotices } = useGetNoticesQuery();
+  const { data: notices } = useGetNoticesQuery();
   // const { mutate: postNotice } = usePostNoticeMutation();
 
   const { register, handleSubmit, reset } = useForm();
