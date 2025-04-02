@@ -14,15 +14,15 @@ import {
 import { useGetUsersListQuery } from "../../services/UsersService";
 import { UserResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
-import { MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlass, XCircle } from "@phosphor-icons/react";
 import {
   useGetResidencesListQuery,
   useGetRolesListQuery,
   usePatchAssociateUserMutation,
+  usePatchRemoveUserMutation,
   usePostAssignRoleMutation,
 } from "../../services";
 import { useToast } from "../../hooks/use-toast";
-
 
 export function Users() {
   const [filterRole, setFilterRole] = useState<string | undefined>(undefined);
@@ -45,7 +45,7 @@ export function Users() {
 
   const { mutate: associateUser } = usePatchAssociateUserMutation();
   const { mutate: assignRole } = usePostAssignRoleMutation();
-  // criar a mutate de remover user nathan
+  const { mutate: removeUser } = usePatchRemoveUserMutation();
 
   const {
     register: registerResidence,
@@ -84,8 +84,7 @@ export function Users() {
 
   const handleRemoveResidence = (residenceId: number) => {
     if (selectedUser?.id) {
-      //trocar a funcao nathan
-      associateUser(
+      removeUser(
         {
           residenciaId: residenceId,
           usuarioId: selectedUser.id,
@@ -97,9 +96,8 @@ export function Users() {
               description: "Residência desvinculada com sucesso!",
               variant: "default",
             });
-            refetchUsers(); 
           },
-        }
+        },
       );
     }
   };
@@ -121,7 +119,7 @@ export function Users() {
             });
             setOpenRoleModal(false);
             refetchUsers();
-          }
+          },
         },
       );
     }
@@ -143,12 +141,11 @@ export function Users() {
               variant: "default",
             });
             refetchUsers();
-          }
-        }
+          },
+        },
       );
     }
   };
-
 
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
@@ -244,149 +241,152 @@ export function Users() {
         </div>
       )}
 
-        <Dialog open={openResidenceModal} onOpenChange={setOpenResidenceModal}>
-          <DialogContent className="bg-white p-6 rounded shadow-lg">
-            <DialogHeader>
-              <DialogTitle className="text-lg font-semibold">Gerenciar Residências</DialogTitle>
-            </DialogHeader>
+      <Dialog open={openResidenceModal} onOpenChange={setOpenResidenceModal}>
+        <DialogContent className="bg-white p-6 rounded shadow-lg">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">Gerenciar Residências</DialogTitle>
+          </DialogHeader>
 
-            <div className="mb-4">
-              <p className="text-gray-700 mb-2">
-                Residências atuais de <strong>{selectedUser?.name}</strong>:
-              </p>
+          <div className="mb-4">
+            <p className="text-gray-700 mb-2">
+              Residências atuais de <strong>{selectedUser?.name}</strong>:
+            </p>
 
-              <div className="flex flex-wrap gap-2">
-                {residences?.data
-                  ?.filter((res) => res.usuariosIds.includes(selectedUser?.id || -1))
-                  .map((res) => (
-                    <div
-                      key={res.id}
-                      className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded text-sm text-gray-800"
+            <div className="flex flex-wrap gap-2">
+              {residences?.data
+                ?.filter((res) => res.usuariosIds.includes(selectedUser?.id || -1))
+                .map((res) => (
+                  <div
+                    key={res.id}
+                    className="flex items-center gap-2 bg-gray-200 px-2 py-1 rounded text-sm text-gray-800"
+                  >
+                    Nº {res.numero} - Bloco {res.bloco} - Unidade {res.unidade}
+                    <button
+                      onClick={() => handleRemoveResidence(res.id)}
+                      className="text-red-500 hover:text-red-700 ml-1"
+                      title="Remover residência"
                     >
-                      Nº {res.numero} - Bloco {res.bloco} - Unidade {res.unidade}
-                      <button
-                        onClick={() => handleRemoveResidence(res.id)}
-                        className="text-red-500 hover:text-red-700 ml-1"
-                        title="Remover residência"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                {residences?.data?.filter((res) => res.usuariosIds.includes(selectedUser?.id || -1)).length === 0 && (
-                  <span className="text-sm text-gray-500">Sem residências associadas</span>
-                )}
-              </div>
+                      <XCircle size={18} />
+                    </button>
+                  </div>
+                ))}
+              {residences?.data?.filter((res) => res.usuariosIds.includes(selectedUser?.id || -1))
+                .length === 0 && (
+                <span className="text-sm text-gray-500">Sem residências associadas</span>
+              )}
             </div>
+          </div>
 
-            <form onSubmit={handleSubmitResidence(onSubmitResidence)} className="space-y-4">
-              <Select
-                {...registerResidence("residence")}
-                onValueChange={(value) => setValueResidence("residence", value)}
+          <form onSubmit={handleSubmitResidence(onSubmitResidence)} className="space-y-4">
+            <Select
+              {...registerResidence("residence")}
+              onValueChange={(value) => setValueResidence("residence", value)}
+            >
+              <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                <SelectValue placeholder="Adicionar nova residência" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-white rounded shadow-lg">
+                {residences?.data
+                  ?.filter((res) => !res.usuariosIds.includes(selectedUser?.id || -1))
+                  .map((residence) => (
+                    <SelectItem value={residence.id.toString()} key={residence.id}>
+                      Nº {residence.numero} - Bloco {residence.bloco} - Unidade {residence.unidade}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                onClick={() => setOpenResidenceModal(false)}
               >
-                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
-                  <SelectValue placeholder="Adicionar nova residência" />
-                </SelectTrigger>
-
-                <SelectContent className="bg-white rounded shadow-lg">
-                  {residences?.data
-                    ?.filter((res) => !res.usuariosIds.includes(selectedUser?.id || -1))
-                    .map((residence) => (
-                      <SelectItem value={residence.id.toString()} key={residence.id}>
-                        Nº {residence.numero} - Bloco {residence.bloco} - Unidade {residence.unidade}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
-                  onClick={() => setOpenResidenceModal(false)}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
-                >
-                  Adicionar
-                </button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
+              >
+                Adicionar
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={openRoleModal} onOpenChange={setOpenRoleModal}>
-  <DialogContent className="bg-white p-6 rounded shadow-lg">
-    <DialogHeader>
-      <DialogTitle className="text-lg font-semibold">Gerenciar Perfis</DialogTitle>
-    </DialogHeader>
+        <DialogContent className="bg-white p-6 rounded shadow-lg">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">Gerenciar Perfis</DialogTitle>
+          </DialogHeader>
 
-    <div className="text-gray-700 mb-4">
-      <p className="mb-2">Perfis atuais de <strong>{selectedUser?.name}</strong>:</p>
-      <div className="flex flex-wrap gap-2">
-        {selectedUser?.roles.map((role) => (
-          <div
-            key={role}
-            className="flex items-center gap-2 bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm"
-          >
-            {role}
-            <button
-              type="button"
-              onClick={() => handleRemoveRole(role)}
-              className="text-red-500 hover:text-red-700"
-              title="Remover perfil"
-            >
-              ×
-            </button>
+          <div className="text-gray-700 mb-4">
+            <p className="mb-2">
+              Perfis atuais de <strong>{selectedUser?.name}</strong>:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {selectedUser?.roles.map((role) => (
+                <div
+                  key={role}
+                  className="flex items-center gap-2 bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm"
+                >
+                  {role}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveRole(role)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Remover perfil"
+                  >
+                    <XCircle size={18} />
+                  </button>
+                </div>
+              ))}
+              {selectedUser?.roles.length === 0 && (
+                <span className="text-sm text-gray-500">Sem perfis atribuídos</span>
+              )}
+            </div>
           </div>
-        ))}
-        {selectedUser?.roles.length === 0 && <span className="text-sm text-gray-500">Sem perfis atribuídos</span>}
-      </div>
-    </div>
 
-    <form onSubmit={handleSubmitRole(onSubmitRole)} className="space-y-4">
-      <Select
-        {...registerRole("role")}
-        onValueChange={(value) => setValueRole("role", value)}
-      >
-        <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
-          <SelectValue placeholder="Adicionar novo perfil" />
-        </SelectTrigger>
+          <form onSubmit={handleSubmitRole(onSubmitRole)} className="space-y-4">
+            <Select
+              {...registerRole("role")}
+              onValueChange={(value) => setValueRole("role", value)}
+            >
+              <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                <SelectValue placeholder="Adicionar novo perfil" />
+              </SelectTrigger>
 
-        <SelectContent className="bg-white rounded shadow-lg z-50">
-          {roles?.data
-            ?.filter((role) => !selectedUser?.roles.includes(role)) // só roles que ainda não tem
-            .map((role, index) => (
-              <SelectItem value={role} key={index}>
-                {role}
-              </SelectItem>
-            ))}
-        </SelectContent>
-      </Select>
+              <SelectContent className="bg-white rounded shadow-lg z-50">
+                {roles?.data
+                  ?.filter((role) => !selectedUser?.roles.includes(role)) // só roles que ainda não tem
+                  .map((role, index) => (
+                    <SelectItem value={role} key={index}>
+                      {role}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
 
-      <div className="flex gap-2">
-        <button
-          type="button"
-          className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
-          onClick={() => setOpenRoleModal(false)}
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
-        >
-          Adicionar
-        </button>
-      </div>
-    </form>
-  </DialogContent>
-</Dialog>
-
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                onClick={() => setOpenRoleModal(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
+              >
+                Adicionar
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

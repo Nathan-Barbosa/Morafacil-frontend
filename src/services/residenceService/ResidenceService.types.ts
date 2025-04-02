@@ -8,6 +8,8 @@ type PatchAssociateUserRequestDTO = {
   usuarioId: number;
 };
 
+type PatchRemoveUserRequestDTO = PatchAssociateUserRequestDTO;
+
 type PostCreateResidenceRequestDTO = {
   endereco: string;
   numero: number;
@@ -21,4 +23,5 @@ export type {
   GetResidencesRequestDTO,
   PatchAssociateUserRequestDTO,
   PostCreateResidenceRequestDTO,
+  PatchRemoveUserRequestDTO,
 };

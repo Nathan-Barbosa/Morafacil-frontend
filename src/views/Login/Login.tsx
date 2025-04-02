@@ -37,7 +37,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    clearAllCookies(); // 🔥 Limpa cookies ao montar componente
+    clearAllCookies();
   }, []);
 
   console.log("form", watch());
@@ -46,11 +46,7 @@ const Login = () => {
     <div className="flex items-center justify-center h-full w-full">
       <div className="max-w-md mx-auto p-6 border rounded shadow w-full">
         <div className="flex justify-center mb-4">
-          <img
-            src={imglogo}
-            alt="Logo Morar Fácil"
-            className="h-34 w-auto"
-          />
+          <img src={imglogo} alt="Logo Morar Fácil" className="h-34 w-auto" />
         </div>
 
         <FormProvider {...methods}>

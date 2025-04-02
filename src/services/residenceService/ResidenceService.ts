@@ -4,6 +4,7 @@ import { api } from "../api.ts";
 import {
   GetResidencesRequestDTO,
   PatchAssociateUserRequestDTO,
+  PatchRemoveUserRequestDTO,
   PostCreateResidenceRequestDTO,
 } from "./ResidenceService.types.ts";
 
@@ -31,6 +32,20 @@ class ResidenceService {
     return apiErrorHandler(() =>
       api
         .patch<void>(`${ResidenceService.url}/associateuser`, {
+          residenciaId,
+          usuarioId,
+        })
+        .then((response) => response.data),
+    );
+  }
+
+  public static async patchRemoveUser({
+    residenciaId,
+    usuarioId,
+  }: PatchRemoveUserRequestDTO): Promise<void> {
+    return apiErrorHandler(() =>
+      api
+        .patch<void>(`${ResidenceService.url}/removeuser`, {
           residenciaId,
           usuarioId,
         })

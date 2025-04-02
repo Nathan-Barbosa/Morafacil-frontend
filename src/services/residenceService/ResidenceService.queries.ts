@@ -5,6 +5,7 @@ import { ResidenceService } from "./ResidenceService";
 import {
   GetResidencesRequestDTO,
   PatchAssociateUserRequestDTO,
+  PatchRemoveUserRequestDTO,
   PostCreateResidenceRequestDTO,
 } from "./ResidenceService.types";
 
@@ -14,6 +15,7 @@ const residencesKeys = {
   list: (params: GetResidencesRequestDTO) => [...residencesKeys.lists(), params] as const,
   associateUser: () => [...residencesKeys.all, "associateUser"] as const,
   createResidence: () => [...residencesKeys.all, "createResidence"] as const,
+  removeUser: () => [...residencesKeys.all, "removeUser"] as const,
 };
 
 const useGetResidencesListQuery = (params: GetResidencesRequestDTO) => {
@@ -36,6 +38,19 @@ const usePatchAssociateUserMutation = () => {
   });
 };
 
+const usePatchRemoveUserMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, APIError, PatchRemoveUserRequestDTO>({
+    mutationKey: residencesKeys.removeUser(),
+    mutationFn: (params) => ResidenceService.patchRemoveUser(params),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: residencesKeys.lists(),
+      }),
+  });
+};
+
 const usePostCreateResidenceMutation = () => {
   const queryClient = useQueryClient();
 
@@ -49,4 +64,9 @@ const usePostCreateResidenceMutation = () => {
   });
 };
 
-export { useGetResidencesListQuery, usePatchAssociateUserMutation, usePostCreateResidenceMutation };
+export {
+  useGetResidencesListQuery,
+  usePatchAssociateUserMutation,
+  usePostCreateResidenceMutation,
+  usePatchRemoveUserMutation,
+};
