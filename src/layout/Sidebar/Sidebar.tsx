@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "../../providers";
 import { UserCircle, House, HouseSimple } from "@phosphor-icons/react";
 import { List, X } from "@phosphor-icons/react"; // Ícones de abrir/fechar
-import imglogo from "../../assets/logo-morar-facil.png";
+import imglogo from "../../assets/logo-morar-facil-2.png";
 
 const Sidebar = () => {
   const { user } = useAuth();

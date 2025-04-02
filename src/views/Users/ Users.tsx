@@ -23,18 +23,20 @@ import {
 } from "../../services";
 import { useToast } from "../../hooks/use-toast";
 
+
 export function Users() {
   const [filterRole, setFilterRole] = useState<string | undefined>(undefined);
   const [searchfilterRole] = useDebounce(filterRole, 1000);
-
   const [openResidenceModal, setOpenResidenceModal] = useState(false);
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
 
   const { toast } = useToast();
 
-  const { data: users } = useGetUsersListQuery(searchfilterRole || "");
+  const { data: users, refetch: refetchUsers } = useGetUsersListQuery(searchfilterRole || "");
   const { data: roles } = useGetRolesListQuery();
+
+  console.log("users", users);
 
   const { data: residences } = useGetResidencesListQuery({
     pageNumber: 1,
@@ -43,6 +45,7 @@ export function Users() {
 
   const { mutate: associateUser } = usePatchAssociateUserMutation();
   const { mutate: assignRole } = usePostAssignRoleMutation();
+  // criar a mutate de remover user nathan
 
   const {
     register: registerResidence,
@@ -79,6 +82,28 @@ export function Users() {
     }
   };
 
+  const handleRemoveResidence = (residenceId: number) => {
+    if (selectedUser?.id) {
+      //trocar a funcao nathan
+      associateUser(
+        {
+          residenciaId: residenceId,
+          usuarioId: selectedUser.id,
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Residência removida",
+              description: "Residência desvinculada com sucesso!",
+              variant: "default",
+            });
+            refetchUsers(); 
+          },
+        }
+      );
+    }
+  };
+
   const onSubmitRole = (data: any) => {
     if (selectedUser && selectedUser.email && selectedUser.id) {
       assignRole(
@@ -95,11 +120,35 @@ export function Users() {
               variant: "default",
             });
             setOpenRoleModal(false);
-          },
+            refetchUsers();
+          }
         },
       );
     }
   };
+
+  const handleRemoveRole = (role: string) => {
+    if (selectedUser?.email) {
+      assignRole(
+        {
+          userEmail: selectedUser.email,
+          roleName: role,
+          action: "remove",
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Removido",
+              description: `Role "${role}" removida com sucesso!`,
+              variant: "default",
+            });
+            refetchUsers();
+          }
+        }
+      );
+    }
+  };
+
 
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
@@ -124,8 +173,8 @@ export function Users() {
               <tr>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nome</th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Bloco</th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Unidade</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Email</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cpf</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -137,16 +186,12 @@ export function Users() {
                 return (
                   <tr key={user.id} className="hover:bg-gray-100 transition">
                     <td className="px-4 py-2 text-gray-600">{user.id}</td>
-                    <td className="px-4 py-2 text-gray-600">{user.name || user.email}</td>
-                    <td className="px-4 py-2 text-gray-600">
-                      {userResidence ? userResidence.bloco : "Não definido"}
-                    </td>
-                    <td className="px-4 py-2 text-gray-600">
-                      {userResidence ? userResidence.unidade : "Não definido"}
-                    </td>
+                    <td className="px-4 py-2 text-gray-600">{user.name}</td>
+                    <td className="px-4 py-2 text-gray-600">{user.email}</td>
+                    <td className="px-4 py-2 text-gray-600">{user.cpf}</td>
 
                     <td className="px-4 py-2">
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex flex-wrap justify-end gap-2">
                         <button
                           onClick={() => {
                             setSelectedUser(user);
@@ -154,7 +199,7 @@ export function Users() {
                           }}
                           className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
                         >
-                          Residência
+                          Residências
                         </button>
                         <button
                           onClick={() => {
@@ -163,7 +208,25 @@ export function Users() {
                           }}
                           className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
                         >
-                          Role
+                          Perfis
+                        </button>
+                        <button
+                          onClick={() => {
+                            // abrir modal ou lógica de edição
+                            console.log("Editar usuário", user);
+                          }}
+                          className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded transition"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => {
+                            // lógica de deleção
+                            console.log("Excluir usuário", user);
+                          }}
+                          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
+                        >
+                          Excluir
                         </button>
                       </div>
                     </td>
@@ -181,89 +244,149 @@ export function Users() {
         </div>
       )}
 
-      <Dialog open={openResidenceModal} onOpenChange={setOpenResidenceModal}>
-        <DialogContent className="bg-white p-6 rounded shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Definir Residência</DialogTitle>
-          </DialogHeader>
-          <p className="text-gray-700">Definir residência para {selectedUser?.name}</p>
-          <form onSubmit={handleSubmitResidence(onSubmitResidence)}>
-            <Select
-              {...registerResidence("residence")}
-              onValueChange={(value) => setValueResidence("residence", value)}
-            >
-              <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded ">
-                <SelectValue placeholder="Selecione a residência" />
-              </SelectTrigger>
+        <Dialog open={openResidenceModal} onOpenChange={setOpenResidenceModal}>
+          <DialogContent className="bg-white p-6 rounded shadow-lg">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-semibold">Gerenciar Residências</DialogTitle>
+            </DialogHeader>
 
-              <SelectContent className="bg-white rounded shadow-lg">
-                {residences?.data?.map((residence) => (
-                  <SelectItem value={residence.id.toString()} key={residence.id}>
-                    {residence.numero}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="mb-4">
+              <p className="text-gray-700 mb-2">
+                Residências atuais de <strong>{selectedUser?.name}</strong>:
+              </p>
 
-            <div className="flex gap-2 mt-2">
-              <button
-                type="button"
-                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
-              >
-                Salvar
-              </button>
+              <div className="flex flex-wrap gap-2">
+                {residences?.data
+                  ?.filter((res) => res.usuariosIds.includes(selectedUser?.id || -1))
+                  .map((res) => (
+                    <div
+                      key={res.id}
+                      className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded text-sm text-gray-800"
+                    >
+                      Nº {res.numero} - Bloco {res.bloco} - Unidade {res.unidade}
+                      <button
+                        onClick={() => handleRemoveResidence(res.id)}
+                        className="text-red-500 hover:text-red-700 ml-1"
+                        title="Remover residência"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                {residences?.data?.filter((res) => res.usuariosIds.includes(selectedUser?.id || -1)).length === 0 && (
+                  <span className="text-sm text-gray-500">Sem residências associadas</span>
+                )}
+              </div>
             </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+
+            <form onSubmit={handleSubmitResidence(onSubmitResidence)} className="space-y-4">
+              <Select
+                {...registerResidence("residence")}
+                onValueChange={(value) => setValueResidence("residence", value)}
+              >
+                <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                  <SelectValue placeholder="Adicionar nova residência" />
+                </SelectTrigger>
+
+                <SelectContent className="bg-white rounded shadow-lg">
+                  {residences?.data
+                    ?.filter((res) => !res.usuariosIds.includes(selectedUser?.id || -1))
+                    .map((residence) => (
+                      <SelectItem value={residence.id.toString()} key={residence.id}>
+                        Nº {residence.numero} - Bloco {residence.bloco} - Unidade {residence.unidade}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                  onClick={() => setOpenResidenceModal(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
+                >
+                  Adicionar
+                </button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
 
       <Dialog open={openRoleModal} onOpenChange={setOpenRoleModal}>
-        <DialogContent className="bg-white p-6 rounded shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Definir Role</DialogTitle>
-          </DialogHeader>
-          <p className=" text-gray-700">Definir role para {selectedUser?.name}</p>
-          <form onSubmit={handleSubmitRole(onSubmitRole)}>
-            <Select
-              {...registerRole("role")}
-              onValueChange={(value) => setValueRole("role", value)}
+  <DialogContent className="bg-white p-6 rounded shadow-lg">
+    <DialogHeader>
+      <DialogTitle className="text-lg font-semibold">Gerenciar Perfis</DialogTitle>
+    </DialogHeader>
+
+    <div className="text-gray-700 mb-4">
+      <p className="mb-2">Perfis atuais de <strong>{selectedUser?.name}</strong>:</p>
+      <div className="flex flex-wrap gap-2">
+        {selectedUser?.roles.map((role) => (
+          <div
+            key={role}
+            className="flex items-center gap-2 bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-sm"
+          >
+            {role}
+            <button
+              type="button"
+              onClick={() => handleRemoveRole(role)}
+              className="text-red-500 hover:text-red-700"
+              title="Remover perfil"
             >
-              <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded ">
-                <SelectValue placeholder="Selecione o perfil do usuário" />
-              </SelectTrigger>
+              ×
+            </button>
+          </div>
+        ))}
+        {selectedUser?.roles.length === 0 && <span className="text-sm text-gray-500">Sem perfis atribuídos</span>}
+      </div>
+    </div>
 
-              <SelectContent className="bg-white rounded shadow-lg z-50">
-                {roles?.data?.map((role, index) => (
-                  <SelectItem value={role} key={index}>
-                    {role}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <form onSubmit={handleSubmitRole(onSubmitRole)} className="space-y-4">
+      <Select
+        {...registerRole("role")}
+        onValueChange={(value) => setValueRole("role", value)}
+      >
+        <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+          <SelectValue placeholder="Adicionar novo perfil" />
+        </SelectTrigger>
 
-            <div className="flex gap-2 mt-2">
-              <button
-                type="button"
-                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
-              >
-                Salvar
-              </button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+        <SelectContent className="bg-white rounded shadow-lg z-50">
+          {roles?.data
+            ?.filter((role) => !selectedUser?.roles.includes(role)) // só roles que ainda não tem
+            .map((role, index) => (
+              <SelectItem value={role} key={index}>
+                {role}
+              </SelectItem>
+            ))}
+        </SelectContent>
+      </Select>
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+          onClick={() => setOpenRoleModal(false)}
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
+        >
+          Adicionar
+        </button>
+      </div>
+    </form>
+  </DialogContent>
+</Dialog>
+
     </div>
   );
 }
