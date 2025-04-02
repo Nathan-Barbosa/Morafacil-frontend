@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../providers";
 import { UserCircle, House, HouseSimple } from "@phosphor-icons/react";
-import { List, X } from "@phosphor-icons/react"; // Ícones de abrir/fechar
+import { List, X, NotePencil } from "@phosphor-icons/react"; // Ícones de abrir/fechar
 import imglogo from "../../assets/logo-morar-facil-2.png";
 
 const Sidebar = () => {
@@ -18,35 +18,29 @@ const Sidebar = () => {
         isOpen ? "w-64" : "w-20"
       }`}
     >
-        <div className="relative mb-4 h-10">
-          {/* Botão sempre à esquerda */}
-          <button
-            onClick={toggleSidebar}
-            className="absolute left-0 top-1/2 -translate-y-1/2 text-white"
-          >
-            {isOpen ? <X size={24} /> : <List size={24} />}
-          </button>
+      <div className="relative mb-4 h-10">
+        {/* Botão sempre à esquerda */}
+        <button
+          onClick={toggleSidebar}
+          className="absolute left-0 top-1/2 -translate-y-1/2 text-white"
+        >
+          {isOpen ? <X size={24} /> : <List size={24} />}
+        </button>
 
-          {/* Logo centralizada, visível só quando aberto */}
-          {isOpen && (
-            <div className="flex justify-center">
-              <img
-                src={imglogo}
-                alt="Logo Morar Fácil"
-                className="h-20 w-auto mx-auto"
-              />
-            </div>
-          )}
-        </div>
-        
-        {/* retirar esse cara */}
-        <div className="flex flex-col items-center mt-10">
-            {isOpen && (
-            <h4 className="text-xs font-bold h-10 flex justify-center mb-4">
-              {roles ?? ""}
-            </h4>
-          )}
-        </div>
+        {/* Logo centralizada, visível só quando aberto */}
+        {isOpen && (
+          <div className="flex justify-center">
+            <img src={imglogo} alt="Logo Morar Fácil" className="h-20 w-auto mx-auto" />
+          </div>
+        )}
+      </div>
+
+      {/* retirar esse cara */}
+      <div className="flex flex-col items-center mt-10">
+        {isOpen && (
+          <h4 className="text-xs font-bold h-10 flex justify-center mb-4">{roles ?? ""}</h4>
+        )}
+      </div>
 
       <nav>
         <ul className="space-y-4">
@@ -59,7 +53,9 @@ const Sidebar = () => {
                     `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
                   }
                 >
-                  <div className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}>
+                  <div
+                    className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}
+                  >
                     <UserCircle size={20} />
                     {isOpen && <span>Usuários</span>}
                   </div>
@@ -72,7 +68,9 @@ const Sidebar = () => {
                     `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
                   }
                 >
-                  <div className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}>
+                  <div
+                    className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}
+                  >
                     <House size={20} />
                     {isOpen && <span>Condomínios</span>}
                   </div>
@@ -85,9 +83,26 @@ const Sidebar = () => {
                     `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
                   }
                 >
-                  <div className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}>
+                  <div
+                    className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}
+                  >
                     <HouseSimple size={20} />
                     {isOpen && <span>Residências</span>}
+                  </div>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/noticeBoard"
+                  className={({ isActive }) =>
+                    `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
+                  }
+                >
+                  <div
+                    className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}
+                  >
+                    <NotePencil size={20} />
+                    {isOpen && <span>Avisos</span>}
                   </div>
                 </NavLink>
               </li>

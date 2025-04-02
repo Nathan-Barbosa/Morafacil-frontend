@@ -177,9 +177,6 @@ export function Users() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {users?.data?.map((user) => {
-                const userResidence = residences?.data?.find((residence) =>
-                  residence.usuariosIds.includes(user.id),
-                );
                 return (
                   <tr key={user.id} className="hover:bg-gray-100 transition">
                     <td className="px-4 py-2 text-gray-600">{user.id}</td>

@@ -5,6 +5,7 @@ import {
   ForgotPassword,
   Home,
   Login,
+  NoticeBoard,
   Register,
   Users,
 } from "../views";
@@ -56,6 +57,10 @@ const routes = createBrowserRouter([
           {
             path: "residence",
             element: <Residence />,
+          },
+          {
+            path: "noticeBoard",
+            element: <NoticeBoard />,
           },
         ],
       },
