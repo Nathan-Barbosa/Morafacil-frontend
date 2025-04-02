@@ -1,50 +1,42 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
-import { useGetNoticesQuery } from "../../services";
-// import { useGetNoticesQuery, usePostNoticeMutation } from "../../services/NoticeService";
-// import { useToast } from "../../hooks/use-toast";
-
-const notices = {
-  data: [
-    {
-      id: 1,
-      titulo: "Manutenção",
-      mensagem: "Manutenção na portaria sábado ás 10:30h",
-      dataPublicacao: "2025-04-02T22:22:18.3587325",
-      usuario: {
-        id: 1,
-        userName: "kazeneithan@gmail.com",
-      },
-    },
-  ],
-};
+import {
+  CreateNoticesRequestDTO,
+  useGetNoticesQuery,
+  usePostCreateNoticeMutation,
+} from "../../services";
+import { useToast } from "../../hooks/use-toast";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 const NoticeBoard = () => {
   const [openNoticeModal, setOpenNoticeModal] = useState(false);
-  // const { toast } = useToast();
+  const { toast } = useToast();
   const { data: notices } = useGetNoticesQuery();
-  // const { mutate: postNotice } = usePostNoticeMutation();
+  const { mutate: postNotice } = usePostCreateNoticeMutation();
 
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset } = useForm<CreateNoticesRequestDTO>();
 
-  // const onSubmitNotice = (data) => {
-  //   postNotice(data, {
-  //     onSuccess: () => {
-  //       toast({ title: "Sucesso", description: "Aviso publicado com sucesso!" });
-  //       setOpenNoticeModal(false);
-  //       refetchNotices();
-  //       reset();
-  //     },
-  //   });
-  // };
+  const onSubmitNotice = (data: CreateNoticesRequestDTO) => {
+    postNotice(data, {
+      onSuccess: () => {
+        toast({
+          title: "Sucesso",
+          description: "Aviso publicado com sucesso!",
+          variant: "default",
+        });
+        setOpenNoticeModal(false);
+        reset();
+      },
+    });
+  };
 
   return (
-    <div className="p-6 space-y-6 h-full w-full flex flex-col">
+    <div className="space-y-6 w-full flex flex-col overflow-auto">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Quadro de Avisos</h1>
-          <p className="text-gray-600">Lista de avisos recentes</p>
+          <p className="text-gray-600 font-semibold">Lista de avisos recentes</p>
         </div>
         <button
           className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
@@ -56,10 +48,10 @@ const NoticeBoard = () => {
 
       <div className="overflow-x-auto">
         {notices?.data && notices.data.length > 0 ? (
-          <ul className="space-y-4">
+          <ul className="grid grid-cols-3 gap-4">
             {notices.data.map((notice) => (
-              <li key={notice.id} className="p-4 bg-white shadow rounded-lg">
-                <h2 className="text-lg font-semibold">{notice.titulo}</h2>
+              <li key={notice.id} className="p-4 bg-white shadow-tooltipShadow rounded">
+                <h2 className="text-sm font-semibold">{notice.titulo}</h2>
                 <p className="text-gray-600">{notice.mensagem}</p>
                 <p className="text-sm text-gray-400">
                   Publicado em {new Date(notice.dataPublicacao).toLocaleDateString()}
@@ -68,7 +60,10 @@ const NoticeBoard = () => {
             ))}
           </ul>
         ) : (
-          <p className="text-gray-500 text-center">Nenhum aviso encontrado</p>
+          <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
+            <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
+            <span className="mt-2 text-gray-600">Nenhum usuário encontrado</span>
+          </div>
         )}
       </div>
 
@@ -78,17 +73,16 @@ const NoticeBoard = () => {
             <DialogTitle className="text-lg font-semibold">Novo Aviso</DialogTitle>
           </DialogHeader>
 
-          {/*handleSubmit(onSubmitNotice)*/}
-          <form onSubmit={() => console.log("teste")} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmitNotice)} className="space-y-4">
             <input
               type="text"
               placeholder="Título"
-              {...register("title", { required: true })}
+              {...register("titulo", { required: true })}
               className="w-full px-3 py-2 border border-gray-300 rounded"
             />
             <textarea
               placeholder="Conteúdo do aviso"
-              {...register("content", { required: true })}
+              {...register("mensagem", { required: true })}
               className="w-full px-3 py-2 border border-gray-300 rounded max-h-[30vh] outline-none"
             ></textarea>
             <div className="flex gap-2 mt-4">

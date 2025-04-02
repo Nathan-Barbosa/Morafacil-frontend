@@ -357,7 +357,7 @@ export function Users() {
 
               <SelectContent className="bg-white rounded shadow-lg z-50">
                 {roles?.data
-                  ?.filter((role) => !selectedUser?.roles.includes(role)) // só roles que ainda não tem
+                  ?.filter((role) => !selectedUser?.roles.includes(role))
                   .map((role, index) => (
                     <SelectItem value={role} key={index}>
                       {role}

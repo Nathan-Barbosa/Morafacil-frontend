@@ -4,11 +4,20 @@ type User = {
 };
 
 type NoticeResponseDTO = {
-  id: 1;
+  id: number;
   titulo: string;
   mensagem: string;
   dataPublicacao: Date;
   usuario: User;
 };
 
-export type { NoticeResponseDTO };
+type CreateNoticeResponseDTO = {
+  id: number;
+  titulo: string;
+  mensagem: string;
+  dataPublicacao: Date;
+  usuarioId: number;
+  usuario: User | null;
+};
+
+export type { NoticeResponseDTO, CreateNoticeResponseDTO };
