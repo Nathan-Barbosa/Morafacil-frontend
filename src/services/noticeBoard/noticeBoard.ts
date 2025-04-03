@@ -32,6 +32,16 @@ class NoticeBoardService {
         .then((response) => response.data),
     );
   }
+
+  public static async deleteNotice(id: number): Promise<void> {
+    return apiErrorHandler(() =>
+      api
+        .delete<void>(`${NoticeBoardService.url}/${id}`, {
+          withCredentials: true,
+        })
+        .then((response) => response.data),
+    );
+  }
 }
 
 export { NoticeBoardService };

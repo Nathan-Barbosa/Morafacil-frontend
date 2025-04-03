@@ -15,6 +15,7 @@ const noticeBoardsKeys = {
   lists: () => [...noticeBoardsKeys.all, "list"] as const,
   // list: (role: string) => [...noticeBoardsKeys.lists(), role] as const,
   createNotice: () => [...noticeBoardsKeys.all, "createNotice"] as const,
+  deleteNotice: () => [...noticeBoardsKeys.all, "deleteNotice"] as const,
 };
 
 const useGetNoticesQuery = () => {
@@ -37,4 +38,17 @@ const usePostCreateNoticeMutation = () => {
   });
 };
 
-export { useGetNoticesQuery, usePostCreateNoticeMutation };
+const useDeleteNoticeMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, APIError, number>({
+    mutationKey: noticeBoardsKeys.deleteNotice(),
+    mutationFn: (id: number) => NoticeBoardService.deleteNotice(id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: noticeBoardsKeys.lists(),
+      }),
+  });
+};
+
+export { useGetNoticesQuery, usePostCreateNoticeMutation, useDeleteNoticeMutation };

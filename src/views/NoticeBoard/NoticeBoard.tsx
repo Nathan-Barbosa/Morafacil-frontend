@@ -7,10 +7,12 @@ import {
   usePostCreateNoticeMutation,
 } from "../../services";
 import { useToast } from "../../hooks/use-toast";
-import { MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlass, DotsThreeVertical } from "@phosphor-icons/react";
+import { NoticeCardOptions } from "./components";
 
 const NoticeBoard = () => {
   const [openNoticeModal, setOpenNoticeModal] = useState(false);
+
   const { toast } = useToast();
   const { data: notices } = useGetNoticesQuery();
   const { mutate: postNotice } = usePostCreateNoticeMutation();
@@ -32,7 +34,7 @@ const NoticeBoard = () => {
   };
 
   return (
-    <div className="space-y-6 w-full flex flex-col overflow-auto">
+    <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Quadro de Avisos</h1>
@@ -46,11 +48,21 @@ const NoticeBoard = () => {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex h-full flex-col gap-y-4 overflow-auto">
         {notices?.data && notices.data.length > 0 ? (
-          <ul className="grid grid-cols-3 gap-4">
+          <section className="relative flex flex-row flex-wrap gap-2">
             {notices.data.map((notice) => (
-              <li key={notice.id} className="p-4 bg-white shadow-tooltipShadow rounded">
+              <li
+                key={notice.id}
+                className="hover:bg-blue-100 flex  w-80 flex-col justify-between rounded-xl border border-gray4 p-4 bg-blue-50"
+              >
+                <div className="ml-auto">
+                  <NoticeCardOptions notice={notice}>
+                    <button className="right-4 flex rounded bg-transparent  outline-none hover:bg-blue-400">
+                      <DotsThreeVertical className="size-6" weight="bold" />
+                    </button>
+                  </NoticeCardOptions>
+                </div>
                 <h2 className="text-sm font-semibold">{notice.titulo}</h2>
                 <p className="text-gray-600">{notice.mensagem}</p>
                 <p className="text-sm text-gray-400">
@@ -58,7 +70,7 @@ const NoticeBoard = () => {
                 </p>
               </li>
             ))}
-          </ul>
+          </section>
         ) : (
           <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
             <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
