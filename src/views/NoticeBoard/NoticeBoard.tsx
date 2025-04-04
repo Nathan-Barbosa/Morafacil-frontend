@@ -50,13 +50,13 @@ const NoticeBoard = () => {
 
       <div className="flex h-full flex-col gap-y-4 overflow-auto">
         {notices?.data && notices.data.length > 0 ? (
-          <section className="relative flex flex-row flex-wrap gap-2">
+          <section className="flex flex-row flex-wrap gap-2 w-full">
             {notices.data.map((notice) => (
               <li
                 key={notice.id}
-                className="hover:bg-blue-100 flex  w-80 flex-col justify-between rounded-xl border border-gray4 p-4 bg-blue-50"
+                className="hover:bg-blue-100 relative flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3 bg-blue-50"
               >
-                <div className="ml-auto">
+                <div className="ml-auto absolute self-end">
                   <NoticeCardOptions notice={notice}>
                     <button className="right-4 flex rounded bg-transparent  outline-none hover:bg-blue-400">
                       <DotsThreeVertical className="size-6" weight="bold" />
@@ -65,9 +65,12 @@ const NoticeBoard = () => {
                 </div>
                 <h2 className="text-sm font-semibold">{notice.titulo}</h2>
                 <p className="text-gray-600">{notice.mensagem}</p>
-                <p className="text-sm text-gray-400">
-                  Publicado em {new Date(notice.dataPublicacao).toLocaleDateString()}
-                </p>
+                <div className="flex justify-between">
+                  <p className="text-sm text-gray-400">
+                    Publicado em {new Date(notice.dataPublicacao).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-gray-400">{notice.usuario?.userName}</p>
+                </div>
               </li>
             ))}
           </section>

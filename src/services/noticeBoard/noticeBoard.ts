@@ -1,12 +1,7 @@
-import {
-  CreateNoticeResponseDTO,
-  NoticeResponseDTO,
-  PaginatedResponse,
-  ResponseDTO,
-} from "../../models";
+import { NoticeResponseDTO, PaginatedResponse, ResponseDTO } from "../../models";
 import { apiErrorHandler } from "../../utils";
 import { api } from "../api.ts";
-import { CreateNoticesRequestDTO } from "./noticeBoard.types.ts";
+import { CreateNoticesRequestDTO, UpdateNoticeRequestDTO } from "./noticeBoard.types.ts";
 
 class NoticeBoardService {
   public static readonly url = "/v1/aviso";
@@ -23,10 +18,22 @@ class NoticeBoardService {
 
   public static async createNotices(
     data: CreateNoticesRequestDTO,
-  ): Promise<ResponseDTO<CreateNoticeResponseDTO>> {
+  ): Promise<ResponseDTO<NoticeResponseDTO>> {
     return apiErrorHandler(() =>
       api
-        .post<ResponseDTO<CreateNoticeResponseDTO>>(NoticeBoardService.url, data, {
+        .post<ResponseDTO<NoticeResponseDTO>>(NoticeBoardService.url, data, {
+          withCredentials: true,
+        })
+        .then((response) => response.data),
+    );
+  }
+
+  public static async updateNotice(
+    data: UpdateNoticeRequestDTO,
+  ): Promise<ResponseDTO<NoticeResponseDTO>> {
+    return apiErrorHandler(() =>
+      api
+        .put<ResponseDTO<NoticeResponseDTO>>(`${NoticeBoardService.url}/${data.id}`, data, {
           withCredentials: true,
         })
         .then((response) => response.data),
