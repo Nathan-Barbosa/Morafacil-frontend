@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { MenuItem, NoticeCardOptionsProps } from "./NoticeCardOptions.types";
 import { useToast } from "../../../../hooks/use-toast";
 import {
-  CreateNoticesRequestDTO,
   UpdateNoticeRequestDTO,
   useDeleteNoticeMutation,
   usePutUpdateNoticeMutation,
