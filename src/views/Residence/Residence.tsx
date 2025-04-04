@@ -233,23 +233,19 @@ const Residence = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 mt-4">
+              <div className="flex justify-end gap-2 text-xs font-semibold">
                 <button
                   type="button"
                   onClick={() => {
                     reset();
                     setOpenModal(false);
                   }}
-                  className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                  className="button-cancel"
                 >
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  disabled={!isValid}
-                  className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition disabled:bg-gray-400"
-                >
-                  Salvar
+                <button type="submit" disabled={!isValid} className="button-confirm">
+                  Cadastrar
                 </button>
               </div>
             </form>

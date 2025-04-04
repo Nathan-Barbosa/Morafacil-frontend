@@ -16,6 +16,14 @@
     @apply duration-300;
   }
 
+  .button-cancel {
+    @apply flex h-8 w-20 items-center justify-center rounded border-none text-sm text-blue-500 hover:bg-blue-500 hover:text-white;
+  }
+
+  .button-confirm {
+    @apply flex h-8 w-20 items-center justify-center rounded bg-blue-500 text-sm text-white hover:bg-blue-600;
+  }
+
   #root {
     @apply flex h-full w-full;
   }

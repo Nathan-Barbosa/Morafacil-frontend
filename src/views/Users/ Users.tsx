@@ -156,7 +156,7 @@ export function Users() {
         </div>
         <input
           type="text"
-          placeholder="Buscar por role..."
+          placeholder="Buscar por perfil"
           {...searchRoleRegister("role")}
           onChange={(e) => setFilterRole(e.target.value)}
           className="w-64 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -294,18 +294,15 @@ export function Users() {
               </SelectContent>
             </Select>
 
-            <div className="flex gap-2">
+            <div className="flex justify-end gap-2 text-xs font-semibold">
               <button
                 type="button"
-                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                className="button-cancel"
                 onClick={() => setOpenResidenceModal(false)}
               >
                 Cancelar
               </button>
-              <button
-                type="submit"
-                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
-              >
+              <button type="submit" className="button-confirm">
                 Adicionar
               </button>
             </div>
@@ -366,18 +363,15 @@ export function Users() {
               </SelectContent>
             </Select>
 
-            <div className="flex gap-2">
+            <div className="flex justify-end gap-2 text-xs font-semibold">
               <button
                 type="button"
-                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                className="button-cancel"
                 onClick={() => setOpenRoleModal(false)}
               >
                 Cancelar
               </button>
-              <button
-                type="submit"
-                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition"
-              >
+              <button type="submit" className="button-confirm">
                 Adicionar
               </button>
             </div>

@@ -130,9 +130,9 @@ const Condominium = () => {
             <DialogTitle className="text-lg font-semibold">Cadastro de Condomínio</DialogTitle>
           </DialogHeader>
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex flex-wrap gap-4">
-                <div className="w-full md:w-1/2">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex gap-4 flex-col">
+              <div className="gap-2 grid grid-cols-2">
+                <div className="w-full">
                   <label className="block text-sm text-gray-700">Nome do Condomínio</label>
                   <Controller
                     control={control}
@@ -148,7 +148,7 @@ const Condominium = () => {
                   {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                 </div>
 
-                <div className="w-full md:w-1/2">
+                <div className="w-full ">
                   <label className="block text-sm text-gray-700">Endereço</label>
                   <Controller
                     control={control}
@@ -166,7 +166,7 @@ const Condominium = () => {
                   )}
                 </div>
 
-                <div className="w-full md:w-1/4">
+                <div className="w-full">
                   <label className="block text-sm text-gray-700">Número</label>
                   <Controller
                     control={control}
@@ -183,7 +183,7 @@ const Condominium = () => {
                   {errors.number && <p className="text-red-500 text-sm">{errors.number.message}</p>}
                 </div>
 
-                <div className="w-full md:w-1/4">
+                <div className="w-full">
                   <label className="block text-sm text-gray-700">CEP</label>
                   <Controller
                     control={control}
@@ -199,7 +199,7 @@ const Condominium = () => {
                   {errors.zip && <p className="text-red-500 text-sm">{errors.zip.message}</p>}
                 </div>
 
-                <div className="w-full md:w-1/2">
+                <div className="w-full ">
                   <label className="block text-sm text-gray-700">Bairro</label>
                   <Controller
                     control={control}
@@ -217,7 +217,7 @@ const Condominium = () => {
                   )}
                 </div>
 
-                <div className="w-full md:w-1/2">
+                <div className="w-full ">
                   <label className="block text-sm text-gray-700">País</label>
                   <Controller
                     control={control}
@@ -235,7 +235,7 @@ const Condominium = () => {
                   )}
                 </div>
 
-                <div className="w-full md:w-1/4">
+                <div className="w-full">
                   <label className="block text-sm text-gray-700">Estado</label>
                   <Controller
                     control={control}
@@ -251,7 +251,7 @@ const Condominium = () => {
                   {errors.state && <p className="text-red-500 text-sm">{errors.state.message}</p>}
                 </div>
 
-                <div className="w-full md:w-1/4">
+                <div className="w-full">
                   <label className="block text-sm text-gray-700">CNPJ</label>
                   <Controller
                     control={control}
@@ -275,7 +275,7 @@ const Condominium = () => {
                     render={({ field }) => (
                       <Select value={field.value} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
-                          <SelectValue placeholder="Selecione o tipo do condomínio" />
+                          <SelectValue placeholder="Selecione o tipo do condomínio" className="" />
                         </SelectTrigger>
                         <SelectContent className="bg-white rounded shadow-lg">
                           <SelectItem value={Types.Residencial}>Condomínio Residencial</SelectItem>
@@ -289,23 +289,23 @@ const Condominium = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 mt-4">
+              <div className="flex justify-end gap-2 text-xs font-semibold">
                 <button
                   type="button"
                   onClick={() => {
                     reset();
                     setOpenModal(false);
                   }}
-                  className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                  className="button-cancel"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={!isValid}
-                  className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition disabled:bg-gray-400"
+                  className="button-confirm disabled:gray-300"
                 >
-                  Salvar
+                  Cadastrar
                 </button>
               </div>
             </form>

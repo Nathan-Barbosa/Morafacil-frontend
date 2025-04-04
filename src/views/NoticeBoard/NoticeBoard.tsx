@@ -100,18 +100,15 @@ const NoticeBoard = () => {
               {...register("mensagem", { required: true })}
               className="w-full px-3 py-2 border border-gray-300 rounded max-h-[30vh] outline-none"
             ></textarea>
-            <div className="flex gap-2 mt-4">
+            <div className="flex justify-end gap-2 text-xs font-semibold">
               <button
                 type="button"
-                className="w-full py-2 bg-gray-300 hover:bg-gray-400 rounded transition"
+                className="button-cancel"
                 onClick={() => setOpenNoticeModal(false)}
               >
                 Cancelar
               </button>
-              <button
-                className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition disabled:bg-gray-400"
-                type="submit"
-              >
+              <button className="button-confirm" type="submit">
                 Publicar
               </button>
             </div>

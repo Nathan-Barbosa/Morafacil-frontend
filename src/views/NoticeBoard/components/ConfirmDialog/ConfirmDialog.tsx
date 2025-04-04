@@ -8,7 +8,7 @@ const ConfirmDialog = ({ open, setOpen, onConfirm, notice }: ConfirmDialogProps)
   return (
     <Dialog open={open}>
       <DialogContent
-        className="flex w-4/5 max-w-96 flex-col gap-4 rounded-lg bg-white p-4"
+        className="flex w-4/5 max-w-96 flex-col gap-4 rounded-xl bg-white p-4"
         onPointerDownOutside={closeDialog}
       >
         <div className="flex w-full justify-between gap-2">
@@ -18,22 +18,16 @@ const ConfirmDialog = ({ open, setOpen, onConfirm, notice }: ConfirmDialogProps)
           </button>
         </div>
 
-        <DialogDescription className="h-9 text-sm leading-4">
-          Tem certeza que deseja remover o aviso{" "}
-          <span className="font-semibold">{notice.titulo}?</span>
+        <DialogDescription className="text-sm leading-4">
+          Tem certeza que deseja remover o aviso
+          <span className="font-semibold"> {notice.titulo}?</span>
         </DialogDescription>
 
         <div className="flex justify-end gap-2 text-xs font-semibold">
-          <button
-            className="flex h-8 w-20 items-center justify-center rounded border-none text-sm text-tertiary hover:bg-tertiary hover:text-white"
-            onClick={closeDialog}
-          >
+          <button className="button-cancel" onClick={closeDialog}>
             Cancelar
           </button>
-          <button
-            className="flex h-8 w-20 items-center justify-center rounded bg-tertiary text-sm text-white hover:bg-tertiaryDark"
-            onClick={onConfirm}
-          >
+          <button className="button-confirm" onClick={onConfirm}>
             Remover
           </button>
         </div>
