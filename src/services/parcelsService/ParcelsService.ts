@@ -1,5 +1,5 @@
 import { GetParcelsResponseDTO } from "../../models/index.ts";
-import { PaginatedResponse } from "../../models/Response.types.ts";
+import { PaginatedResponse, ResponseDTO } from "../../models/Response.types.ts";
 import { apiErrorHandler } from "../../utils/apiErrorHandler.ts";
 import { api } from "../api.ts";
 import { PostParcelRequestDTO } from "./ParcelsService.types.ts";
@@ -18,6 +18,16 @@ class ParcelsService {
   public static async postParcel(data: PostParcelRequestDTO): Promise<void> {
     return apiErrorHandler(() =>
       api.post<void>(ParcelsService.url, data).then((response) => response.data),
+    );
+  }
+
+  public static async patchPickupParcel(
+    encomendaId: number,
+  ): Promise<ResponseDTO<GetParcelsResponseDTO>> {
+    return apiErrorHandler(() =>
+      api
+        .patch<ResponseDTO<GetParcelsResponseDTO>>(`${ParcelsService.url}/retirar`, { encomendaId })
+        .then((response) => response.data),
     );
   }
 }

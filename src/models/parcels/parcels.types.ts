@@ -17,7 +17,7 @@ type GetParcelsResponseDTO = {
   id: number;
   numeroEncomenda: string;
   residenciaId: number;
-  residencia: Residence;
+  residencia?: Residence;
   dataChegada: Date;
   dataRetirada: Date;
 };

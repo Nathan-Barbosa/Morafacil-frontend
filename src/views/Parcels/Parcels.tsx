@@ -16,14 +16,19 @@ import {
 import {
   useGetParcelsListQuery,
   useGetResidencesListQuery,
+  usePatchPickupParcelMutation,
   usePostParcelMutation,
 } from "../../services";
 import { ParcelsFormData } from "./Parcels.types";
 import { parcelsSchema } from "./Parcels.schemas";
 import { useToast } from "../../hooks/use-toast";
+import { ConfirmDialog } from "./components";
+import { GetParcelsResponseDTO } from "../../models";
 
 const Parcels = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedParcel, setSelectedParcel] = useState<GetParcelsResponseDTO>();
 
   const methods = useForm<ParcelsFormData>({
     resolver: zodResolver(parcelsSchema),
@@ -46,6 +51,7 @@ const Parcels = () => {
   });
 
   const { mutate: createParcel } = usePostParcelMutation();
+  const { mutate: pickupParcel } = usePatchPickupParcelMutation();
 
   const onSubmit = (data: ParcelsFormData) => {
     createParcel(data, {
@@ -53,6 +59,19 @@ const Parcels = () => {
         toast({
           title: "Sucesso",
           description: "Encomenda publicado com sucesso!",
+          variant: "default",
+        });
+        setOpenModal(false);
+      },
+    });
+  };
+
+  const handleConfirmPickup = (parcel: GetParcelsResponseDTO) => {
+    pickupParcel(parcel.id, {
+      onSuccess: () => {
+        toast({
+          title: "Sucesso",
+          description: "Encomenda retirada com sucesso!",
           variant: "default",
         });
         setOpenModal(false);
@@ -96,8 +115,8 @@ const Parcels = () => {
               {parcels.data.map((parcel) => (
                 <tr key={parcel.id} className="hover:bg-gray-100 transition">
                   <td className="px-4 py-2 text-gray-600">{parcel.numeroEncomenda}</td>
-                  <td className="px-4 py-2 text-gray-600">{parcel.residencia.bloco}</td>
-                  <td className="px-4 py-2 text-gray-600">{parcel.residencia.unidade}</td>
+                  <td className="px-4 py-2 text-gray-600">{parcel.residencia?.bloco}</td>
+                  <td className="px-4 py-2 text-gray-600">{parcel.residencia?.unidade}</td>
                   <td className="px-4 py-2 text-gray-600">
                     {new Date(parcel.dataChegada).toLocaleString()}
                   </td>
@@ -110,7 +129,12 @@ const Parcels = () => {
                     <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
                       Editar
                     </button>
-                    <button className="px-3 py-1 bg-blue-500 hover:bg-green-600 text-white text-sm rounded transition">
+                    <button
+                      onClick={() => {
+                        setSelectedParcel(parcel), setOpenDialog(true);
+                      }}
+                      className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+                    >
                       Retirar
                     </button>
                   </td>
@@ -124,6 +148,13 @@ const Parcels = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        parcel={selectedParcel}
+        open={openDialog}
+        setOpen={setOpenDialog}
+        onConfirm={() => selectedParcel && handleConfirmPickup(selectedParcel)}
+      />
 
       <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
