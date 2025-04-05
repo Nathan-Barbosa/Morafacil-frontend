@@ -105,12 +105,33 @@ const Condominium = () => {
                   <td className="px-4 py-2 text-gray-600">{condo.nome}</td>
                   <td className="px-4 py-2 text-gray-600">{condo.endereco}</td>
                   <td className="px-4 py-2 text-gray-600">{condo.numero}</td>
-                  <td className="px-4 py-2">
+                  <td className=" flex px-4 py-2 gap-2">
                     <button
                       className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
                       // Aqui você pode adicionar a lógica para edição, se necessário
                     >
                       Editar
+                    </button>
+
+                    <button
+                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                      // Aqui você pode adicionar a lógica para edição, se necessário
+                    >
+                      Remover
+                    </button>
+
+                    <button
+                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                      // Aqui você pode adicionar a lógica para edição, se necessário
+                    >
+                      Habilitar
+                    </button>
+
+                    <button
+                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                      // Aqui você pode adicionar a lógica para edição, se necessário
+                    >
+                      Desabilitar
                     </button>
                   </td>
                 </tr>
