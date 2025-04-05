@@ -13,7 +13,11 @@ import {
   SelectValue,
 } from "../../components";
 
-import { useGetResidencesListQuery, usePostParcelMutation } from "../../services";
+import {
+  useGetParcelsListQuery,
+  useGetResidencesListQuery,
+  usePostParcelMutation,
+} from "../../services";
 import { ParcelsFormData } from "./Parcels.types";
 import { parcelsSchema } from "./Parcels.schemas";
 import { useToast } from "../../hooks/use-toast";
@@ -34,6 +38,8 @@ const Parcels = () => {
 
   const { toast } = useToast();
 
+  const { data: parcels } = useGetParcelsListQuery();
+
   const { data: residences } = useGetResidencesListQuery({
     pageNumber: 1,
     pageSize: 10,
@@ -49,6 +55,7 @@ const Parcels = () => {
           description: "Encomenda publicado com sucesso!",
           variant: "default",
         });
+        setOpenModal(false);
       },
     });
   };
@@ -69,7 +76,7 @@ const Parcels = () => {
       </div>
 
       <div className="overflow-x-auto">
-        {residences?.data ? (
+        {parcels?.data ? (
           <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
             <thead className="bg-gray-50">
               <tr>
@@ -86,16 +93,25 @@ const Parcels = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {residences.data.map((residence) => (
-                <tr key={residence.id} className="hover:bg-gray-100 transition">
-                  <td className="px-4 py-2 text-gray-600">{residence.numero}</td>
-                  <td className="px-4 py-2 text-gray-600">{residence.bloco}</td>
-                  <td className="px-4 py-2 text-gray-600">{residence.unidade}</td>
-                  <td className="px-4 py-2 text-gray-600">{residence.situacao}</td>
-                  <td className="px-4 py-2 text-gray-600">{residence.situacao}</td>
-                  <td className="flex justify-end px-4 py-2">
+              {parcels.data.map((parcel) => (
+                <tr key={parcel.id} className="hover:bg-gray-100 transition">
+                  <td className="px-4 py-2 text-gray-600">{parcel.numeroEncomenda}</td>
+                  <td className="px-4 py-2 text-gray-600">{parcel.residencia.bloco}</td>
+                  <td className="px-4 py-2 text-gray-600">{parcel.residencia.unidade}</td>
+                  <td className="px-4 py-2 text-gray-600">
+                    {new Date(parcel.dataChegada).toLocaleString()}
+                  </td>
+                  <td className="px-4 py-2 text-gray-600">
+                    {parcel.dataRetirada
+                      ? new Date(parcel.dataRetirada).toLocaleString()
+                      : "Não retirado"}
+                  </td>
+                  <td className="flex justify-end px-4 py-2 gap-2">
                     <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
                       Editar
+                    </button>
+                    <button className="px-3 py-1 bg-blue-500 hover:bg-green-600 text-white text-sm rounded transition">
+                      Retirar
                     </button>
                   </td>
                 </tr>

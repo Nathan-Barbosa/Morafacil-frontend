@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { APIError } from "../../models";
+import { APIError, GetParcelsResponseDTO, PaginatedResponse } from "../../models";
 import { PostParcelRequestDTO } from "./ParcelsService.types";
 import { ParcelsService } from "./ParcelsService";
 
@@ -8,6 +8,13 @@ const parcelsKeys = {
   all: ["parcels"] as const,
   lists: () => [...parcelsKeys.all, "list"] as const,
   postParcel: () => [...parcelsKeys.all, "postParcel"] as const,
+};
+
+const useGetParcelsListQuery = () => {
+  return useQuery<PaginatedResponse<GetParcelsResponseDTO[]>, APIError>({
+    queryKey: parcelsKeys.lists(),
+    queryFn: () => ParcelsService.getParcels(),
+  });
 };
 
 const usePostParcelMutation = () => {
@@ -24,4 +31,4 @@ const usePostParcelMutation = () => {
   });
 };
 
-export { usePostParcelMutation };
+export { usePostParcelMutation, useGetParcelsListQuery };
