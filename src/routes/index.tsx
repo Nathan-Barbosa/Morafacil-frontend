@@ -6,6 +6,7 @@ import {
   Home,
   Login,
   NoticeBoard,
+  Parcels,
   Register,
   Users,
 } from "../views";
@@ -61,6 +62,10 @@ const routes = createBrowserRouter([
           {
             path: "noticeBoard",
             element: <NoticeBoard />,
+          },
+          {
+            path: "parcels",
+            element: <Parcels />,
           },
         ],
       },

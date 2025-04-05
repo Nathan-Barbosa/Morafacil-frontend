@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../providers";
 import { UserCircle, House, HouseSimple } from "@phosphor-icons/react";
-import { List, X, NotePencil } from "@phosphor-icons/react"; // Ícones de abrir/fechar
+import { List, X, NotePencil, Package } from "@phosphor-icons/react"; // Ícones de abrir/fechar
 import imglogo from "../../assets/logo-morar-facil-2.png";
 
 const Sidebar = () => {
@@ -103,6 +103,44 @@ const Sidebar = () => {
                   >
                     <NotePencil size={20} />
                     {isOpen && <span>Avisos</span>}
+                  </div>
+                </NavLink>
+              </li>
+            </ul>
+          )}
+          {roles?.includes("Usuario") && (
+            <ul className="flex flex-col gap-2">
+              <li>
+                <NavLink
+                  to="/noticeBoard"
+                  className={({ isActive }) =>
+                    `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
+                  }
+                >
+                  <div
+                    className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}
+                  >
+                    <NotePencil size={20} />
+                    {isOpen && <span>Avisos</span>}
+                  </div>
+                </NavLink>
+              </li>
+            </ul>
+          )}
+          {roles?.includes("Porteiro") && (
+            <ul className="flex flex-col gap-2">
+              <li>
+                <NavLink
+                  to="/parcels"
+                  className={({ isActive }) =>
+                    `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
+                  }
+                >
+                  <div
+                    className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}
+                  >
+                    <Package size={20} />
+                    {isOpen && <span>Encomendas</span>}
                   </div>
                 </NavLink>
               </li>

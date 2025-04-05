@@ -7,3 +7,4 @@ export * from "./Users";
 export * from "./Condominium";
 export * from "./Residence";
 export * from "./NoticeBoard";
+export * from "./Parcels";
