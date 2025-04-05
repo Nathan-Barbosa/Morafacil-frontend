@@ -13,10 +13,10 @@ import {
   SelectValue,
 } from "../../components";
 
-import { useGetResidencesListQuery, usePostCreateResidenceMutation } from "../../services";
-import { useToast } from "../../providers/ToastProvider";
+import { useGetResidencesListQuery, usePostParcelMutation } from "../../services";
 import { ParcelsFormData } from "./Parcels.types";
 import { parcelsSchema } from "./Parcels.schemas";
+import { useToast } from "../../hooks/use-toast";
 
 const Parcels = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -39,10 +39,18 @@ const Parcels = () => {
     pageSize: 10,
   });
 
-  const { mutate: createResidence } = usePostCreateResidenceMutation();
+  const { mutate: createParcel } = usePostParcelMutation();
 
   const onSubmit = (data: ParcelsFormData) => {
-    console.log("data", data);
+    createParcel(data, {
+      onSuccess: () => {
+        toast({
+          title: "Sucesso",
+          description: "Encomenda publicado com sucesso!",
+          variant: "default",
+        });
+      },
+    });
   };
 
   return (
