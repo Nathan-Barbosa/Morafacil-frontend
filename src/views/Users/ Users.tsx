@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -25,27 +25,51 @@ import {
 import { useToast } from "../../hooks/use-toast";
 
 export function Users() {
-  const [filterRole, setFilterRole] = useState<string | undefined>(undefined);
-  const [searchfilterRole] = useDebounce(filterRole, 1000);
-  const [openResidenceModal, setOpenResidenceModal] = useState(false);
-  const [openRoleModal, setOpenRoleModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
+const [filterField, setFilterField] = useState("name");
+const [filterValue, setFilterValue] = useState("");
+const [debouncedFilterValue] = useDebounce(filterValue, 300);
+const [allUsers, setAllUsers] = useState<UserResponseDTO[]>([]);
+const [openResidenceModal, setOpenResidenceModal] = useState(false);
+const [openRoleModal, setOpenRoleModal] = useState(false);
+const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
 
-  const { toast } = useToast();
+const { toast } = useToast();
 
-  const { data: users, refetch: refetchUsers } = useGetUsersListQuery(searchfilterRole || "");
-  const { data: roles } = useGetRolesListQuery();
+const { data: usersResponse, refetch: refetchUsers } = useGetUsersListQuery();
 
-  console.log("users", users);
+const { data: roles } = useGetRolesListQuery();
 
-  const { data: residences } = useGetResidencesListQuery({
-    pageNumber: 1,
-    pageSize: 10,
-  });
+const { data: residences } = useGetResidencesListQuery({
+  pageNumber: 1,
+  pageSize: 10,
+});
+
+useEffect(() => {
+  if (usersResponse?.data) {
+    setAllUsers(usersResponse.data);
+  }
+}, [usersResponse]);
 
   const { mutate: associateUser } = usePatchAssociateUserMutation();
   const { mutate: assignRole } = usePostAssignRoleMutation();
   const { mutate: removeUser } = usePatchRemoveUserMutation();
+
+  const filteredUsers = allUsers.filter((user) => {
+    const value = debouncedFilterValue.toLowerCase();
+    switch (filterField) {
+      case "name":
+        return user.name?.toLowerCase().includes(value);
+      case "email":
+        return user.email?.toLowerCase().includes(value);
+      case "cpf":
+        return user.cpf?.toLowerCase().includes(value);
+      case "id":
+        return user.id.toString().includes(value);
+      default:
+        return true;
+    }
+  });
+
 
   const {
     register: registerResidence,
@@ -154,17 +178,31 @@ export function Users() {
           <h1 className="text-2xl font-bold text-gray-800">Usuários</h1>
           <p className="text-gray-600">Lista de usuários cadastrados</p>
         </div>
-        <input
-          type="text"
-          placeholder="Buscar por perfil"
-          {...searchRoleRegister("role")}
-          onChange={(e) => setFilterRole(e.target.value)}
-          className="w-64 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+          <div className="flex gap-4 items-center">
+            <Select value={filterField} onValueChange={setFilterField}>
+              <SelectTrigger className="w-40 border border-gray-300 rounded px-3 py-2">
+                <SelectValue placeholder="Campo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="id">ID</SelectItem>
+                <SelectItem value="name">Nome</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="cpf">CPF</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <input
+              type="text"
+              value={filterValue}
+              onChange={(e) => setFilterValue(e.target.value)}
+              placeholder={`Buscar por ${filterField}`}
+              className="px-3 py-2 border border-gray-300 rounded w-64"
+            />
+          </div>
       </div>
 
       <div className="overflow-x-auto">
-        {users?.data && (
+        {filteredUsers && (
           <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
             <thead className="bg-gray-50">
               <tr>
@@ -176,7 +214,7 @@ export function Users() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users?.data?.map((user) => {
+              {filteredUsers?.map((user) => {
                 return (
                   <tr key={user.id} className="hover:bg-gray-100 transition">
                     <td className="px-4 py-2 text-gray-600">{user.id}</td>
@@ -231,7 +269,7 @@ export function Users() {
           </table>
         )}
       </div>
-      {!users?.data && (
+      {!filteredUsers && (
         <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
           <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
           <span className="mt-2 text-gray-600">Nenhum usuário encontrado</span>
