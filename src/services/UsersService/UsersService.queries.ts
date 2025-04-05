@@ -9,10 +9,10 @@ const usersKeys = {
   list: (role: string) => [...usersKeys.lists(), role] as const,
 };
 
-const useGetUsersListQuery = (role: string) => {
+const useGetUsersListQuery = (role?: string) => {
   return useQuery<ResponseDTO<UserResponseDTO[]>, APIError>({
-    queryKey: usersKeys.list(role),
-    queryFn: () => UsersService.getUsers(role),
+    queryKey: usersKeys.list(role || ""),
+    queryFn: () => UsersService.getUsers(role || ""),
   });
 };
 
