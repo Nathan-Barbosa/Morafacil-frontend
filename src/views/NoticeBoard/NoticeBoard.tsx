@@ -9,6 +9,7 @@ import {
 import { useToast } from "../../hooks/use-toast";
 import { MagnifyingGlass, DotsThreeVertical } from "@phosphor-icons/react";
 import { NoticeCardOptions } from "./components";
+import { useGetCondosListQuery } from "../../services";
 
 const NoticeBoard = () => {
   const [openNoticeModal, setOpenNoticeModal] = useState(false);
@@ -32,6 +33,9 @@ const NoticeBoard = () => {
       },
     });
   };
+
+  const { data: condosData } = useGetCondosListQuery({ pageNumber: 1, pageSize: 100 });
+  const condominios = condosData?.data || [];
 
   return (
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
@@ -100,6 +104,18 @@ const NoticeBoard = () => {
               {...register("mensagem", { required: true })}
               className="w-full px-3 py-2 border border-gray-300 rounded max-h-[30vh] outline-none"
             ></textarea>
+            <select
+              {...register("condominioId", { required: true })}
+              className="w-full px-3 py-2 border border-gray-300 rounded"
+            >
+              <option value="">Selecione um condomínio</option>
+              {condominios?.map((condominio) => (
+                <option key={condominio.id} value={condominio.id}>
+                  {condominio.nome}
+                </option>
+              ))}
+            </select>
+
             <div className="flex justify-end gap-2 text-xs font-semibold">
               <button
                 type="button"
