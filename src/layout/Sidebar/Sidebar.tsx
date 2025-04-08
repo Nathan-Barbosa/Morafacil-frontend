@@ -1,8 +1,16 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../providers";
-import { UserCircle, House, HouseSimple } from "@phosphor-icons/react";
-import { List, X, NotePencil, Package } from "@phosphor-icons/react"; // Ícones de abrir/fechar
+import {
+  UserCircle,
+  House,
+  HouseSimple,
+  List,
+  X,
+  NotePencil,
+  Package,
+  MicrosoftOutlookLogo,
+} from "@phosphor-icons/react";
 import imglogo from "../../assets/logo-morar-facil-2.png";
 
 const Sidebar = () => {
@@ -103,6 +111,21 @@ const Sidebar = () => {
                   >
                     <NotePencil size={20} />
                     {isOpen && <span>Avisos</span>}
+                  </div>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/votingBoard"
+                  className={({ isActive }) =>
+                    `block p-2 rounded ${isActive ? "bg-blue-700" : "hover:bg-blue-800"}`
+                  }
+                >
+                  <div
+                    className={`flex gap-2 items-center ${isOpen ? "justify-start" : "justify-center"}`}
+                  >
+                    <MicrosoftOutlookLogo size={20} />
+                    {isOpen && <span>Votação</span>}
                   </div>
                 </NavLink>
               </li>

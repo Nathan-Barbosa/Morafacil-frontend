@@ -6,3 +6,4 @@ export * from "./residence";
 export * from "./condominium";
 export * from "./noticeBoard";
 export * from "./parcels";
+export * from "./votingBoard";

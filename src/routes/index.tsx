@@ -14,6 +14,7 @@ import { BaseLayout } from "../layout";
 import { ProtectedRoute } from "../components";
 import { AuthProvider } from "../providers";
 import { Residence } from "../views/Residence";
+import { VotingBoard } from "../views/Voting";
 
 const routes = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const routes = createBrowserRouter([
           {
             path: "parcels",
             element: <Parcels />,
+          },
+          {
+            path: "votingBoard",
+            element: <VotingBoard />,
           },
         ],
       },
