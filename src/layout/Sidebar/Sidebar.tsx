@@ -27,7 +27,6 @@ const Sidebar = () => {
       }`}
     >
       <div className="relative mb-4 h-10">
-        {/* Botão sempre à esquerda */}
         <button
           onClick={toggleSidebar}
           className="absolute left-0 top-1/2 -translate-y-1/2 text-white"
@@ -35,7 +34,6 @@ const Sidebar = () => {
           {isOpen ? <X size={24} /> : <List size={24} />}
         </button>
 
-        {/* Logo centralizada, visível só quando aberto */}
         {isOpen && (
           <div className="flex justify-center">
             <img src={imglogo} alt="Logo Morar Fácil" className="h-20 w-auto mx-auto" />
@@ -43,7 +41,6 @@ const Sidebar = () => {
         )}
       </div>
 
-      {/* retirar esse cara */}
       <div className="flex flex-col items-center mt-10">
         {isOpen && (
           <h4 className="text-xs font-bold h-10 flex justify-center mb-4">{roles ?? ""}</h4>

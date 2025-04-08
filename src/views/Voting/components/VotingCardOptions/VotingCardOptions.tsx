@@ -3,7 +3,7 @@ import { MenuItem, VotingCardOptionsProps } from "./NoticeCardOptions.types";
 import { useToast } from "../../../../hooks/use-toast";
 import {
   UpdateNoticeRequestDTO,
-  useDeleteNoticeMutation,
+  useCloseVotingMutation,
   usePutUpdateNoticeMutation,
 } from "../../../../services";
 import {
@@ -27,23 +27,23 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
   const { register, handleSubmit, reset } = useForm<UpdateNoticeRequestDTO>();
 
   const { toast } = useToast();
-  const { mutate: deleteNotice } = useDeleteNoticeMutation();
+  const { mutate: closeVoting } = useCloseVotingMutation();
   const { mutate: editNotice } = usePutUpdateNoticeMutation();
 
   const onEdit = () => setOpenEditModal(true);
-  const onRemove = () => setOpenDialog(true);
+  const onCloseVoting = () => setOpenDialog(true);
 
   const onSuccess = () => {
     toast({
       title: "Sucesso",
-      description: `Aviso removido com sucesso!`,
+      description: `Votação encerrado com sucesso!`,
       variant: "default",
     });
     setOpenDialog(false);
   };
 
-  const handleConfirmRemoveNotice = async () => {
-    deleteNotice(Number(voting?.id), { onSuccess });
+  const handleConfirmCloseVoting = async () => {
+    closeVoting(Number(voting?.id), { onSuccess });
   };
 
   const onSubmitUpdateNotice = (data: UpdateNoticeRequestDTO) => {
@@ -51,7 +51,7 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
       onSuccess: () => {
         toast({
           title: "Sucesso",
-          description: "Aviso alterado com sucesso!",
+          description: "Votação alterada com sucesso!",
           variant: "default",
         });
         setOpenEditModal(false);
@@ -62,8 +62,8 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
 
   const menuItems: MenuItem[] = [
     { label: "Editar", callback: onEdit },
-    { label: "Remover", callback: onRemove },
-  ];
+    voting.encerrada ? null : { label: "Encerrar", callback: onCloseVoting },
+  ].filter(Boolean) as MenuItem[];
 
   useEffect(() => {
     if (openEditModal) {
@@ -96,13 +96,13 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
         voting={voting}
         open={openDialog}
         setOpen={setOpenDialog}
-        onConfirm={handleConfirmRemoveNotice}
+        onConfirm={handleConfirmCloseVoting}
       />
 
       <Dialog open={openEditModal} onOpenChange={setOpenEditModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Editar aviso</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">Editar Votação</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmitUpdateNotice)} className="space-y-4">

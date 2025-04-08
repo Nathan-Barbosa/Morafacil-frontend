@@ -16,7 +16,7 @@ const votingBoardsKeys = {
   list: (role: string) => [...votingBoardsKeys.lists(), role] as const,
   createVoting: () => [...votingBoardsKeys.all, "createVoting"] as const,
   updateVoting: () => [...votingBoardsKeys.all, "updateVoting"] as const,
-  deleteVoting: () => [...votingBoardsKeys.all, "deleteVoting"] as const,
+  closeVoting: () => [...votingBoardsKeys.all, "closeVoting"] as const,
 };
 
 const useGetVotingsQuery = (params: GetVotingsRequestDTO) => {
@@ -52,22 +52,22 @@ const usePostCreateVotingMutation = () => {
 //   });
 // };
 
-// const useDeleteNoticeMutation = () => {
-//   const queryClient = useQueryClient();
+const useCloseVotingMutation = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation<void, APIError, number>({
-//     mutationKey: votingBoardsKeys.deleteVoting(),
-//     mutationFn: (id: number) => VotingBoardService.deleteVoting(id),
-//     onSuccess: () =>
-//       queryClient.invalidateQueries({
-//         queryKey: votingBoardsKeys.lists(),
-//       }),
-//   });
-// };
+  return useMutation<ResponseDTO<boolean>, APIError, number>({
+    mutationKey: votingBoardsKeys.closeVoting(),
+    mutationFn: (id: number) => VotingBoardService.closeVoting(id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: votingBoardsKeys.lists(),
+      }),
+  });
+};
 
 export {
   useGetVotingsQuery,
   usePostCreateVotingMutation,
-  // useDeleteNoticeMutation,
+  useCloseVotingMutation,
   // usePutUpdateNoticeMutation,
 };

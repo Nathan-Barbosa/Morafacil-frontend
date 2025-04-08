@@ -1,6 +1,5 @@
 import {
   GetVotingResponseDTO,
-  NoticeResponseDTO,
   PaginatedResponse,
   ResponseDTO,
   VotingResponseDTO,
@@ -50,15 +49,15 @@ class VotingBoardService {
   //   );
   // }
 
-  // public static async deleteVoting(id: number): Promise<void> {
-  //   return apiErrorHandler(() =>
-  //     api
-  //       .delete<void>(`${VotingBoardService.url}/${id}`, {
-  //         withCredentials: true,
-  //       })
-  //       .then((response) => response.data),
-  //   );
-  // }
+  public static async closeVoting(id: number): Promise<ResponseDTO<boolean>> {
+    return apiErrorHandler(() =>
+      api
+        .patch<ResponseDTO<boolean>>(`${VotingBoardService.url}/${id}/encerrar`, {
+          withCredentials: true,
+        })
+        .then((response) => response.data),
+    );
+  }
 }
 
 export { VotingBoardService };

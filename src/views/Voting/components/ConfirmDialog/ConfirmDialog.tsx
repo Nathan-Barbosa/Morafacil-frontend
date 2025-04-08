@@ -12,14 +12,14 @@ const ConfirmDialog = ({ open, setOpen, onConfirm, voting }: ConfirmDialogProps)
         onPointerDownOutside={closeDialog}
       >
         <div className="flex w-full justify-between gap-2">
-          <DialogTitle className="w-full font-semibold">Remover aviso do mural</DialogTitle>
+          <DialogTitle className="w-full font-semibold">Encerrar votação</DialogTitle>
           <button onClick={closeDialog} className="p-1">
             <X className="size-4" />
           </button>
         </div>
 
         <DialogDescription className="text-sm leading-4">
-          Tem certeza que deseja remover o aviso
+          Tem certeza que deseja encerrar a votação
           <span className="font-semibold"> {voting.titulo}?</span>
         </DialogDescription>
 
@@ -28,7 +28,7 @@ const ConfirmDialog = ({ open, setOpen, onConfirm, voting }: ConfirmDialogProps)
             Cancelar
           </button>
           <button className="button-confirm" onClick={onConfirm}>
-            Remover
+            Encerrar
           </button>
         </div>
       </DialogContent>

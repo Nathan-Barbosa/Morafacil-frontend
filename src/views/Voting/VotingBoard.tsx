@@ -47,7 +47,6 @@ const VotingBoard = () => {
 
   return (
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
-      {/* Cabeçalho */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Quadro de Votações</h1>
@@ -61,37 +60,41 @@ const VotingBoard = () => {
         </button>
       </div>
 
-      {/* Lista de votações */}
       <div className="flex h-full flex-col gap-y-4 overflow-auto">
-        {votings?.data && votings.data.length > 0 ? (
+        {votings?.data && votings.data.length > 0 && (
           <section className="flex flex-row flex-wrap gap-2 w-full">
-            {votings.data.map((voting) => (
-              <li
-                key={voting.id}
-                className="hover:bg-blue-100 relative flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3 bg-blue-50"
-              >
-                {/* Botão de opções da votação */}
-                <div className="ml-auto absolute self-end">
-                  <VotingCardOptions voting={voting}>
-                    <button className="right-4 flex rounded bg-transparent outline-none hover:bg-blue-400">
-                      <DotsThreeVertical className="size-6" weight="bold" />
-                    </button>
-                  </VotingCardOptions>
-                </div>
-                <h2 className="text-sm font-semibold">{voting.titulo}</h2>
-                <p className="text-gray-600">{voting.descricao}</p>
-                <div className="flex justify-between">
-                  <p className="text-sm text-gray-400">
-                    Início: {new Date(voting.dataInicio).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    Fim: {new Date(voting.dataFim).toLocaleDateString()}
-                  </p>
-                </div>
-              </li>
-            ))}
+            {votings.data.map((voting) => {
+              const closedVote = voting.encerrada;
+              return (
+                <li
+                  key={voting.id}
+                  className={`hover:bg-blue-300 relative group flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3 bg-blue-100 ${closedVote && "bg-red-200 hover:bg-red-400"}`}
+                >
+                  <div className="ml-auto absolute self-end">
+                    <VotingCardOptions voting={voting}>
+                      <button
+                        className={`right-4 flex rounded outline-none hover:bg-blue-400 ${closedVote && " hover:bg-red-500"} `}
+                      >
+                        <DotsThreeVertical className="size-6" weight="bold" />
+                      </button>
+                    </VotingCardOptions>
+                  </div>
+                  <h2 className="text-sm font-semibold">{voting.titulo}</h2>
+                  <p className="text-gray-600">{voting.descricao}</p>
+                  <div className="flex justify-between">
+                    <p className="text-sm text-gray-400">
+                      Início: {new Date(voting.dataInicio).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Fim: {new Date(voting.dataFim).toLocaleDateString()}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
           </section>
-        ) : (
+        )}
+        {!votings?.data.length && (
           <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
             <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
             <span className="mt-2 text-gray-600">Nenhuma votação encontrada</span>
@@ -99,7 +102,6 @@ const VotingBoard = () => {
         )}
       </div>
 
-      {/* Diálogo para criação de nova votação */}
       <Dialog open={openVotingModal} onOpenChange={setOpenVotingModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
           <DialogHeader>
