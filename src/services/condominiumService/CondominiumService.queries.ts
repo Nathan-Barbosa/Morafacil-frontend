@@ -18,6 +18,7 @@ const condominiumKeys = {
   lists: () => [...condominiumKeys.all, "list"] as const,
   list: (params: GetCondominiumRequestDTO) => [...condominiumKeys.lists(), params] as const,
   createCondo: () => [...condominiumKeys.all, "createCondo"] as const,
+  deleteCondo: () => [...condominiumKeys.all, "deleteCondo"] as const,
 };
 
 const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
@@ -29,7 +30,6 @@ const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
 
 const usePostCreateCondominiumMutation = () => {
   const queryClient = useQueryClient();
-
   return useMutation<
     ResponseDTO<PostCondominiumResponseDTO>,
     APIError,
@@ -45,4 +45,17 @@ const usePostCreateCondominiumMutation = () => {
   });
 };
 
-export { usePostCreateCondominiumMutation, useGetCondosListQuery };
+const useDeleteCondoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation<ResponseDTO<string>, APIError, number>({
+    mutationKey: condominiumKeys.deleteCondo(),
+    mutationFn: (id: number) => CondominiumService.deleteCondo(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: condominiumKeys.lists(),
+      });
+    },
+  });
+};
+
+export { usePostCreateCondominiumMutation, useGetCondosListQuery, useDeleteCondoMutation };

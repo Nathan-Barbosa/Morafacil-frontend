@@ -1,15 +1,30 @@
 import { useState } from "react";
-import { useGetCondosListQuery } from "../../services";
+import { useDeleteCondoMutation, useGetCondosListQuery } from "../../services";
 import { NewCondoModal } from "./components";
+import { useToast } from "../../hooks/use-toast";
 
 const Condominium = () => {
   const [openModal, setOpenModal] = useState(false);
+  const { toast } = useToast();
 
   const { data: condos } = useGetCondosListQuery({
     pageNumber: 1,
     pageSize: 10,
   });
 
+  const { mutate: deleteCondo } = useDeleteCondoMutation();
+
+  const handleDeleteCondo = (id: number) => {
+    deleteCondo(id, {
+      onSuccess: () => {
+        toast({
+          title: "Sucesso",
+          description: "Condomínio removido com sucesso!",
+          variant: "default",
+        });
+      },
+    });
+  };
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
       <div className="flex justify-between items-center">
@@ -51,7 +66,11 @@ const Condominium = () => {
                       Editar
                     </button>
 
-                    <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCondo(Number(condo.id))}
+                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                    >
                       Remover
                     </button>
 

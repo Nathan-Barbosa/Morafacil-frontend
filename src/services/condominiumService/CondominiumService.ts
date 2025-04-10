@@ -37,6 +37,14 @@ class CondominiumService {
         .then((response) => response.data),
     );
   }
+
+  public static async deleteCondo(id: number): Promise<ResponseDTO<string>> {
+    return apiErrorHandler(() =>
+      api
+        .delete<ResponseDTO<string>>(`${CondominiumService.url}/${id}`)
+        .then((response) => response.data),
+    );
+  }
 }
 
 export { CondominiumService };
