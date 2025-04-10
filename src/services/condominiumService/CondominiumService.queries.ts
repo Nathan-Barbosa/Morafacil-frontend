@@ -9,6 +9,7 @@ import {
 } from "../../models";
 import {
   GetCondominiumRequestDTO,
+  PatchCondominiumStatusRequestDTO,
   PostCreateCondominiumRequestDTO,
 } from "./CondominiumService.types";
 import { CondominiumService } from "./CondominiumService";
@@ -19,6 +20,7 @@ const condominiumKeys = {
   list: (params: GetCondominiumRequestDTO) => [...condominiumKeys.lists(), params] as const,
   createCondo: () => [...condominiumKeys.all, "createCondo"] as const,
   deleteCondo: () => [...condominiumKeys.all, "deleteCondo"] as const,
+  updateCondoStatus: () => [...condominiumKeys.all, "updateCondoStatus"] as const,
 };
 
 const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
@@ -30,6 +32,7 @@ const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
 
 const usePostCreateCondominiumMutation = () => {
   const queryClient = useQueryClient();
+
   return useMutation<
     ResponseDTO<PostCondominiumResponseDTO>,
     APIError,
@@ -47,6 +50,7 @@ const usePostCreateCondominiumMutation = () => {
 
 const useDeleteCondoMutation = () => {
   const queryClient = useQueryClient();
+
   return useMutation<ResponseDTO<string>, APIError, number>({
     mutationKey: condominiumKeys.deleteCondo(),
     mutationFn: (id: number) => CondominiumService.deleteCondo(id),
@@ -58,4 +62,23 @@ const useDeleteCondoMutation = () => {
   });
 };
 
-export { usePostCreateCondominiumMutation, useGetCondosListQuery, useDeleteCondoMutation };
+const usePatchCondoStatusMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<string>, APIError, PatchCondominiumStatusRequestDTO>({
+    mutationKey: condominiumKeys.updateCondoStatus(),
+    mutationFn: (data: PatchCondominiumStatusRequestDTO) =>
+      CondominiumService.updateCondoStatus(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: condominiumKeys.lists(),
+      });
+    },
+  });
+};
+export {
+  usePostCreateCondominiumMutation,
+  useGetCondosListQuery,
+  useDeleteCondoMutation,
+  usePatchCondoStatusMutation,
+};

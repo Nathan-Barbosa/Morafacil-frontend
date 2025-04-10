@@ -8,6 +8,7 @@ import { apiErrorHandler } from "../../utils";
 import { api } from "../api.ts";
 import {
   GetCondominiumRequestDTO,
+  PatchCondominiumStatusRequestDTO,
   PostCreateCondominiumRequestDTO,
 } from "./CondominiumService.types.ts";
 
@@ -42,6 +43,16 @@ class CondominiumService {
     return apiErrorHandler(() =>
       api
         .delete<ResponseDTO<string>>(`${CondominiumService.url}/${id}`)
+        .then((response) => response.data),
+    );
+  }
+
+  public static async updateCondoStatus(
+    data: PatchCondominiumStatusRequestDTO,
+  ): Promise<ResponseDTO<string>> {
+    return apiErrorHandler(() =>
+      api
+        .patch<ResponseDTO<string>>(`${CondominiumService.url}/status`, data)
         .then((response) => response.data),
     );
   }

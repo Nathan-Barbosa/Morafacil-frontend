@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { useDeleteCondoMutation, useGetCondosListQuery } from "../../services";
+import {
+  useDeleteCondoMutation,
+  useGetCondosListQuery,
+  usePatchCondoStatusMutation,
+} from "../../services";
 import { NewCondoModal } from "./components";
 import { useToast } from "../../hooks/use-toast";
 
@@ -13,6 +17,7 @@ const Condominium = () => {
   });
 
   const { mutate: deleteCondo } = useDeleteCondoMutation();
+  const { mutate: updateCondoStatus } = usePatchCondoStatusMutation();
 
   const handleDeleteCondo = (id: number) => {
     deleteCondo(id, {
@@ -25,6 +30,45 @@ const Condominium = () => {
       },
     });
   };
+
+  const handleUpdateCondoStatus = (id: number, ativo: boolean) => {
+    if (ativo) {
+      updateCondoStatus(
+        {
+          id: id,
+          ativo: false,
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Sucesso",
+              description: "Condomínio desativado com sucesso!",
+              variant: "default",
+            });
+          },
+        },
+      );
+    }
+
+    if (!ativo) {
+      updateCondoStatus(
+        {
+          id: id,
+          ativo: true,
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Sucesso",
+              description: "Condomínio ativado com sucesso!",
+              variant: "default",
+            });
+          },
+        },
+      );
+    }
+  };
+
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
       <div className="flex justify-between items-center">
@@ -61,25 +105,24 @@ const Condominium = () => {
                   <td className="px-4 py-2 text-gray-600">{condo.nome}</td>
                   <td className="px-4 py-2 text-gray-600">{condo.endereco}</td>
                   <td className="px-4 py-2 text-gray-600">{condo.numero}</td>
-                  <td className=" flex px-4 py-2 gap-2">
-                    <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
+                  <td className="flex px-4 py-2 gap-2 justify-end">
+                    <button className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded transition">
                       Editar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateCondoStatus(Number(condo.id), condo.ativo)}
+                      className={`px-3 py-1 text-white text-sm rounded transition ${condo.ativo ? " bg-orange-500 hover:bg-orange-600" : "bg-green-500 hover:bg-green-600"}`}
+                    >
+                      {condo.ativo ? "Desabilitar" : "Habilitar"}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleDeleteCondo(Number(condo.id))}
-                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                      className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
                     >
                       Remover
-                    </button>
-
-                    <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
-                      Habilitar
-                    </button>
-
-                    <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
-                      Desabilitar
                     </button>
                   </td>
                 </tr>

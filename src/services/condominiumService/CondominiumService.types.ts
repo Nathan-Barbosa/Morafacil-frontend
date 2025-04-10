@@ -21,4 +21,13 @@ type GetCondominiumRequestDTO = {
   pageSize: number;
 };
 
-export type { PostCreateCondominiumRequestDTO, GetCondominiumRequestDTO };
+type PatchCondominiumStatusRequestDTO = {
+  id: number;
+  ativo: boolean;
+};
+
+export type {
+  PostCreateCondominiumRequestDTO,
+  GetCondominiumRequestDTO,
+  PatchCondominiumStatusRequestDTO,
+};
