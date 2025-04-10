@@ -273,15 +273,7 @@ export function Users() {
                         >
                           Editar
                         </button>
-                        <button
-                          onClick={() => {
-                            // lógica de deleção
-                            console.log("Excluir usuário", user);
-                          }}
-                          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
-                        >
-                          Excluir
-                        </button>
+
                         <button
                           onClick={() => {
                             handleBlockuser(user.id);
