@@ -6,7 +6,6 @@ import {
   House,
   HouseSimple,
   List,
-  X,
   NotePencil,
   Package,
   MicrosoftOutlookLogo,
