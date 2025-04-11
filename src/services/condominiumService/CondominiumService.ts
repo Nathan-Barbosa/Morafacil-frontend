@@ -9,7 +9,7 @@ import { api } from "../api.ts";
 import {
   GetCondominiumRequestDTO,
   PatchCondominiumStatusRequestDTO,
-  PostCreateCondominiumRequestDTO,
+  CondominiumRequestDTO,
 } from "./CondominiumService.types.ts";
 
 class CondominiumService {
@@ -30,11 +30,21 @@ class CondominiumService {
   }
 
   public static async postCreateCondominium(
-    data: PostCreateCondominiumRequestDTO,
+    data: CondominiumRequestDTO,
   ): Promise<ResponseDTO<PostCondominiumResponseDTO>> {
     return apiErrorHandler(() =>
       api
         .post<ResponseDTO<PostCondominiumResponseDTO>>(`${CondominiumService.url}`, data)
+        .then((response) => response.data),
+    );
+  }
+
+  public static async putUpdateCondominium(
+    data: CondominiumRequestDTO,
+  ): Promise<ResponseDTO<GetCondominiumResponseDTO>> {
+    return apiErrorHandler(() =>
+      api
+        .put<ResponseDTO<GetCondominiumResponseDTO>>(`${CondominiumService.url}/${data?.id}`, data)
         .then((response) => response.data),
     );
   }

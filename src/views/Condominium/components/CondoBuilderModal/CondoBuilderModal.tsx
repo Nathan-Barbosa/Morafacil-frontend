@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import {
   Dialog,
@@ -10,18 +11,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../../components";
-import { NewCondoModalProps } from "./NewCondoModal.types";
+import { CondoBuilderModalProps } from "./CondoBuilderModal.types";
 import { CondoFormData } from "../../Condominium.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { condoSchema } from "../../Condominium.schemas";
 import {
-  PostCreateCondominiumRequestDTO,
+  CondominiumRequestDTO,
   Types,
   usePostCreateCondominiumMutation,
+  useUpdateCondominiumMutation,
 } from "../../../../services";
 import { useToast } from "../../../../hooks/use-toast";
 
-const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
+const CondoBuilderModal = ({ open, onOpenChange, isEdit, condoData }: CondoBuilderModalProps) => {
+  const typeMapping: Record<number, Types> = {
+    1: Types.Residencial,
+    2: Types.Comercial,
+    3: Types.Misto,
+  };
+
+  const stringToNumberMapping: Record<Types, number> = {
+    [Types.Residencial]: 1,
+    [Types.Comercial]: 2,
+    [Types.Misto]: 3,
+  };
+
   const { toast } = useToast();
 
   const methods = useForm<CondoFormData>({
@@ -37,9 +51,28 @@ const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
   } = methods;
 
   const { mutate: createCondominium } = usePostCreateCondominiumMutation();
+  const { mutate: updateCondominium } = useUpdateCondominiumMutation();
+
+  useEffect(() => {
+    if (isEdit && condoData) {
+      reset({
+        name: condoData.nome,
+        address: condoData.endereco,
+        number: condoData.numero,
+        zip: condoData.cep,
+        neighborhood: condoData.bairro,
+        country: condoData.pais,
+        state: condoData.estado,
+        cnpj: condoData.cnpj,
+        type: typeMapping[condoData.tipo],
+      });
+    } else {
+      reset();
+    }
+  }, [isEdit, condoData, reset]);
 
   const onSubmit = (data: CondoFormData) => {
-    const formattedData: PostCreateCondominiumRequestDTO = {
+    const baseData = {
       nome: data.name,
       endereco: data.address,
       numero: data.number,
@@ -48,27 +81,56 @@ const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
       pais: data.country,
       estado: data.state,
       cnpj: data.cnpj,
-      tipo: data.type as Types,
     };
 
-    createCondominium(formattedData, {
-      onSuccess: () => {
-        toast({
-          title: "Sucesso",
-          description: "Condomínio criado com sucesso!",
-          variant: "default",
-        });
-        reset();
-        onOpenChange(false);
-      },
-    });
+    if (isEdit && condoData) {
+      const formattedData: CondominiumRequestDTO = {
+        ...baseData,
+        tipo: stringToNumberMapping[data.type].toString(),
+      };
+
+      updateCondominium(
+        { id: Number(condoData.id), ...formattedData },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Sucesso",
+              description: "Condomínio atualizado com sucesso!",
+              variant: "default",
+            });
+            reset();
+            onOpenChange(false);
+          },
+        },
+      );
+    } else {
+      // Para criação, o tipo é enviado como string
+      const formattedData: CondominiumRequestDTO = {
+        ...baseData,
+        tipo: data.type as Types,
+      };
+
+      createCondominium(formattedData, {
+        onSuccess: () => {
+          toast({
+            title: "Sucesso",
+            description: "Condomínio criado com sucesso!",
+            variant: "default",
+          });
+          reset();
+          onOpenChange(false);
+        },
+      });
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white p-6 rounded shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Cadastro de Condomínio</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            {isEdit ? "Editar Condomínio" : "Cadastro de Condomínio"}
+          </DialogTitle>
         </DialogHeader>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)} className="flex gap-4 flex-col">
@@ -89,7 +151,7 @@ const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
                 {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
               </div>
 
-              <div className="w-full ">
+              <div className="w-full">
                 <label className="block text-sm text-gray-700">Endereço</label>
                 <Controller
                   control={control}
@@ -138,7 +200,7 @@ const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
                 {errors.zip && <p className="text-red-500 text-sm">{errors.zip.message}</p>}
               </div>
 
-              <div className="w-full ">
+              <div className="w-full">
                 <label className="block text-sm text-gray-700">Bairro</label>
                 <Controller
                   control={control}
@@ -156,7 +218,7 @@ const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
                 )}
               </div>
 
-              <div className="w-full ">
+              <div className="w-full">
                 <label className="block text-sm text-gray-700">País</label>
                 <Controller
                   control={control}
@@ -212,7 +274,7 @@ const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
-                        <SelectValue placeholder="Selecione o tipo do condomínio" className="" />
+                        <SelectValue placeholder="Selecione o tipo do condomínio" />
                       </SelectTrigger>
                       <SelectContent className="bg-white rounded shadow-lg">
                         <SelectItem value={Types.Residencial}>Condomínio Residencial</SelectItem>
@@ -240,9 +302,9 @@ const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
               <button
                 type="submit"
                 disabled={!isValid}
-                className="button-confirm disabled:gray-300"
+                className="button-confirm disabled:bg-gray-300"
               >
-                Cadastrar
+                {isEdit ? "Atualizar" : "Cadastrar"}
               </button>
             </div>
           </form>
@@ -252,4 +314,4 @@ const NewCondoModal = ({ open, onOpenChange }: NewCondoModalProps) => {
   );
 };
 
-export { NewCondoModal };
+export { CondoBuilderModal };

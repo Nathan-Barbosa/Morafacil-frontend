@@ -10,7 +10,7 @@ import {
 import {
   GetCondominiumRequestDTO,
   PatchCondominiumStatusRequestDTO,
-  PostCreateCondominiumRequestDTO,
+  CondominiumRequestDTO,
 } from "./CondominiumService.types";
 import { CondominiumService } from "./CondominiumService";
 
@@ -19,6 +19,7 @@ const condominiumKeys = {
   lists: () => [...condominiumKeys.all, "list"] as const,
   list: (params: GetCondominiumRequestDTO) => [...condominiumKeys.lists(), params] as const,
   createCondo: () => [...condominiumKeys.all, "createCondo"] as const,
+  updateCondo: () => [...condominiumKeys.all, "updateCondo"] as const,
   deleteCondo: () => [...condominiumKeys.all, "deleteCondo"] as const,
   updateCondoStatus: () => [...condominiumKeys.all, "updateCondoStatus"] as const,
 };
@@ -33,14 +34,22 @@ const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
 const usePostCreateCondominiumMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    ResponseDTO<PostCondominiumResponseDTO>,
-    APIError,
-    PostCreateCondominiumRequestDTO
-  >({
+  return useMutation<ResponseDTO<PostCondominiumResponseDTO>, APIError, CondominiumRequestDTO>({
     mutationKey: condominiumKeys.createCondo(),
-    mutationFn: (data: PostCreateCondominiumRequestDTO) =>
-      CondominiumService.postCreateCondominium(data),
+    mutationFn: (data: CondominiumRequestDTO) => CondominiumService.postCreateCondominium(data),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: condominiumKeys.lists(),
+      }),
+  });
+};
+
+const useUpdateCondominiumMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<GetCondominiumResponseDTO>, APIError, CondominiumRequestDTO>({
+    mutationKey: condominiumKeys.updateCondo(),
+    mutationFn: (data: CondominiumRequestDTO) => CondominiumService.putUpdateCondominium(data),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: condominiumKeys.lists(),
@@ -81,4 +90,5 @@ export {
   useGetCondosListQuery,
   useDeleteCondoMutation,
   usePatchCondoStatusMutation,
+  useUpdateCondominiumMutation,
 };

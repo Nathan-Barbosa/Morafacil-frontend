@@ -4,11 +4,14 @@ import {
   useGetCondosListQuery,
   usePatchCondoStatusMutation,
 } from "../../services";
-import { NewCondoModal } from "./components";
+import { CondoBuilderModal } from "./components";
 import { useToast } from "../../hooks/use-toast";
+import { GetCondominiumResponseDTO } from "../../models";
 
 const Condominium = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedCondo, setSelectedCondo] = useState<GetCondominiumResponseDTO | undefined>();
   const { toast } = useToast();
 
   const { data: condos } = useGetCondosListQuery({
@@ -31,7 +34,7 @@ const Condominium = () => {
     });
   };
 
-  const handleUpdateCondoStatus = (id: number, ativo: boolean) => {
+  const handleUpdateCondoStatus = (id: number, ativo?: boolean) => {
     if (ativo) {
       updateCondoStatus(
         {
@@ -69,6 +72,12 @@ const Condominium = () => {
     }
   };
 
+  const handleEditCondo = (condo: GetCondominiumResponseDTO) => {
+    setIsEdit(true);
+    setSelectedCondo(condo);
+    setOpenModal(true);
+  };
+
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
       <div className="flex justify-between items-center">
@@ -77,7 +86,11 @@ const Condominium = () => {
           <p className="text-gray-600">Lista de condomínios cadastrados</p>
         </div>
         <button
-          onClick={() => setOpenModal(true)}
+          onClick={() => {
+            setIsEdit(false);
+            setSelectedCondo(undefined);
+            setOpenModal(true);
+          }}
           className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
         >
           Novo Condomínio
@@ -106,12 +119,16 @@ const Condominium = () => {
                   <td className="px-4 py-2 text-gray-600">{condo.endereco}</td>
                   <td className="px-4 py-2 text-gray-600">{condo.numero}</td>
                   <td className="flex px-4 py-2 gap-2 justify-end">
-                    <button className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded transition">
+                    <button
+                      type="button"
+                      onClick={() => handleEditCondo(condo)}
+                      className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded transition"
+                    >
                       Editar
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleUpdateCondoStatus(Number(condo.id), condo.ativo)}
+                      onClick={() => handleUpdateCondoStatus(Number(condo.id), condo?.ativo)}
                       className={`px-3 py-1 text-white text-sm rounded transition ${condo.ativo ? " bg-orange-500 hover:bg-orange-600" : "bg-green-500 hover:bg-green-600"}`}
                     >
                       {condo.ativo ? "Desabilitar" : "Habilitar"}
@@ -136,7 +153,15 @@ const Condominium = () => {
         )}
       </div>
 
-      <NewCondoModal open={openModal} onOpenChange={setOpenModal} />
+      {openModal && isEdit && (
+        <CondoBuilderModal
+          open={openModal}
+          onOpenChange={setOpenModal}
+          isEdit={isEdit}
+          condoData={selectedCondo}
+        />
+      )}
+      {openModal && !isEdit && <CondoBuilderModal open={openModal} onOpenChange={setOpenModal} />}
     </div>
   );
 };

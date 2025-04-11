@@ -4,7 +4,8 @@ export enum Types {
   Misto = "Misto",
 }
 
-type PostCreateCondominiumRequestDTO = {
+type CondominiumRequestDTO = {
+  id?: number;
   nome: string;
   endereco: string;
   numero: number;
@@ -13,7 +14,7 @@ type PostCreateCondominiumRequestDTO = {
   pais: string;
   estado: string;
   cnpj?: string;
-  tipo: Types;
+  tipo: Types | string;
 };
 
 type GetCondominiumRequestDTO = {
@@ -26,8 +27,4 @@ type PatchCondominiumStatusRequestDTO = {
   ativo: boolean;
 };
 
-export type {
-  PostCreateCondominiumRequestDTO,
-  GetCondominiumRequestDTO,
-  PatchCondominiumStatusRequestDTO,
-};
+export type { CondominiumRequestDTO, GetCondominiumRequestDTO, PatchCondominiumStatusRequestDTO };
