@@ -22,6 +22,7 @@ const condominiumKeys = {
   updateCondo: () => [...condominiumKeys.all, "updateCondo"] as const,
   deleteCondo: () => [...condominiumKeys.all, "deleteCondo"] as const,
   updateCondoStatus: () => [...condominiumKeys.all, "updateCondoStatus"] as const,
+  getCondo: (id: number) => [...condominiumKeys.all, "getCondo", "lists", id] as const,
 };
 
 const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
@@ -71,6 +72,14 @@ const useDeleteCondoMutation = () => {
   });
 };
 
+const useGetCondoQuery = (id: number) => {
+  return useQuery<ResponseDTO<GetCondominiumResponseDTO>, APIError>({
+    queryKey: condominiumKeys.getCondo(id),
+    queryFn: () => CondominiumService.getCondo(id),
+    enabled: !!id,
+  });
+};
+
 const usePatchCondoStatusMutation = () => {
   const queryClient = useQueryClient();
 
@@ -91,4 +100,5 @@ export {
   useDeleteCondoMutation,
   usePatchCondoStatusMutation,
   useUpdateCondominiumMutation,
+  useGetCondoQuery,
 };

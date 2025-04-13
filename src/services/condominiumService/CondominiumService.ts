@@ -57,6 +57,14 @@ class CondominiumService {
     );
   }
 
+  public static async getCondo(id: number): Promise<ResponseDTO<GetCondominiumResponseDTO>> {
+    return apiErrorHandler(() =>
+      api
+        .get<ResponseDTO<GetCondominiumResponseDTO>>(`${CondominiumService.url}/${id}`)
+        .then((response) => response.data),
+    );
+  }
+
   public static async updateCondoStatus(
     data: PatchCondominiumStatusRequestDTO,
   ): Promise<ResponseDTO<string>> {

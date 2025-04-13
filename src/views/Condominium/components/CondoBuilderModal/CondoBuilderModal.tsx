@@ -104,7 +104,6 @@ const CondoBuilderModal = ({ open, onOpenChange, isEdit, condoData }: CondoBuild
         },
       );
     } else {
-      // Para criação, o tipo é enviado como string
       const formattedData: CondominiumRequestDTO = {
         ...baseData,
         tipo: data.type as Types,

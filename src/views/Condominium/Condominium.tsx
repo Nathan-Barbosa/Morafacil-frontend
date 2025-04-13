@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useDeleteCondoMutation,
+  useGetCondoQuery,
   useGetCondosListQuery,
   usePatchCondoStatusMutation,
 } from "../../services";
 import { CondoBuilderModal } from "./components";
 import { useToast } from "../../hooks/use-toast";
 import { GetCondominiumResponseDTO } from "../../models";
+import { useDebounce } from "use-debounce";
 
 const Condominium = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedCondo, setSelectedCondo] = useState<GetCondominiumResponseDTO | undefined>();
+  const [condoFilter, setCondoFilter] = useState<string>("");
+  const [debouncedCondoFilter] = useDebounce(condoFilter, 1000);
+  const [allCondos, setAllCondos] = useState<GetCondominiumResponseDTO[] | undefined>();
+
   const { toast } = useToast();
 
   const { data: condos } = useGetCondosListQuery({
@@ -21,6 +27,20 @@ const Condominium = () => {
 
   const { mutate: deleteCondo } = useDeleteCondoMutation();
   const { mutate: updateCondoStatus } = usePatchCondoStatusMutation();
+
+  const { data: condo } = useGetCondoQuery(Number(debouncedCondoFilter));
+
+  useEffect(() => {
+    if (debouncedCondoFilter && !isNaN(Number(debouncedCondoFilter))) {
+      if (condo && condo.data) {
+        setAllCondos([condo.data]);
+      } else {
+        setAllCondos([]);
+      }
+    } else if (condos?.data) {
+      setAllCondos(condos.data);
+    }
+  }, [debouncedCondoFilter, condo, condos]);
 
   const handleDeleteCondo = (id: number) => {
     deleteCondo(id, {
@@ -35,41 +55,22 @@ const Condominium = () => {
   };
 
   const handleUpdateCondoStatus = (id: number, ativo?: boolean) => {
-    if (ativo) {
-      updateCondoStatus(
-        {
-          id: id,
-          ativo: false,
-        },
-        {
-          onSuccess: () => {
-            toast({
-              title: "Sucesso",
-              description: "Condomínio desativado com sucesso!",
-              variant: "default",
-            });
-          },
-        },
-      );
-    }
+    const updateData = {
+      id: id,
+      ativo: !ativo,
+    };
 
-    if (!ativo) {
-      updateCondoStatus(
-        {
-          id: id,
-          ativo: true,
-        },
-        {
-          onSuccess: () => {
-            toast({
-              title: "Sucesso",
-              description: "Condomínio ativado com sucesso!",
-              variant: "default",
-            });
-          },
-        },
-      );
-    }
+    updateCondoStatus(updateData, {
+      onSuccess: () => {
+        toast({
+          title: "Sucesso",
+          description: ativo
+            ? "Condomínio desativado com sucesso!"
+            : "Condomínio ativado com sucesso!",
+          variant: "default",
+        });
+      },
+    });
   };
 
   const handleEditCondo = (condo: GetCondominiumResponseDTO) => {
@@ -85,20 +86,30 @@ const Condominium = () => {
           <h1 className="text-2xl font-bold text-gray-800">Condomínios</h1>
           <p className="text-gray-600">Lista de condomínios cadastrados</p>
         </div>
-        <button
-          onClick={() => {
-            setIsEdit(false);
-            setSelectedCondo(undefined);
-            setOpenModal(true);
-          }}
-          className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
-        >
-          Novo Condomínio
-        </button>
+        <div className="flex gap-4 items-center">
+          <input
+            type="text"
+            value={condoFilter}
+            onChange={(e) => setCondoFilter(e.target.value)}
+            placeholder="Buscar por condomínio por id"
+            className="px-3 py-2 border border-gray-300 rounded w-64"
+          />
+
+          <button
+            onClick={() => {
+              setIsEdit(false);
+              setSelectedCondo(undefined);
+              setOpenModal(true);
+            }}
+            className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+          >
+            Novo Condomínio
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
-        {condos?.data ? (
+        {allCondos && allCondos.length > 0 ? (
           <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
             <thead className="bg-gray-50">
               <tr>
@@ -112,31 +123,36 @@ const Condominium = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {condos.data.map((condo) => (
-                <tr key={condo.id} className="hover:bg-gray-100 transition">
-                  <td className="px-4 py-2 text-gray-600">{condo.id}</td>
-                  <td className="px-4 py-2 text-gray-600">{condo.nome}</td>
-                  <td className="px-4 py-2 text-gray-600">{condo.endereco}</td>
-                  <td className="px-4 py-2 text-gray-600">{condo.numero}</td>
+              {allCondos.map((condoItem) => (
+                <tr key={condoItem.id} className="hover:bg-gray-100 transition">
+                  <td className="px-4 py-2 text-gray-600">{condoItem.id}</td>
+                  <td className="px-4 py-2 text-gray-600">{condoItem.nome}</td>
+                  <td className="px-4 py-2 text-gray-600">{condoItem.endereco}</td>
+                  <td className="px-4 py-2 text-gray-600">{condoItem.numero}</td>
                   <td className="flex px-4 py-2 gap-2 justify-end">
                     <button
                       type="button"
-                      onClick={() => handleEditCondo(condo)}
+                      onClick={() => handleEditCondo(condoItem)}
                       className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded transition"
                     >
                       Editar
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleUpdateCondoStatus(Number(condo.id), condo?.ativo)}
-                      className={`px-3 py-1 text-white text-sm rounded transition ${condo.ativo ? " bg-orange-500 hover:bg-orange-600" : "bg-green-500 hover:bg-green-600"}`}
+                      onClick={() =>
+                        handleUpdateCondoStatus(Number(condoItem.id), condoItem?.ativo)
+                      }
+                      className={`px-3 py-1 text-white text-sm rounded transition ${
+                        condoItem.ativo
+                          ? "bg-orange-500 hover:bg-orange-600"
+                          : "bg-green-500 hover:bg-green-600"
+                      }`}
                     >
-                      {condo.ativo ? "Desabilitar" : "Habilitar"}
+                      {condoItem.ativo ? "Desabilitar" : "Habilitar"}
                     </button>
-
                     <button
                       type="button"
-                      onClick={() => handleDeleteCondo(Number(condo.id))}
+                      onClick={() => handleDeleteCondo(Number(condoItem.id))}
                       className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
                     >
                       Remover
@@ -153,7 +169,7 @@ const Condominium = () => {
         )}
       </div>
 
-      {openModal && isEdit && (
+      {openModal && (
         <CondoBuilderModal
           open={openModal}
           onOpenChange={setOpenModal}
@@ -161,7 +177,6 @@ const Condominium = () => {
           condoData={selectedCondo}
         />
       )}
-      {openModal && !isEdit && <CondoBuilderModal open={openModal} onOpenChange={setOpenModal} />}
     </div>
   );
 };
