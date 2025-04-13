@@ -62,6 +62,14 @@ class ResidenceService {
         .then((response) => response.data),
     );
   }
+
+  public static async getResidence(id: number): Promise<ResponseDTO<ResidenceResponseDTO>> {
+    return apiErrorHandler(() =>
+      api
+        .get<ResponseDTO<ResidenceResponseDTO>>(`${ResidenceService.url}/${id}`)
+        .then((response) => response.data),
+    );
+  }
 }
 
 export { ResidenceService };

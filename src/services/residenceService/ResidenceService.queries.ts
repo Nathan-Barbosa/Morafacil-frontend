@@ -16,6 +16,7 @@ const residencesKeys = {
   associateUser: () => [...residencesKeys.all, "associateUser"] as const,
   createResidence: () => [...residencesKeys.all, "createResidence"] as const,
   removeUser: () => [...residencesKeys.all, "removeUser"] as const,
+  getResidence: (id: number) => [...residencesKeys.all, "getResidence", id] as const,
 };
 
 const useGetResidencesListQuery = (params: GetResidencesRequestDTO) => {
@@ -64,9 +65,18 @@ const usePostCreateResidenceMutation = () => {
   });
 };
 
+const useGetResidenceQuery = (id: number) => {
+  return useQuery<ResponseDTO<ResidenceResponseDTO>, APIError>({
+    queryKey: residencesKeys.getResidence(id),
+    queryFn: () => ResidenceService.getResidence(id),
+    enabled: !!id,
+  });
+};
+
 export {
   useGetResidencesListQuery,
   usePatchAssociateUserMutation,
   usePostCreateResidenceMutation,
   usePatchRemoveUserMutation,
+  useGetResidenceQuery,
 };

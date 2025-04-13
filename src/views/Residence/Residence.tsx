@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,11 +14,21 @@ import {
 } from "../../components";
 import { residenceSchema } from "./Residence.schemas";
 import { ResidenceFormData } from "./Residence.types";
-import { useGetResidencesListQuery, usePostCreateResidenceMutation } from "../../services";
+import {
+  useGetResidenceQuery,
+  useGetResidencesListQuery,
+  usePostCreateResidenceMutation,
+} from "../../services";
 import { useToast } from "../../providers/ToastProvider";
+import { useDebounce } from "use-debounce";
+import { ResidenceResponseDTO } from "../../models";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 const Residence = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [residenceFilter, setResidenceFilter] = useState<string>("");
+  const [debouncedResidenceFilter] = useDebounce(residenceFilter, 1000);
+  const [allResidences, setAllResidences] = useState<ResidenceResponseDTO[] | undefined>();
 
   const methods = useForm<ResidenceFormData>({
     resolver: zodResolver(residenceSchema),
@@ -39,6 +49,19 @@ const Residence = () => {
   });
 
   const { mutate: createResidence } = usePostCreateResidenceMutation();
+  const { data: residence } = useGetResidenceQuery(Number(debouncedResidenceFilter));
+
+  useEffect(() => {
+    if (debouncedResidenceFilter && !isNaN(Number(debouncedResidenceFilter))) {
+      if (residence && residence.data) {
+        setAllResidences([residence.data]);
+      } else {
+        setAllResidences([]);
+      }
+    } else if (residences?.data) {
+      setAllResidences(residences.data);
+    }
+  }, [debouncedResidenceFilter, residence, residences]);
 
   const onSubmit = (data: ResidenceFormData) => {
     createResidence(data, {
@@ -61,16 +84,27 @@ const Residence = () => {
           <h1 className="text-2xl font-bold text-gray-800">Residências</h1>
           <p className="text-gray-600">Lista de residências cadastrados</p>
         </div>
-        <button
-          onClick={() => setOpenModal(true)}
-          className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
-        >
-          Nova Residência
-        </button>
+
+        <div className="flex gap-4 items-center">
+          <input
+            type="text"
+            value={residenceFilter}
+            onChange={(e) => setResidenceFilter(e.target.value)}
+            placeholder="Buscar por condomínio por id"
+            className="px-3 py-2 border border-gray-300 rounded w-64"
+          />
+
+          <button
+            onClick={() => setOpenModal(true)}
+            className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+          >
+            Nova Residência
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
-        {residences?.data ? (
+        {allResidences && allResidences.length > 0 ? (
           <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
             <thead className="bg-gray-50">
               <tr>
@@ -88,7 +122,7 @@ const Residence = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {residences.data.map((residence) => (
+              {allResidences.map((residence) => (
                 <tr key={residence.id} className="hover:bg-gray-100 transition">
                   <td className="px-4 py-2 text-gray-600">{residence.id}</td>
                   <td className="px-4 py-2 text-gray-600">{residence.endereco}</td>
@@ -106,8 +140,9 @@ const Residence = () => {
             </tbody>
           </table>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center h-full w-full">
-            <span className="mt-2 text-gray-600">Nenhum condomínio encontrado</span>
+          <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
+            <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
+            <span className="mt-2 text-gray-600">Nenhuma residência encontrada</span>
           </div>
         )}
       </div>

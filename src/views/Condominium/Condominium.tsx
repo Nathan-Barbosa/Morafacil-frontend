@@ -9,6 +9,7 @@ import { CondoBuilderModal } from "./components";
 import { useToast } from "../../hooks/use-toast";
 import { GetCondominiumResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 const Condominium = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -163,7 +164,8 @@ const Condominium = () => {
             </tbody>
           </table>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center h-full w-full">
+          <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
+            <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
             <span className="mt-2 text-gray-600">Nenhum condomínio encontrado</span>
           </div>
         )}
