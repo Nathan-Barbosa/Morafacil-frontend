@@ -17,6 +17,7 @@ const residencesKeys = {
   createResidence: () => [...residencesKeys.all, "createResidence"] as const,
   removeUser: () => [...residencesKeys.all, "removeUser"] as const,
   getResidence: (id: number) => [...residencesKeys.all, "getResidence", id] as const,
+  deleteResidence: () => [...residencesKeys.all, "deleteResidence"] as const,
 };
 
 const useGetResidencesListQuery = (params: GetResidencesRequestDTO) => {
@@ -73,10 +74,25 @@ const useGetResidenceQuery = (id: number) => {
   });
 };
 
+const useDeleteResidenceMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<string>, APIError, number>({
+    mutationKey: residencesKeys.deleteResidence(),
+    mutationFn: (id: number) => ResidenceService.deleteResidence(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: residencesKeys.lists(),
+      });
+    },
+  });
+};
+
 export {
   useGetResidencesListQuery,
   usePatchAssociateUserMutation,
   usePostCreateResidenceMutation,
   usePatchRemoveUserMutation,
   useGetResidenceQuery,
+  useDeleteResidenceMutation,
 };

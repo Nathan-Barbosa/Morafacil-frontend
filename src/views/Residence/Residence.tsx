@@ -15,6 +15,7 @@ import {
 import { residenceSchema } from "./Residence.schemas";
 import { ResidenceFormData } from "./Residence.types";
 import {
+  useDeleteResidenceMutation,
   useGetResidenceQuery,
   useGetResidencesListQuery,
   usePostCreateResidenceMutation,
@@ -49,6 +50,8 @@ const Residence = () => {
   });
 
   const { mutate: createResidence } = usePostCreateResidenceMutation();
+  const { mutate: deleteResidence } = useDeleteResidenceMutation();
+
   const { data: residence } = useGetResidenceQuery(Number(debouncedResidenceFilter));
 
   useEffect(() => {
@@ -62,6 +65,18 @@ const Residence = () => {
       setAllResidences(residences.data);
     }
   }, [debouncedResidenceFilter, residence, residences]);
+
+  const handleDeleteResidence = (id: number) => {
+    deleteResidence(id, {
+      onSuccess: () => {
+        toast({
+          title: "Sucesso",
+          description: "Condomínio removido com sucesso!",
+          variant: "success",
+        });
+      },
+    });
+  };
 
   const onSubmit = (data: ResidenceFormData) => {
     createResidence(data, {
@@ -90,7 +105,7 @@ const Residence = () => {
             type="text"
             value={residenceFilter}
             onChange={(e) => setResidenceFilter(e.target.value)}
-            placeholder="Buscar por condomínio por id"
+            placeholder="Buscar por residência por id"
             className="px-3 py-2 border border-gray-300 rounded w-64"
           />
 
@@ -130,9 +145,17 @@ const Residence = () => {
                   <td className="px-4 py-2 text-gray-600">{residence.bloco}</td>
                   <td className="px-4 py-2 text-gray-600">{residence.unidade}</td>
                   <td className="px-4 py-2 text-gray-600">{residence.situacao}</td>
-                  <td className="flex justify-end px-4 py-2">
+                  <td className="flex px-4 py-2 gap-2 justify-end">
                     <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
                       Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteResidence(residence.id)}
+                      className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
+                    >
+                      Remover
                     </button>
                   </td>
                 </tr>

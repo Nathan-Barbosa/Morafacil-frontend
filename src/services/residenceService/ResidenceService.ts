@@ -70,6 +70,14 @@ class ResidenceService {
         .then((response) => response.data),
     );
   }
+
+  public static async deleteResidence(id: number): Promise<ResponseDTO<string>> {
+    return apiErrorHandler(() =>
+      api
+        .delete<ResponseDTO<string>>(`${ResidenceService.url}/${id}`)
+        .then((response) => response.data),
+    );
+  }
 }
 
 export { ResidenceService };
