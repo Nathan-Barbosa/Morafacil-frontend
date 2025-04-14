@@ -7,6 +7,7 @@ import {
   PatchAssociateUserRequestDTO,
   PatchRemoveUserRequestDTO,
   PostCreateResidenceRequestDTO,
+  PutUpdateResidenceRequestDTO,
 } from "./ResidenceService.types";
 
 const residencesKeys = {
@@ -18,6 +19,7 @@ const residencesKeys = {
   removeUser: () => [...residencesKeys.all, "removeUser"] as const,
   getResidence: (id: number) => [...residencesKeys.all, "getResidence", id] as const,
   deleteResidence: () => [...residencesKeys.all, "deleteResidence"] as const,
+  updateResidence: () => [...residencesKeys.all, "updateResidence"] as const,
 };
 
 const useGetResidencesListQuery = (params: GetResidencesRequestDTO) => {
@@ -88,6 +90,20 @@ const useDeleteResidenceMutation = () => {
   });
 };
 
+const usePutResidenceMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<string>, APIError, PutUpdateResidenceRequestDTO>({
+    mutationKey: residencesKeys.updateResidence(),
+    mutationFn: (data: PutUpdateResidenceRequestDTO) => ResidenceService.putUpdateResidence(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: residencesKeys.lists(),
+      });
+    },
+  });
+};
+
 export {
   useGetResidencesListQuery,
   usePatchAssociateUserMutation,
@@ -95,4 +111,5 @@ export {
   usePatchRemoveUserMutation,
   useGetResidenceQuery,
   useDeleteResidenceMutation,
+  usePutResidenceMutation,
 };

@@ -6,6 +6,7 @@ import {
   PatchAssociateUserRequestDTO,
   PatchRemoveUserRequestDTO,
   PostCreateResidenceRequestDTO,
+  PutUpdateResidenceRequestDTO,
 } from "./ResidenceService.types.ts";
 
 class ResidenceService {
@@ -75,6 +76,16 @@ class ResidenceService {
     return apiErrorHandler(() =>
       api
         .delete<ResponseDTO<string>>(`${ResidenceService.url}/${id}`)
+        .then((response) => response.data),
+    );
+  }
+
+  public static async putUpdateResidence(
+    data: PutUpdateResidenceRequestDTO,
+  ): Promise<ResponseDTO<string>> {
+    return apiErrorHandler(() =>
+      api
+        .put<ResponseDTO<string>>(`${ResidenceService.url}/${data.id}`, data)
         .then((response) => response.data),
     );
   }
