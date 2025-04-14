@@ -10,17 +10,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../../components";
-import { ResidenceBuilderModalProps } from "./ResidenceBuilderModal.types";
+import {
+  mapResidenceResponseToFormData,
+  ResidenceBuilderModalProps,
+} from "./ResidenceBuilderModal.types";
 import { useToast } from "../../../../providers/ToastProvider";
 import { ResidenceFormData } from "../../Residence.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { residenceSchema } from "../../Residence.schemas";
-import { usePostCreateResidenceMutation } from "../../../../services";
+import { usePostCreateResidenceMutation, usePutResidenceMutation } from "../../../../services";
+import { useEffect, useMemo } from "react";
 
-const ResidenceBuilderModal = ({ open, setOpenModal }: ResidenceBuilderModalProps) => {
+const ResidenceBuilderModal = ({ open, setOpenModal, initialData }: ResidenceBuilderModalProps) => {
+  const editData = useMemo(() => {
+    return initialData ? mapResidenceResponseToFormData(initialData) : null;
+  }, [initialData]);
+
   const methods = useForm<ResidenceFormData>({
     resolver: zodResolver(residenceSchema),
     mode: "onChange",
+    defaultValues: editData || {
+      endereco: "",
+      numero: 0,
+      situacao: "",
+      bloco: "",
+      unidade: "",
+      condominioId: 0,
+    },
   });
 
   const {
@@ -33,26 +49,57 @@ const ResidenceBuilderModal = ({ open, setOpenModal }: ResidenceBuilderModalProp
   const { toast } = useToast();
 
   const { mutate: createResidence } = usePostCreateResidenceMutation();
+  const { mutate: updateResidence } = usePutResidenceMutation();
+
+  useEffect(() => {
+    if (editData) {
+      reset(editData);
+    } else {
+      reset({
+        endereco: "",
+        numero: 0,
+        situacao: "",
+        bloco: "",
+        unidade: "",
+        condominioId: 0,
+      });
+    }
+  }, [editData, reset]);
 
   const onSubmit = (data: ResidenceFormData) => {
-    createResidence(data, {
-      onSuccess: () => {
-        toast({
-          title: "Sucesso",
-          description: "Residência criada com sucesso!",
-          variant: "success",
-        });
-        reset();
-        setOpenModal(false);
-      },
-    });
+    if (editData) {
+      updateResidence(data, {
+        onSuccess: () => {
+          toast({
+            title: "Sucesso",
+            description: "Residência atualizada com sucesso!",
+            variant: "success",
+          });
+          reset();
+          setOpenModal(false);
+        },
+      });
+    } else {
+      createResidence(data, {
+        onSuccess: () => {
+          toast({
+            title: "Sucesso",
+            description: "Residência criada com sucesso!",
+            variant: "success",
+          });
+          reset();
+          setOpenModal(false);
+        },
+      });
+    }
   };
-
   return (
     <Dialog open={open} onOpenChange={setOpenModal}>
       <DialogContent className="bg-white p-6 rounded shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Cadastro de Residência</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            {initialData ? "Editar Residência" : "Cadastrar de Residência"}
+          </DialogTitle>
         </DialogHeader>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -180,7 +227,7 @@ const ResidenceBuilderModal = ({ open, setOpenModal }: ResidenceBuilderModalProp
                 Cancelar
               </button>
               <button type="submit" disabled={!isValid} className="button-confirm">
-                Cadastrar
+                {initialData ? "Atualizar" : "Cadastrar"}
               </button>
             </div>
           </form>

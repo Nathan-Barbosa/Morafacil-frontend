@@ -85,7 +85,7 @@ class ResidenceService {
   ): Promise<ResponseDTO<string>> {
     return apiErrorHandler(() =>
       api
-        .put<ResponseDTO<string>>(`${ResidenceService.url}/${data.id}`, data)
+        .put<ResponseDTO<string>>(`${ResidenceService.url}/residencias/${data.id}`, data)
         .then((response) => response.data),
     );
   }

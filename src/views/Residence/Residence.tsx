@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { ResidenceFormData } from "./Residence.types";
 import {
   useDeleteResidenceMutation,
   useGetResidenceQuery,
   useGetResidencesListQuery,
-  usePutResidenceMutation,
 } from "../../services";
 import { useToast } from "../../providers/ToastProvider";
 import { useDebounce } from "use-debounce";
@@ -18,6 +16,7 @@ const Residence = () => {
   const [residenceFilter, setResidenceFilter] = useState<string>("");
   const [debouncedResidenceFilter] = useDebounce(residenceFilter, 1000);
   const [allResidences, setAllResidences] = useState<ResidenceResponseDTO[] | undefined>();
+  const [editingResidence, setEditingResidence] = useState<ResidenceResponseDTO | null>(null);
 
   const { toast } = useToast();
 
@@ -27,7 +26,6 @@ const Residence = () => {
   });
 
   const { mutate: deleteResidence } = useDeleteResidenceMutation();
-  const { mutate: updateResidence } = usePutResidenceMutation();
 
   const { data: residence } = useGetResidenceQuery(Number(debouncedResidenceFilter));
 
@@ -53,6 +51,11 @@ const Residence = () => {
         });
       },
     });
+  };
+
+  const handleEditResidence = (residence: ResidenceResponseDTO) => {
+    setEditingResidence(residence);
+    setOpenModal(true);
   };
 
   return (
@@ -109,7 +112,11 @@ const Residence = () => {
                   <td className="px-4 py-2 text-gray-600">{residence.unidade}</td>
                   <td className="px-4 py-2 text-gray-600">{residence.situacao}</td>
                   <td className="flex px-4 py-2 gap-2 justify-end">
-                    <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
+                    <button
+                      type="button"
+                      onClick={() => handleEditResidence(residence)}
+                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                    >
                       Editar
                     </button>
 
@@ -133,7 +140,11 @@ const Residence = () => {
         )}
       </div>
 
-      <ResidenceBuilderModal open={openModal} setOpenModal={setOpenModal} />
+      <ResidenceBuilderModal
+        open={openModal}
+        setOpenModal={setOpenModal}
+        initialData={editingResidence}
+      />
     </div>
   );
 };
