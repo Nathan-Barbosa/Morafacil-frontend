@@ -16,6 +16,14 @@ class NoticeBoardService {
     );
   }
 
+  public static async getNotice(id: number): Promise<ResponseDTO<NoticeResponseDTO>> {
+    return apiErrorHandler(() =>
+      api
+        .get<PaginatedResponse<NoticeResponseDTO>>(`${NoticeBoardService.url}/${id}`)
+        .then((response) => response.data),
+    );
+  }
+
   public static async createNotices(
     data: CreateNoticesRequestDTO,
   ): Promise<ResponseDTO<NoticeResponseDTO>> {
