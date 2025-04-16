@@ -47,7 +47,12 @@ const NoticeCardOptions = ({ children, notice }: NoticeCardOptionsProps) => {
   };
 
   const onSubmitUpdateNotice = (data: UpdateNoticeRequestDTO) => {
-    editNotice(data, {
+    const payload = {
+      ...data,
+      condominioId: notice.condominio.id,
+    };
+
+    editNotice(payload, {
       onSuccess: () => {
         toast({
           title: "Sucesso",

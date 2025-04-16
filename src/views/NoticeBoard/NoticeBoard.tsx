@@ -127,7 +127,13 @@ const NoticeBoard = () => {
               placeholder="Conteúdo do aviso"
               {...register("mensagem", { required: true })}
               className="w-full px-3 py-2 border border-gray-300 rounded max-h-[30vh] outline-none"
-            ></textarea>
+            />
+            <input
+              type="number"
+              placeholder="Condominio"
+              {...register("condominioId", { required: true })}
+              className="w-full px-3 py-2 border border-gray-300 rounded"
+            />
             <div className="flex justify-end gap-2 text-xs font-semibold">
               <button
                 type="button"
