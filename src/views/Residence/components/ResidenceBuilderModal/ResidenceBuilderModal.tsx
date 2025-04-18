@@ -18,7 +18,7 @@ import { useToast } from "../../../../providers/ToastProvider";
 import { ResidenceFormData } from "../../Residence.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { residenceSchema } from "../../Residence.schemas";
-import { usePostCreateResidenceMutation, usePutResidenceMutation } from "../../../../services";
+import { PutUpdateResidenceRequestDTO, usePostCreateResidenceMutation, usePutResidenceMutation } from "../../../../services";
 import { useEffect, useMemo } from "react";
 
 const ResidenceBuilderModal = ({ open, setOpenModal, initialData }: ResidenceBuilderModalProps) => {
@@ -68,7 +68,7 @@ const ResidenceBuilderModal = ({ open, setOpenModal, initialData }: ResidenceBui
 
   const onSubmit = (data: ResidenceFormData) => {
     if (editData) {
-      updateResidence(data, {
+      updateResidence(data as PutUpdateResidenceRequestDTO, {
         onSuccess: () => {
           toast({
             title: "Sucesso",

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const residenceSchema = z.object({
-  id: z.number(),
+  id: z.number().optional(),
   endereco: z.string().min(1, "Endereço obrigatório"),
   numero: z.preprocess((val) => Number(val), z.number({ invalid_type_error: "Número inválido" })),
   situacao: z.string().min(1, "Situação obrigatória"),
