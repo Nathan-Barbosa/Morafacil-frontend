@@ -12,6 +12,7 @@ const ROUTES = {
   REGISTER: "/register",
   FORGOT_PASSWORD: "/forgotPassword",
   EMAIL_CONFIRMED: "/emailConfirmed",
+  FINES: "/fines",
 };
 
 export { ROUTES };

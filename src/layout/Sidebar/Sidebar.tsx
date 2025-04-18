@@ -10,6 +10,7 @@ import {
   Package,
   MicrosoftOutlookLogo,
   CaretLeft,
+  FileText,
 } from "@phosphor-icons/react";
 import imglogo from "../../assets/logo-morar-facil-2.png";
 import { ROUTES } from "../../constants/paths";
@@ -49,7 +50,13 @@ const navItems = [
     to: ROUTES.PARCELS,
     label: "Encomendas",
     icon: <Package size={20} />,
-    roles: ["Porteiro", "Morador"],
+    roles: ["Admin","Porteiro", "Morador"],
+  },
+  {
+    to: ROUTES.FINES,
+    label: "Multas",
+    icon: <FileText size={20} />,
+    roles: ["Admin"],
   },
 ];
 
