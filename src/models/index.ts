@@ -7,3 +7,4 @@ export * from "./condominium";
 export * from "./noticeBoard";
 export * from "./parcels";
 export * from "./votingBoard";
+export * from "./fines";

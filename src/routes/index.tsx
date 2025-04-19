@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import {
   Condominium,
   ConfirmedEmail,
+  Fines,
   ForgotPassword,
   Home,
   Login,
@@ -74,6 +75,10 @@ const routes = createBrowserRouter([
           {
             path: ROUTES.VOTING_BOARD,
             element: <VotingBoard />,
+          },
+          {
+            path: ROUTES.FINES,
+            element: <Fines />,
           },
         ],
       },
