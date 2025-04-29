@@ -143,8 +143,6 @@ const NoticeBoard = () => {
                 </option>
               ))}
             </select>
-
-            />
             <input
               type="number"
               placeholder="Condominio"
