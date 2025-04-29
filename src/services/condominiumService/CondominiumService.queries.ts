@@ -9,7 +9,8 @@ import {
 } from "../../models";
 import {
   GetCondominiumRequestDTO,
-  PostCreateCondominiumRequestDTO,
+  PatchCondominiumStatusRequestDTO,
+  CondominiumRequestDTO,
 } from "./CondominiumService.types";
 import { CondominiumService } from "./CondominiumService";
 
@@ -18,6 +19,10 @@ const condominiumKeys = {
   lists: () => [...condominiumKeys.all, "list"] as const,
   list: (params: GetCondominiumRequestDTO) => [...condominiumKeys.lists(), params] as const,
   createCondo: () => [...condominiumKeys.all, "createCondo"] as const,
+  updateCondo: () => [...condominiumKeys.all, "updateCondo"] as const,
+  deleteCondo: () => [...condominiumKeys.all, "deleteCondo"] as const,
+  updateCondoStatus: () => [...condominiumKeys.all, "updateCondoStatus"] as const,
+  getCondo: (id: number) => [...condominiumKeys.all, "getCondo", "lists", id] as const,
 };
 
 const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
@@ -30,14 +35,9 @@ const useGetCondosListQuery = (params: GetCondominiumRequestDTO) => {
 const usePostCreateCondominiumMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    ResponseDTO<PostCondominiumResponseDTO>,
-    APIError,
-    PostCreateCondominiumRequestDTO
-  >({
+  return useMutation<ResponseDTO<PostCondominiumResponseDTO>, APIError, CondominiumRequestDTO>({
     mutationKey: condominiumKeys.createCondo(),
-    mutationFn: (data: PostCreateCondominiumRequestDTO) =>
-      CondominiumService.postCreateCondominium(data),
+    mutationFn: (data: CondominiumRequestDTO) => CondominiumService.postCreateCondominium(data),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: condominiumKeys.lists(),
@@ -45,4 +45,60 @@ const usePostCreateCondominiumMutation = () => {
   });
 };
 
-export { usePostCreateCondominiumMutation, useGetCondosListQuery };
+const useUpdateCondominiumMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<GetCondominiumResponseDTO>, APIError, CondominiumRequestDTO>({
+    mutationKey: condominiumKeys.updateCondo(),
+    mutationFn: (data: CondominiumRequestDTO) => CondominiumService.putUpdateCondominium(data),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: condominiumKeys.lists(),
+      }),
+  });
+};
+
+const useDeleteCondoMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<string>, APIError, number>({
+    mutationKey: condominiumKeys.deleteCondo(),
+    mutationFn: (id: number) => CondominiumService.deleteCondo(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: condominiumKeys.lists(),
+      });
+    },
+  });
+};
+
+const useGetCondoQuery = (id: number) => {
+  return useQuery<ResponseDTO<GetCondominiumResponseDTO>, APIError>({
+    queryKey: condominiumKeys.getCondo(id),
+    queryFn: () => CondominiumService.getCondo(id),
+    enabled: !!id,
+  });
+};
+
+const usePatchCondoStatusMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<string>, APIError, PatchCondominiumStatusRequestDTO>({
+    mutationKey: condominiumKeys.updateCondoStatus(),
+    mutationFn: (data: PatchCondominiumStatusRequestDTO) =>
+      CondominiumService.updateCondoStatus(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: condominiumKeys.lists(),
+      });
+    },
+  });
+};
+export {
+  usePostCreateCondominiumMutation,
+  useGetCondosListQuery,
+  useDeleteCondoMutation,
+  usePatchCondoStatusMutation,
+  useUpdateCondominiumMutation,
+  useGetCondoQuery,
+};

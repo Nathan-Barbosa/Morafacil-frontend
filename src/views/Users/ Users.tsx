@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components";
-import { useGetUsersListQuery } from "../../services/UsersService";
+import { useGetUsersListQuery, usePostBlockUserMutation } from "../../services/UsersService";
 import { UserResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
 import { MagnifyingGlass, XCircle } from "@phosphor-icons/react";
@@ -25,34 +25,35 @@ import {
 import { useToast } from "../../hooks/use-toast";
 
 export function Users() {
-const [filterField, setFilterField] = useState("name");
-const [filterValue, setFilterValue] = useState("");
-const [debouncedFilterValue] = useDebounce(filterValue, 300);
-const [allUsers, setAllUsers] = useState<UserResponseDTO[]>([]);
-const [openResidenceModal, setOpenResidenceModal] = useState(false);
-const [openRoleModal, setOpenRoleModal] = useState(false);
-const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
+  const [filterField, setFilterField] = useState("name");
+  const [filterValue, setFilterValue] = useState("");
+  const [debouncedFilterValue] = useDebounce(filterValue, 300);
+  const [allUsers, setAllUsers] = useState<UserResponseDTO[]>([]);
+  const [openResidenceModal, setOpenResidenceModal] = useState(false);
+  const [openRoleModal, setOpenRoleModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
 
-const { toast } = useToast();
+  const { toast } = useToast();
 
-const { data: usersResponse, refetch: refetchUsers } = useGetUsersListQuery();
+  const { data: usersResponse, refetch: refetchUsers } = useGetUsersListQuery();
 
-const { data: roles } = useGetRolesListQuery();
+  const { data: roles } = useGetRolesListQuery();
 
-const { data: residences } = useGetResidencesListQuery({
-  pageNumber: 1,
-  pageSize: 10,
-});
+  const { data: residences } = useGetResidencesListQuery({
+    pageNumber: 1,
+    pageSize: 10,
+  });
 
-useEffect(() => {
-  if (usersResponse?.data) {
-    setAllUsers(usersResponse.data);
-  }
-}, [usersResponse]);
+  useEffect(() => {
+    if (usersResponse?.data) {
+      setAllUsers(usersResponse.data);
+    }
+  }, [usersResponse]);
 
   const { mutate: associateUser } = usePatchAssociateUserMutation();
   const { mutate: assignRole } = usePostAssignRoleMutation();
   const { mutate: removeUser } = usePatchRemoveUserMutation();
+  const { mutate: blockUser } = usePostBlockUserMutation();
 
   const filteredUsers = allUsers.filter((user) => {
     const value = debouncedFilterValue.toLowerCase();
@@ -70,14 +71,13 @@ useEffect(() => {
     }
   });
 
-
   const {
     register: registerResidence,
     handleSubmit: handleSubmitResidence,
     setValue: setValueResidence,
   } = useForm();
+
   const {
-    register: searchRoleRegister,
     register: registerRole,
     handleSubmit: handleSubmitRole,
     setValue: setValueRole,
@@ -171,6 +171,28 @@ useEffect(() => {
     }
   };
 
+  const handleBlockuser = (id: number) => {
+    console.log("Botão clicado - ID do usuário:", id);
+
+    blockUser(
+      {
+        userBlock: id.toString(),
+        isPermanent: false,
+        lockoutDurationMinutes: 5,
+      },
+      {
+        onSuccess: () => {
+          console.log("Usuário bloqueado com sucesso!");
+          toast({
+            title: "Bloqueado",
+            description: `Usuário bloqueado com sucesso!`,
+            variant: "default",
+          });
+        },
+      },
+    );
+  };
+
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
       <div className="flex justify-between items-center">
@@ -178,27 +200,27 @@ useEffect(() => {
           <h1 className="text-2xl font-bold text-gray-800">Usuários</h1>
           <p className="text-gray-600">Lista de usuários cadastrados</p>
         </div>
-          <div className="flex gap-4 items-center">
-            <Select value={filterField} onValueChange={setFilterField}>
-              <SelectTrigger className="w-40 border border-gray-300 rounded px-3 py-2">
-                <SelectValue placeholder="Campo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="id">ID</SelectItem>
-                <SelectItem value="name">Nome</SelectItem>
-                <SelectItem value="email">Email</SelectItem>
-                <SelectItem value="cpf">CPF</SelectItem>
-              </SelectContent>
-            </Select>
+        <div className="flex gap-4 items-center">
+          <Select value={filterField} onValueChange={setFilterField}>
+            <SelectTrigger className="w-40 border border-gray-300 rounded px-3 py-2">
+              <SelectValue placeholder="Campo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="id">ID</SelectItem>
+              <SelectItem value="name">Nome</SelectItem>
+              <SelectItem value="email">Email</SelectItem>
+              <SelectItem value="cpf">CPF</SelectItem>
+            </SelectContent>
+          </Select>
 
-            <input
-              type="text"
-              value={filterValue}
-              onChange={(e) => setFilterValue(e.target.value)}
-              placeholder={`Buscar por ${filterField}`}
-              className="px-3 py-2 border border-gray-300 rounded w-64"
-            />
-          </div>
+          <input
+            type="text"
+            value={filterValue}
+            onChange={(e) => setFilterValue(e.target.value)}
+            placeholder={`Buscar por ${filterField}`}
+            className="px-3 py-2 border border-gray-300 rounded w-64"
+          />
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -251,14 +273,14 @@ useEffect(() => {
                         >
                           Editar
                         </button>
+
                         <button
                           onClick={() => {
-                            // lógica de deleção
-                            console.log("Excluir usuário", user);
+                            handleBlockuser(user.id);
                           }}
-                          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
+                          className="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white text-sm rounded transition"
                         >
-                          Excluir
+                          Bloquear
                         </button>
                       </div>
                     </td>

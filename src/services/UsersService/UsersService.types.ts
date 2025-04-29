@@ -2,4 +2,10 @@ type GetUsersRequestDTO = {
   role?: string;
 };
 
-export type { GetUsersRequestDTO };
+type BlockUserRequestDTO = {
+  userBlock: string;
+  isPermanent: boolean;
+  lockoutDurationMinutes: number;
+};
+
+export type { GetUsersRequestDTO, BlockUserRequestDTO };

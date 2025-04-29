@@ -52,7 +52,6 @@ const Login = () => {
         <FormProvider {...methods}>
           <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
           <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
-            {/* Campo Email */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
@@ -72,7 +71,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Campo Senha */}
             <div className="mb-4">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
@@ -92,7 +90,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Botões Entrar / Cadastrar */}
             <div className="flex gap-2">
               <button
                 type="button"
@@ -107,7 +104,6 @@ const Login = () => {
               </button>
             </div>
 
-            {/* Checkbox + Link de senha */}
             <div className="w-full flex justify-between p-1 ">
               <div className="flex gap-2">
                 <Controller

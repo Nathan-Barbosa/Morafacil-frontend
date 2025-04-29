@@ -1,22 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
 import {
   CreateNoticesRequestDTO,
-  useGetNoticesQuery,
+  useGetNoticeQuery,
+  useGetNoticesListQuery,
   usePostCreateNoticeMutation,
 } from "../../services";
 import { useToast } from "../../hooks/use-toast";
 import { MagnifyingGlass, DotsThreeVertical } from "@phosphor-icons/react";
 import { NoticeCardOptions } from "./components";
 import { useGetCondosListQuery } from "../../services";
+import { useDebounce } from "use-debounce";
+import { NoticeResponseDTO } from "../../models";
 
 const NoticeBoard = () => {
   const [openNoticeModal, setOpenNoticeModal] = useState(false);
+  const [noticeFilter, setNoticeFilter] = useState<string>("");
+  const [debouncedNoticeFilter] = useDebounce(noticeFilter, 1000);
+  const [allNotices, setAllNotices] = useState<NoticeResponseDTO[] | undefined>();
 
   const { toast } = useToast();
-  const { data: notices } = useGetNoticesQuery();
+  const { data: notices } = useGetNoticesListQuery();
   const { mutate: postNotice } = usePostCreateNoticeMutation();
+  const { data: notice } = useGetNoticeQuery(Number(debouncedNoticeFilter));
+
+  useEffect(() => {
+    if (debouncedNoticeFilter && !isNaN(Number(debouncedNoticeFilter))) {
+      if (notice && notice.data) {
+        setAllNotices([notice.data]);
+      } else {
+        setAllNotices([]);
+      }
+    } else if (notices?.data) {
+      setAllNotices(notices.data);
+    }
+  }, [debouncedNoticeFilter, notice, notices]);
 
   const { register, handleSubmit, reset } = useForm<CreateNoticesRequestDTO>();
 
@@ -44,18 +63,27 @@ const NoticeBoard = () => {
           <h1 className="text-2xl font-bold text-gray-800">Quadro de Avisos</h1>
           <p className="text-gray-600 font-semibold">Lista de avisos recentes</p>
         </div>
-        <button
-          className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
-          onClick={() => setOpenNoticeModal(true)}
-        >
-          Novo Aviso
-        </button>
+        <div className="flex gap-4 items-center">
+          <input
+            type="text"
+            value={noticeFilter}
+            onChange={(e) => setNoticeFilter(e.target.value)}
+            placeholder="Buscar por residência por id"
+            className="px-3 py-2 border border-gray-300 rounded w-64"
+          />
+          <button
+            className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+            onClick={() => setOpenNoticeModal(true)}
+          >
+            Novo Aviso
+          </button>
+        </div>
       </div>
 
       <div className="flex h-full flex-col gap-y-4 overflow-auto">
-        {notices?.data && notices.data.length > 0 ? (
+        {allNotices && allNotices.length > 0 ? (
           <section className="flex flex-row flex-wrap gap-2 w-full">
-            {notices.data.map((notice) => (
+            {allNotices.map((notice) => (
               <li
                 key={notice.id}
                 className="hover:bg-blue-100 relative flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3 bg-blue-50"
@@ -116,6 +144,13 @@ const NoticeBoard = () => {
               ))}
             </select>
 
+            />
+            <input
+              type="number"
+              placeholder="Condominio"
+              {...register("condominioId", { required: true })}
+              className="w-full px-3 py-2 border border-gray-300 rounded"
+            />
             <div className="flex justify-end gap-2 text-xs font-semibold">
               <button
                 type="button"

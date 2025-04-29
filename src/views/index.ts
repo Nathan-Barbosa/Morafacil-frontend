@@ -8,3 +8,4 @@ export * from "./Condominium";
 export * from "./Residence";
 export * from "./NoticeBoard";
 export * from "./Parcels";
+export * from "./Fines";

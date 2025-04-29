@@ -7,16 +7,24 @@ import { CreateNoticesRequestDTO, UpdateNoticeRequestDTO } from "./noticeBoard.t
 const noticeBoardsKeys = {
   all: ["notices"] as const,
   lists: () => [...noticeBoardsKeys.all, "list"] as const,
-  // list: (role: string) => [...noticeBoardsKeys.lists(), role] as const,
+  list: (id: number) => [...noticeBoardsKeys.lists(), id] as const,
   createNotice: () => [...noticeBoardsKeys.all, "createNotice"] as const,
   updateNotice: () => [...noticeBoardsKeys.all, "updateNotice"] as const,
   deleteNotice: () => [...noticeBoardsKeys.all, "deleteNotice"] as const,
 };
 
-const useGetNoticesQuery = () => {
+const useGetNoticesListQuery = () => {
   return useQuery<PaginatedResponse<NoticeResponseDTO[]>, APIError>({
     queryKey: noticeBoardsKeys.lists(),
     queryFn: () => NoticeBoardService.getNotices(),
+  });
+};
+
+const useGetNoticeQuery = (id: number) => {
+  return useQuery<ResponseDTO<NoticeResponseDTO>, APIError>({
+    queryKey: noticeBoardsKeys.list(id),
+    queryFn: () => NoticeBoardService.getNotice(id),
+    enabled: !!id,
   });
 };
 
@@ -60,8 +68,9 @@ const useDeleteNoticeMutation = () => {
 };
 
 export {
-  useGetNoticesQuery,
+  useGetNoticesListQuery,
   usePostCreateNoticeMutation,
   useDeleteNoticeMutation,
   usePutUpdateNoticeMutation,
+  useGetNoticeQuery,
 };

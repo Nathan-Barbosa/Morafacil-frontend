@@ -7,6 +7,7 @@ import {
   PatchAssociateUserRequestDTO,
   PatchRemoveUserRequestDTO,
   PostCreateResidenceRequestDTO,
+  PutUpdateResidenceRequestDTO,
 } from "./ResidenceService.types";
 
 const residencesKeys = {
@@ -16,6 +17,9 @@ const residencesKeys = {
   associateUser: () => [...residencesKeys.all, "associateUser"] as const,
   createResidence: () => [...residencesKeys.all, "createResidence"] as const,
   removeUser: () => [...residencesKeys.all, "removeUser"] as const,
+  getResidence: (id: number) => [...residencesKeys.all, "getResidence", id] as const,
+  deleteResidence: () => [...residencesKeys.all, "deleteResidence"] as const,
+  updateResidence: () => [...residencesKeys.all, "updateResidence"] as const,
 };
 
 const useGetResidencesListQuery = (params: GetResidencesRequestDTO) => {
@@ -64,9 +68,48 @@ const usePostCreateResidenceMutation = () => {
   });
 };
 
+const useGetResidenceQuery = (id: number) => {
+  return useQuery<ResponseDTO<ResidenceResponseDTO>, APIError>({
+    queryKey: residencesKeys.getResidence(id),
+    queryFn: () => ResidenceService.getResidence(id),
+    enabled: !!id,
+  });
+};
+
+const useDeleteResidenceMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<string>, APIError, number>({
+    mutationKey: residencesKeys.deleteResidence(),
+    mutationFn: (id: number) => ResidenceService.deleteResidence(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: residencesKeys.lists(),
+      });
+    },
+  });
+};
+
+const usePutResidenceMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<ResponseDTO<string>, APIError, PutUpdateResidenceRequestDTO>({
+    mutationKey: residencesKeys.updateResidence(),
+    mutationFn: (data: PutUpdateResidenceRequestDTO) => ResidenceService.putUpdateResidence(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: residencesKeys.lists(),
+      });
+    },
+  });
+};
+
 export {
   useGetResidencesListQuery,
   usePatchAssociateUserMutation,
   usePostCreateResidenceMutation,
   usePatchRemoveUserMutation,
+  useGetResidenceQuery,
+  useDeleteResidenceMutation,
+  usePutResidenceMutation,
 };

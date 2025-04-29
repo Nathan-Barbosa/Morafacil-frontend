@@ -7,7 +7,7 @@ type PostCondominiumResponseDTO = {
 };
 
 type GetCondominiumResponseDTO = {
-  id: string;
+  id?: string;
   nome: string;
   endereco: string;
   numero: number;
@@ -17,7 +17,7 @@ type GetCondominiumResponseDTO = {
   estado: string;
   cnpj?: string;
   tipo: number;
-  ativo: boolean;
+  ativo?: boolean;
 };
 
 export type { PostCondominiumResponseDTO, GetCondominiumResponseDTO };
