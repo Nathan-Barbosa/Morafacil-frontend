@@ -1,4 +1,4 @@
-import { Bell, User, SignOut } from "@phosphor-icons/react";
+import { SignOut } from "@phosphor-icons/react";
 import { usePostLogoutMutation } from "../../services";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers";
