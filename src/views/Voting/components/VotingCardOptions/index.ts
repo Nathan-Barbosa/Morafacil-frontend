@@ -1,2 +1,2 @@
 export * from "./VotingCardOptions";
-export * from "./NoticeCardOptions.types";
+export * from "./VotingCardOptions.types";

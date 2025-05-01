@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MenuItem, VotingCardOptionsProps } from "./VotingCardOptions.types";
+import { MenuItem, FinesCardOptionsProps } from "./FinesCardOptions.types";
 import { useToast } from "../../../../hooks/use-toast";
 import {
   UpdateNoticeRequestDTO,
@@ -20,7 +20,7 @@ import {
 import { ConfirmDialog } from "../ConfirmDialog";
 import { useForm } from "react-hook-form";
 
-const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
+const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
 
@@ -43,7 +43,7 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
   };
 
   const handleConfirmCloseVoting = async () => {
-    closeVoting(Number(voting?.id), { onSuccess });
+    closeVoting(Number(fine?.id), { onSuccess });
   };
 
   const onSubmitUpdateNotice = (data: UpdateNoticeRequestDTO) => {
@@ -62,18 +62,18 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
 
   const menuItems: MenuItem[] = [
     { label: "Editar", callback: onEdit },
-    voting.encerrada ? null : { label: "Encerrar", callback: onCloseVoting },
+    fine.encerrada ? null : { label: "Encerrar", callback: onCloseVoting },
   ].filter(Boolean) as MenuItem[];
 
   useEffect(() => {
     if (openEditModal) {
       reset({
-        id: voting.id,
-        titulo: voting.titulo,
-        // mensagem: voting.mensagem,
+        id: fine.id,
+        titulo: fine.titulo,
+        // mensagem: fine.mensagem,
       });
     }
-  }, [openEditModal, voting, reset]);
+  }, [openEditModal, fine, reset]);
 
   return (
     <>
@@ -93,7 +93,7 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
       </DropdownMenu>
 
       <ConfirmDialog
-        voting={voting}
+        fine={fine}
         open={openDialog}
         setOpen={setOpenDialog}
         onConfirm={handleConfirmCloseVoting}
@@ -136,4 +136,4 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
   );
 };
 
-export { VotingCardOptions };
+export { FinesCardOptions };
