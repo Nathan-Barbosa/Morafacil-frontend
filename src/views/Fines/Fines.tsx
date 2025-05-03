@@ -1,42 +1,41 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
-import { useGetFinesQuery, usePostCreateFineMutation, FineRequestDTO } from "../../services";
 import { useToast } from "../../hooks/use-toast";
 import { MagnifyingGlass, DotsThreeVertical } from "@phosphor-icons/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FinesCardOptions } from "./components";
 import { finesFormSchema } from "./fines.schemas";
+import { FineRequestDTO, useGetFinesQuery, usePostCreateFineMutation } from "../../services";
+import { FinesFormData, FineStatus } from "./Fines.types";
 
-type FineFormInput = Omit<FineRequestDTO, "mensagem"> & {
-  mensagemText: string;
-};
-const FinesBoard = () => {
+const Fines = () => {
   const [openFineModal, setOpenFineModal] = useState(false);
   const { toast } = useToast();
 
   const { data: fines } = useGetFinesQuery({ pageNumber: 1, pageSize: 10 });
   const { mutate: postFine } = usePostCreateFineMutation();
 
-  const { control, handleSubmit, reset } = useForm<FineFormInput>({
+  const { control, handleSubmit, reset } = useForm<FinesFormData>({
     resolver: zodResolver(finesFormSchema),
+    defaultValues: {
+      status: "Pendente",
+    },
   });
-
-  const onSubmitFine = (data: FineFormInput) => {
+  const onSubmitFine = (data: FinesFormData) => {
     const finePayload: FineRequestDTO = {
-      titulo: data.titulo,
-      descricao: data.descricao,
-      dataInicio: data.dataInicio,
-      dataFim: data.dataFim,
-      criadoPorId: data.criadoPorId,
-      mensagem: data.mensagemText.split(",").map((option) => option.trim()),
+      motivo: data.motivo,
+      residenciaId: data.residenciaId,
+      status: data.status,
+      valor: data.valor,
+      data: data.data,
     };
 
     postFine(finePayload, {
       onSuccess: () => {
         toast({
           title: "Sucesso",
-          description: "Votação publicada com sucesso!",
+          description: "Multa publicada com sucesso!",
           variant: "default",
         });
         setOpenFineModal(false);
@@ -49,14 +48,14 @@ const FinesBoard = () => {
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Quadro de Votações</h1>
-          <p className="text-gray-600 font-semibold">Lista de votações recentes</p>
+          <h1 className="text-2xl font-bold text-gray-800">Quadro de Multas</h1>
+          <p className="text-gray-600 font-semibold">Lista de multas recentes</p>
         </div>
         <button
           className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
           onClick={() => setOpenFineModal(true)}
         >
-          Nova Votação
+          Nova Multa
         </button>
       </div>
 
@@ -64,29 +63,29 @@ const FinesBoard = () => {
         {fines?.data && fines.data.length > 0 && (
           <section className="flex flex-row flex-wrap gap-2 w-full">
             {fines.data.map((fine) => {
-              const closedVote = fine.encerrada;
+              const isPending = Number(fine.status) === 0;
               return (
                 <li
                   key={fine.id}
-                  className={`hover:bg-blue-300 relative group flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3 bg-blue-100 ${closedVote && "bg-red-200 hover:bg-red-400"}`}
+                  className={`hover:bg-blue-300 relative group flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3 bg-blue-100 ${isPending && "bg-red-200 hover:bg-red-400"}`}
                 >
                   <div className="ml-auto absolute self-end">
                     <FinesCardOptions fine={fine}>
                       <button
-                        className={`right-4 flex rounded outline-none hover:bg-blue-400 ${closedVote && " hover:bg-red-500"} `}
+                        className={`right-4 flex rounded outline-none hover:bg-blue-400 ${isPending && " hover:bg-red-500"} `}
                       >
                         <DotsThreeVertical className="size-6" weight="bold" />
                       </button>
                     </FinesCardOptions>
                   </div>
-                  <h2 className="text-sm font-semibold">{fine.titulo}</h2>
-                  <p className="text-gray-600">{fine.descricao}</p>
+                  <h2 className="text-sm font-semibold">{fine.motivo}</h2>
+                  <p className="text-gray-600">R$: {fine.valor}</p>
                   <div className="flex justify-between">
                     <p className="text-sm text-gray-400">
-                      Início: {new Date(fine.dataInicio).toLocaleDateString()}
+                      Data: {new Date(fine.data).toLocaleDateString()}
                     </p>
                     <p className="text-sm text-gray-400">
-                      Fim: {new Date(fine.dataFim).toLocaleDateString()}
+                      Status: {FineStatus[Number(fine.status)]}
                     </p>
                   </div>
                 </li>
@@ -105,18 +104,18 @@ const FinesBoard = () => {
       <Dialog open={openFineModal} onOpenChange={setOpenFineModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Nova Votação</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">Nova Multa</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmitFine)} className="space-y-4">
             <Controller
-              name="titulo"
+              name="motivo"
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
                   <input
                     type="text"
-                    placeholder="Título"
+                    placeholder="Motivo"
                     {...field}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                   />
@@ -126,82 +125,13 @@ const FinesBoard = () => {
             />
 
             <Controller
-              name="descricao"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <textarea
-                    placeholder="Descrição da votação"
-                    {...field}
-                    className="w-full px-3 py-2 border border-gray-300 rounded"
-                  ></textarea>
-                  {error && <p className="text-xs text-red-500">{error.message}</p>}
-                </>
-              )}
-            />
-
-            <Controller
-              name="dataInicio"
-              control={control}
-              render={({ field, fieldState: { error } }) => {
-                const stringValue = field.value
-                  ? new Date(field.value).toISOString().split("T")[0]
-                  : "";
-                return (
-                  <>
-                    <input
-                      type="date"
-                      name={field.name}
-                      placeholder="Data de Início"
-                      className="w-full px-3 py-2 border border-gray-300 rounded"
-                      value={stringValue}
-                      onChange={(e) => {
-                        field.onChange(new Date(e.target.value));
-                      }}
-                      onBlur={field.onBlur}
-                      ref={field.ref}
-                    />
-                    {error && <p className="text-xs text-red-500">{error.message}</p>}
-                  </>
-                );
-              }}
-            />
-
-            <Controller
-              name="dataFim"
-              control={control}
-              render={({ field, fieldState: { error } }) => {
-                const stringValue = field.value
-                  ? new Date(field.value).toISOString().split("T")[0]
-                  : "";
-                return (
-                  <>
-                    <input
-                      type="date"
-                      name={field.name}
-                      placeholder="Data de Fim"
-                      className="w-full px-3 py-2 border border-gray-300 rounded"
-                      value={stringValue}
-                      onChange={(e) => {
-                        field.onChange(new Date(e.target.value));
-                      }}
-                      onBlur={field.onBlur}
-                      ref={field.ref}
-                    />
-                    {error && <p className="text-xs text-red-500">{error.message}</p>}
-                  </>
-                );
-              }}
-            />
-
-            <Controller
-              name="criadoPorId"
+              name="residenciaId"
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
                   <input
                     type="number"
-                    placeholder="Criado Por (ID)"
+                    placeholder="ID da residência"
                     {...field}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
                   />
@@ -211,19 +141,65 @@ const FinesBoard = () => {
             />
 
             <Controller
-              name="mensagemText"
+              name="status"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <select
+                    {...field}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded"
+                  >
+                    <option value="Pendente">Pendente</option>
+                    <option value="Paga">Paga</option>
+                    <option value="Cancelada">Cancelada</option>
+                  </select>
+                  {error && <p className="text-xs text-red-500">{error.message}</p>}
+                </>
+              )}
+            />
+
+            <Controller
+              name="valor"
               control={control}
               render={({ field, fieldState: { error } }) => (
                 <>
                   <input
-                    type="text"
-                    placeholder="Opções (separadas por vírgula)"
+                    type="number"
+                    placeholder="valor da multa"
                     {...field}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
-                  />
+                  ></input>
                   {error && <p className="text-xs text-red-500">{error.message}</p>}
                 </>
               )}
+            />
+
+            <Controller
+              name="data"
+              control={control}
+              render={({ field, fieldState: { error } }) => {
+                const stringValue = field.value
+                  ? new Date(field.value).toISOString().split("T")[0]
+                  : "";
+                return (
+                  <>
+                    <input
+                      type="date"
+                      name={field.name}
+                      placeholder="Data"
+                      className="w-full px-3 py-2 border border-gray-300 rounded"
+                      value={stringValue}
+                      onChange={(e) => {
+                        field.onChange(new Date(e.target.value));
+                      }}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    {error && <p className="text-xs text-red-500">{error.message}</p>}
+                  </>
+                );
+              }}
             />
 
             <div className="flex justify-end gap-2 text-xs font-semibold">
@@ -245,4 +221,4 @@ const FinesBoard = () => {
   );
 };
 
-export { FinesBoard };
+export { Fines };
