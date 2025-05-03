@@ -9,3 +9,4 @@ export * from "./condominiumService";
 export * from "./noticeBoard";
 export * from "./parcelsService";
 export * from "./votingBoard";
+export * from "./finesService";

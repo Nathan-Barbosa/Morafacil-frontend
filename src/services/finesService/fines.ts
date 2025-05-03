@@ -45,7 +45,7 @@ class FinesService {
   ): Promise<ResponseDTO<FinesResponseDTO>> {
     return apiErrorHandler(() =>
       api
-        .post<ResponseDTO<FinesResponseDTO>>(FinesService.url, data, {
+        .put<ResponseDTO<FinesResponseDTO>>(FinesService.url, data, {
           withCredentials: true,
         })
         .then((response) => response.data),

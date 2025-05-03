@@ -1,8 +1,8 @@
-import { GetVotingResponseDTO } from "../../../../models";
+import { FinesResponseDTO } from "../../../../models";
 
 type FinesCardOptionsProps = {
   children: React.ReactNode;
-  fine: GetVotingResponseDTO;
+  fine: FinesResponseDTO;
 };
 
 type MenuItem = {

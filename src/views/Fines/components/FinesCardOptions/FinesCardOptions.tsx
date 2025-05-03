@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { MenuItem, FinesCardOptionsProps } from "./FinesCardOptions.types";
 import { useToast } from "../../../../hooks/use-toast";
 import {
-  UpdateNoticeRequestDTO,
+  FineRequestDTO,
+  UpdateFineRequestDTO,
   useCloseVotingMutation,
-  usePutUpdateNoticeMutation,
+  usePutUpdateFineMutation,
 } from "../../../../services";
 import {
   Dialog,
@@ -18,20 +19,20 @@ import {
 } from "../../../../components";
 
 import { ConfirmDialog } from "../ConfirmDialog";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
 
-  const { register, handleSubmit, reset } = useForm<UpdateNoticeRequestDTO>();
+  const { register, handleSubmit, reset, control } = useForm<FineRequestDTO>();
 
   const { toast } = useToast();
   const { mutate: closeVoting } = useCloseVotingMutation();
-  const { mutate: editNotice } = usePutUpdateNoticeMutation();
 
   const onEdit = () => setOpenEditModal(true);
   const onCloseVoting = () => setOpenDialog(true);
+  const { mutate: editFine } = usePutUpdateFineMutation();
 
   const onSuccess = () => {
     toast({
@@ -46,12 +47,20 @@ const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
     closeVoting(Number(fine?.id), { onSuccess });
   };
 
-  const onSubmitUpdateNotice = (data: UpdateNoticeRequestDTO) => {
-    editNotice(data, {
+  const onSubmitFine = (data: FineRequestDTO) => {
+    const finePayload: UpdateFineRequestDTO = {
+      id: data.id!,
+      motivo: data.motivo,
+      status: Number(data.status),
+      valor: data.valor,
+      data: data.data,
+    };
+
+    editFine(finePayload, {
       onSuccess: () => {
         toast({
           title: "Sucesso",
-          description: "Votação alterada com sucesso!",
+          description: "Multa alterado com sucesso!",
           variant: "default",
         });
         setOpenEditModal(false);
@@ -62,15 +71,17 @@ const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
 
   const menuItems: MenuItem[] = [
     { label: "Editar", callback: onEdit },
-    fine.encerrada ? null : { label: "Encerrar", callback: onCloseVoting },
+    fine.motivo ? null : { label: "Encerrar", callback: onCloseVoting },
   ].filter(Boolean) as MenuItem[];
 
   useEffect(() => {
     if (openEditModal) {
       reset({
         id: fine.id,
-        titulo: fine.titulo,
-        // mensagem: fine.mensagem,
+        motivo: fine.motivo,
+        status: fine.status,
+        valor: fine.valor,
+        data: fine.data,
       });
     }
   }, [openEditModal, fine, reset]);
@@ -102,21 +113,69 @@ const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
       <Dialog open={openEditModal} onOpenChange={setOpenEditModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Editar Votação</DialogTitle>
+            <DialogTitle className="text-lg font-semibold">Editar Multa</DialogTitle>
           </DialogHeader>
-
-          <form onSubmit={handleSubmit(onSubmitUpdateNotice)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmitFine)} className="space-y-4">
             <input
               type="text"
-              placeholder="Título"
-              {...register("titulo", { required: true })}
+              placeholder="Motivo"
+              {...register("motivo", { required: true })}
               className="w-full px-3 py-2 border border-gray-300 rounded"
             />
-            <textarea
-              placeholder="Conteúdo do aviso"
-              {...register("mensagem", { required: true })}
-              className="w-full px-3 py-2 border border-gray-300 rounded max-h-[30vh] outline-none"
-            ></textarea>
+
+            <Controller
+              name="status"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <select
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded"
+                  >
+                    <option value={0}>Pendente</option>
+                    <option value={1}>Paga</option>
+                    <option value={2}>Cancelada</option>
+                  </select>
+                  {error && <p className="text-xs text-red-500">{error.message}</p>}
+                </>
+              )}
+            />
+
+            <input
+              type="number"
+              placeholder="Valor da multa"
+              {...register("valor", { required: true, valueAsNumber: true })}
+              className="w-full px-3 py-2 border border-gray-300 rounded"
+            />
+
+            <Controller
+              name="data"
+              control={control}
+              render={({ field, fieldState: { error } }) => {
+                const stringValue = field.value
+                  ? new Date(field.value).toISOString().split("T")[0]
+                  : "";
+                return (
+                  <>
+                    <input
+                      type="date"
+                      name={field.name}
+                      placeholder="Data"
+                      className="w-full px-3 py-2 border border-gray-300 rounded"
+                      value={stringValue}
+                      onChange={(e) => {
+                        field.onChange(new Date(e.target.value));
+                      }}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                    {error && <p className="text-xs text-red-500">{error.message}</p>}
+                  </>
+                );
+              }}
+            />
+
             <div className="flex justify-end gap-2 text-xs font-semibold">
               <button
                 type="button"

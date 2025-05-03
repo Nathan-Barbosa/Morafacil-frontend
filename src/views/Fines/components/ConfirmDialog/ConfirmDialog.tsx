@@ -20,7 +20,7 @@ const ConfirmDialog = ({ open, setOpen, onConfirm, fine }: ConfirmDialogProps) =
 
         <DialogDescription className="text-sm leading-4">
           Tem certeza que deseja encerrar a votação
-          <span className="font-semibold"> {fine.titulo}?</span>
+          <span className="font-semibold"> {fine.motivo}?</span>
         </DialogDescription>
 
         <div className="flex justify-end gap-2 text-xs font-semibold">

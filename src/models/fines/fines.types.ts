@@ -3,9 +3,9 @@ import { ResidenceResponseDTO } from "../residence";
 type FinesResponseDTO = {
   id: number | undefined;
   valor: number;
-  data: string;
+  data: Date;
   motivo: string;
-  status: number;
+  status: string;
   residenciaId: number;
   residencia: ResidenceResponseDTO | null;
 };
