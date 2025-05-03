@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { APIError, ResponseDTO, UserResponseDTO } from "../../models";
 import { UsersService } from "./UsersService";
-import { BlockUserRequestDTO } from "./UsersService.types";
+import { AssociateCondominiumDTO, BlockUserRequestDTO } from "./UsersService.types";
 
 const usersKeys = {
   all: ["users"] as const,
@@ -25,4 +25,12 @@ const usePostBlockUserMutation = () => {
   });
 };
 
-export { useGetUsersListQuery, usePostBlockUserMutation };
+const usePostAssociateCondominiumMutation = () => {
+  return useMutation<ResponseDTO<string>, APIError, AssociateCondominiumDTO>({
+    mutationKey: [...usersKeys.all, "associate-condominio"],
+    mutationFn: (data: AssociateCondominiumDTO) =>
+      UsersService.associateCondominium(data),
+  });
+};
+
+export { useGetUsersListQuery, usePostBlockUserMutation, usePostAssociateCondominiumMutation };

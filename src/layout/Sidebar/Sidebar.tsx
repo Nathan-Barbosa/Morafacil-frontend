@@ -35,6 +35,12 @@ const navItems = [
     roles: ["Admin"],
   },
   {
+    to: ROUTES.RESIDENCE,
+    label: "Residências",
+    icon: <HouseSimple size={20} />,
+    roles: ["AdminCond"],
+  },
+  {
     to: ROUTES.NOTICE_BOARD,
     label: "Avisos",
     icon: <NotePencil size={20} />,

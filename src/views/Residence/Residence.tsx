@@ -20,7 +20,7 @@ const Residence = () => {
 
   const { toast } = useToast();
 
-  const { data: residences } = useGetResidencesListQuery({
+  const { data: residences, refetch: refetchResidences } = useGetResidencesListQuery({
     pageNumber: 1,
     pageSize: 10,
   });
@@ -40,6 +40,10 @@ const Residence = () => {
       setAllResidences(residences.data);
     }
   }, [debouncedResidenceFilter, residence, residences]);
+
+  useEffect(() => {
+    refetchResidences();
+  }, []);
 
   const handleDeleteResidence = (id: number) => {
     deleteResidence(id, {

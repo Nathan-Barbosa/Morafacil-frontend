@@ -8,4 +8,9 @@ type BlockUserRequestDTO = {
   lockoutDurationMinutes: number;
 };
 
-export type { GetUsersRequestDTO, BlockUserRequestDTO };
+type AssociateCondominiumDTO = {
+  userId: string;
+  condominioId: number;
+};
+
+export type { GetUsersRequestDTO, BlockUserRequestDTO, AssociateCondominiumDTO };

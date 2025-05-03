@@ -7,6 +7,7 @@ type UserResponseDTO = {
   cpf: string;
   roles: RoleResponseDTO[];
   residence: number;
+  condominioid: string;
 };
 
 export type { UserResponseDTO };

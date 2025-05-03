@@ -11,11 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components";
-import { useGetUsersListQuery, usePostBlockUserMutation } from "../../services/UsersService";
-import { UserResponseDTO } from "../../models";
+import { useGetUsersListQuery, usePostAssociateCondominiumMutation, usePostBlockUserMutation } from "../../services/UsersService";
+import { GetCondominiumResponseDTO, UserResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
 import { MagnifyingGlass, XCircle } from "@phosphor-icons/react";
 import {
+  useGetCondosListQuery,
   useGetResidencesListQuery,
   useGetRolesListQuery,
   usePatchAssociateUserMutation,
@@ -32,6 +33,7 @@ export function Users() {
   const [openResidenceModal, setOpenResidenceModal] = useState(false);
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
+  const [openCondominiumModal, setOpenCondominiumModal] = useState(false);
 
   const { toast } = useToast();
 
@@ -50,6 +52,7 @@ export function Users() {
     }
   }, [usersResponse]);
 
+  const { mutate: associateCondominium } = usePostAssociateCondominiumMutation();
   const { mutate: associateUser } = usePatchAssociateUserMutation();
   const { mutate: assignRole } = usePostAssignRoleMutation();
   const { mutate: removeUser } = usePatchRemoveUserMutation();
@@ -69,6 +72,17 @@ export function Users() {
       default:
         return true;
     }
+  });
+
+  const {
+    register: registerCondominium,
+    handleSubmit: handleSubmitCondominium,
+    setValue: setValueCondominium,
+  } = useForm();
+  
+  const { data: condominios } = useGetCondosListQuery({
+    pageNumber: 1,
+    pageSize: 100,
   });
 
   const {
@@ -171,6 +185,28 @@ export function Users() {
     }
   };
 
+  const onSubmitCondominium = (data: any) => {
+    if (selectedUser?.id && data.condominio) {
+      associateCondominium(
+        {
+          userId: selectedUser.id.toString(),
+          condominioId: Number(data.condominio),
+        },
+        {
+          onSuccess: () => {
+            toast({
+              title: "Condomínio associado",
+              description: "Usuário vinculado ao condomínio com sucesso!",
+              variant: "default",
+            });
+            setOpenCondominiumModal(false);
+            refetchUsers();
+          },
+        }
+      );
+    }
+  };
+
   const handleBlockuser = (id: number) => {
     console.log("Botão clicado - ID do usuário:", id);
 
@@ -246,6 +282,15 @@ export function Users() {
 
                     <td className="px-4 py-2">
                       <div className="flex flex-wrap justify-end gap-2">
+                      <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setOpenCondominiumModal(true);
+                          }}
+                          className="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded transition"
+                        >
+                          Condomínio
+                        </button>
                         <button
                           onClick={() => {
                             setSelectedUser(user);
@@ -438,6 +483,63 @@ export function Users() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={openCondominiumModal} onOpenChange={setOpenCondominiumModal}>
+        <DialogContent className="bg-white p-6 rounded shadow-lg">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">Associar Condomínio</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitCondominium(onSubmitCondominium)} className="space-y-4">
+            <p className="text-gray-700 mb-2">
+              Usuário: <strong>{selectedUser?.name}</strong>
+            </p>
+
+            {selectedUser?.condominioid && (
+              <div className="text-sm text-gray-600">
+                Condomínio atual:{" "}
+                <strong>
+                  {
+                    condominios?.data.find((c) => c.id?.toString() === selectedUser.condominioid?.toString())
+                      ?.nome ?? "Não encontrado"
+                  }
+                </strong>
+              </div>
+            )}
+
+            <Select
+              {...registerCondominium("condominio")}
+              onValueChange={(value) => setValueCondominium("condominio", value)}
+            >
+              <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                <SelectValue placeholder="Selecione o condomínio" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-white rounded shadow-lg">
+                {condominios?.data.map((cond: GetCondominiumResponseDTO) => (
+                  <SelectItem value={cond.id?.toString() || ""} key={cond.id}>
+                    {cond.nome} - {cond.id}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex justify-end gap-2 text-xs font-semibold">
+              <button
+                type="button"
+                className="button-cancel"
+                onClick={() => setOpenCondominiumModal(false)}
+              >
+                Cancelar
+              </button>
+              <button type="submit" className="button-confirm">
+                Associar
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
