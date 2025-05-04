@@ -59,6 +59,8 @@ export function Users() {
   const { mutate: blockUser } = usePostBlockUserMutation();
 
   const filteredUsers = allUsers.filter((user) => {
+
+    console.log("user", user);
     const value = debouncedFilterValue.toLowerCase();
     switch (filterField) {
       case "name":
@@ -74,6 +76,7 @@ export function Users() {
     }
   });
 
+
   const {
     register: registerCondominium,
     handleSubmit: handleSubmitCondominium,
@@ -84,6 +87,8 @@ export function Users() {
     pageNumber: 1,
     pageSize: 100,
   });
+
+  console.log("condominios", condominios);
 
   const {
     register: registerResidence,
@@ -267,18 +272,21 @@ export function Users() {
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nome</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Email</th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cpf</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">CPF</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Condominio</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredUsers?.map((user) => {
+                const condominio = condominios?.data.find((c) => c.id === user.condominioId);
                 return (
                   <tr key={user.id} className="hover:bg-gray-100 transition">
                     <td className="px-4 py-2 text-gray-600">{user.id}</td>
                     <td className="px-4 py-2 text-gray-600">{user.name}</td>
                     <td className="px-4 py-2 text-gray-600">{user.email}</td>
                     <td className="px-4 py-2 text-gray-600">{user.cpf}</td>
+                    <td className="px-4 py-2 text-gray-600">{condominio?.nome || "Não associado"}</td>
 
                     <td className="px-4 py-2">
                       <div className="flex flex-wrap justify-end gap-2">
@@ -494,18 +502,6 @@ export function Users() {
             <p className="text-gray-700 mb-2">
               Usuário: <strong>{selectedUser?.name}</strong>
             </p>
-
-            {selectedUser?.condominioid && (
-              <div className="text-sm text-gray-600">
-                Condomínio atual:{" "}
-                <strong>
-                  {
-                    condominios?.data.find((c) => c.id?.toString() === selectedUser.condominioid?.toString())
-                      ?.nome ?? "Não encontrado"
-                  }
-                </strong>
-              </div>
-            )}
 
             <Select
               {...registerCondominium("condominio")}
