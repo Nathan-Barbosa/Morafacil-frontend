@@ -19,6 +19,8 @@ import { AuthProvider } from "../providers";
 import { Residence } from "../views/Residence";
 import { VotingBoard } from "../views/Voting";
 import { ROUTES } from "../constants";
+import { PendingApproval } from "../views/PendingApproval/PendingApproval";
+
 
 const routes = createBrowserRouter([
   {
@@ -79,6 +81,10 @@ const routes = createBrowserRouter([
           {
             path: ROUTES.FINES,
             element: <Fines />,
+          },
+          {
+            path: ROUTES.PENDING_APPROVAL,
+            element: <PendingApproval />,
           },
         ],
       },

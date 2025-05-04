@@ -15,7 +15,9 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-md p-4 flex items-center justify-between w-full">
-      <h1 className="text-lg font-bold text-gray-700">Bem Vindo, {user?.name}</h1>
+      <h1 className="text-lg font-bold text-gray-700">
+        Olá, {user?.name?.split(" ")[0]}
+      </h1>
 
       <div className="flex items-center gap-4">
       

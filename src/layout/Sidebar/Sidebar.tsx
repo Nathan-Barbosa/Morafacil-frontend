@@ -1,5 +1,5 @@
-import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../providers";
 import {
   UserCircle,
@@ -70,8 +70,15 @@ const Sidebar = () => {
   const { user } = useAuth();
   const roles = user?.roles ?? [];
   const [isOpen, setIsOpen] = useState(true);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+
+  useEffect(() => {
+    if (roles.length === 0) {
+      navigate(ROUTES.PENDING_APPROVAL);
+    }
+  }, [roles, navigate]);
 
   return (
     <aside
