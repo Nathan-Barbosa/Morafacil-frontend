@@ -12,7 +12,7 @@ import {
   CaretLeft,
   FileText,
 } from "@phosphor-icons/react";
-import imglogo from "../../assets/logo-morar-facil-2.png";
+import imglogo from "../../assets/logo-morar-facil-branco.png";
 import { ROUTES } from "../../constants/paths";
 
 const navItems = [
