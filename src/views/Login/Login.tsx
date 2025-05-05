@@ -57,7 +57,7 @@ const Login = () => {
     >
       <div className="max-w-md w-full bg-white p-6 border rounded shadow-md">
         <div className="flex justify-center mb-6">
-          <img src={imglogo} alt="Logo Morar Fácil" className="h-20 w-auto" />
+          <img src={imglogo} alt="Logo Morar Fácil" className="h-36 w-auto" />
         </div>
 
         <FormProvider {...methods}>

@@ -14,7 +14,7 @@ import {
 import { useGetUsersListQuery, usePostAssociateCondominiumMutation, usePostBlockUserMutation } from "../../services/UsersService";
 import { GetCondominiumResponseDTO, UserResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
-import { MagnifyingGlass, XCircle } from "@phosphor-icons/react";
+import { Buildings, House, Key, MagnifyingGlass, Pencil, Prohibit, XCircle } from "@phosphor-icons/react";
 import {
   useGetCondosListQuery,
   useGetResidencesListQuery,
@@ -24,6 +24,7 @@ import {
   usePostAssignRoleMutation,
 } from "../../services";
 import { useToast } from "../../hooks/use-toast";
+import Loading from "../../components/ui/loading";
 
 export function Users() {
   const [filterField, setFilterField] = useState("name");
@@ -37,7 +38,12 @@ export function Users() {
 
   const { toast } = useToast();
 
-  const { data: usersResponse, refetch: refetchUsers } = useGetUsersListQuery();
+  const {
+    data: usersResponse,
+    refetch: refetchUsers,
+    isLoading: isLoadingUsers,
+    isFetching: isFetchingUsers,
+  } = useGetUsersListQuery();
 
   const { data: roles } = useGetRolesListQuery();
 
@@ -212,6 +218,10 @@ export function Users() {
     }
   };
 
+  useEffect(() => {
+    refetchUsers();
+  }, []);
+
   const handleBlockuser = (id: number) => {
     console.log("Botão clicado - ID do usuário:", id);
 
@@ -233,6 +243,10 @@ export function Users() {
       },
     );
   };
+
+  if (isLoadingUsers || isFetchingUsers) {
+    return <Loading />;
+  }
 
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
@@ -269,11 +283,11 @@ export function Users() {
           <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nome</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Email</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">CPF</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Condominio</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Perfis</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -282,11 +296,22 @@ export function Users() {
                 const condominio = condominios?.data.find((c) => c.id === user.condominioId);
                 return (
                   <tr key={user.id} className="hover:bg-gray-100 transition">
-                    <td className="px-4 py-2 text-gray-600">{user.id}</td>
                     <td className="px-4 py-2 text-gray-600">{user.name}</td>
                     <td className="px-4 py-2 text-gray-600">{user.email}</td>
                     <td className="px-4 py-2 text-gray-600">{user.cpf}</td>
                     <td className="px-4 py-2 text-gray-600">{condominio?.nome || "Não associado"}</td>
+                    <td className="px-4 py-2 text-gray-600">
+                      <div className="flex flex-wrap gap-1">
+                        {user.roles.map((role) => (
+                          <span
+                            key={role}
+                            className="bg-blue-100 text-blue-700 px-2 py-0.5 text-xs rounded"
+                          >
+                            {role}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
 
                     <td className="px-4 py-2">
                       <div className="flex flex-wrap justify-end gap-2">
@@ -295,27 +320,27 @@ export function Users() {
                             setSelectedUser(user);
                             setOpenCondominiumModal(true);
                           }}
+                          title="Gerenciar Condomínios"
                           className="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded transition"
                         >
-                          Condomínio
+                          <Buildings size={20} />
                         </button>
                         <button
                           onClick={() => {
                             setSelectedUser(user);
                             setOpenResidenceModal(true);
                           }}
+                          title="Gerenciar Residências"
                           className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
                         >
-                          Residências
+                          <House size={20} />
                         </button>
                         <button
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setOpenRoleModal(true);
-                          }}
-                          className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                          onClick={() => { setSelectedUser(user); setOpenRoleModal(true); }}
+                          className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded transition"
+                          title="Gerenciar Perfis"
                         >
-                          Perfis
+                          <Key size={20} />
                         </button>
                         <button
                           onClick={() => {
@@ -323,8 +348,9 @@ export function Users() {
                             console.log("Editar usuário", user);
                           }}
                           className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded transition"
+                          title="Editar Usuário"
                         >
-                          Editar
+                          <Pencil size={20} />
                         </button>
 
                         <button
@@ -332,8 +358,9 @@ export function Users() {
                             handleBlockuser(user.id);
                           }}
                           className="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white text-sm rounded transition"
+                          title="Bloquear Usuário"
                         >
-                          Bloquear
+                          <Prohibit size={20} />
                         </button>
                       </div>
                     </td>

@@ -8,8 +8,9 @@ import {
 import { useToast } from "../../providers/ToastProvider";
 import { useDebounce } from "use-debounce";
 import { ResidenceResponseDTO } from "../../models";
-import { MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlass, Pencil, Trash } from "@phosphor-icons/react";
 import { ResidenceBuilderModal } from "./components";
+import Loading from "../../components/ui/loading";
 
 const Residence = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -20,7 +21,11 @@ const Residence = () => {
 
   const { toast } = useToast();
 
-  const { data: residences, refetch: refetchResidences } = useGetResidencesListQuery({
+  const { data: residences, 
+    refetch: refetchResidences, 
+    isLoading: isLoadingResidence,
+    isFetching: isFetchingResidence,
+  } = useGetResidencesListQuery({
     pageNumber: 1,
     pageSize: 10,
   });
@@ -61,6 +66,10 @@ const Residence = () => {
     setEditingResidence(residence);
     setOpenModal(true);
   };
+
+  if (isLoadingResidence || isFetchingResidence) {
+    return <Loading />;
+  }
 
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
@@ -121,7 +130,7 @@ const Residence = () => {
                       onClick={() => handleEditResidence(residence)}
                       className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
                     >
-                      Editar
+                      <Pencil size={20}/>
                     </button>
 
                     <button
@@ -129,7 +138,7 @@ const Residence = () => {
                       onClick={() => handleDeleteResidence(residence.id)}
                       className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
                     >
-                      Remover
+                      <Trash size={20}/>
                     </button>
                   </td>
                 </tr>

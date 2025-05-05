@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
 import { useGetVotingsQuery, usePostCreateVotingMutation, VotingRequestDTO } from "../../services";
@@ -7,6 +7,7 @@ import { MagnifyingGlass, DotsThreeVertical } from "@phosphor-icons/react";
 import { VotingCardOptions } from "./components";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { votingFormSchema } from "./VotingBoard.schemas";
+import Loading from "../../components/ui/loading";
 
 type VotingFormInput = Omit<VotingRequestDTO, "mensagem"> & {
   mensagemText: string;
@@ -15,7 +16,9 @@ const VotingBoard = () => {
   const [openVotingModal, setOpenVotingModal] = useState(false);
   const { toast } = useToast();
 
-  const { data: votings } = useGetVotingsQuery({ pageNumber: 1, pageSize: 10 });
+  const { data: votings,    refetch: refetchVoting,
+    isLoading: isLoadingVoting,
+    isFetching: isFetchingVoting,} = useGetVotingsQuery({ pageNumber: 1, pageSize: 10 });
   const { mutate: postVoting } = usePostCreateVotingMutation();
 
   const { control, handleSubmit, reset } = useForm<VotingFormInput>({
@@ -45,6 +48,14 @@ const VotingBoard = () => {
     });
   };
 
+    useEffect(() => {
+      refetchVoting();
+    }, []);
+
+  if (isLoadingVoting || isFetchingVoting) {
+    return <Loading />;
+  }
+    
   return (
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
       <div className="flex justify-between items-center">

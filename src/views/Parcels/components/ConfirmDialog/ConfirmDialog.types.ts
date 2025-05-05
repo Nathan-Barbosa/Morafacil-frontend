@@ -3,7 +3,7 @@ import { GetParcelsResponseDTO } from "../../../../models";
 type ConfirmDialogProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onConfirm: () => void;
+  onConfirm: (retiradoPor: string) => void;
   parcel?: GetParcelsResponseDTO;
 };
 

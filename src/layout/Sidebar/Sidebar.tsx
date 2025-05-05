@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../providers";
 import {
+  ChartBar,
   UserCircle,
   House,
   HouseSimple,
@@ -17,10 +18,16 @@ import { ROUTES } from "../../constants/paths";
 
 const navItems = [
   {
+    to: ROUTES.HOME,
+    label: "Dashboard",
+    icon: <ChartBar size={20} />,
+    roles: ["Admin"],
+  },
+  {
     to: ROUTES.USERS,
     label: "Usuários",
     icon: <UserCircle size={20} />,
-    roles: ["Admin"],
+    roles: ["Admin", "AdminCond", "Sindico"],
   },
   {
     to: ROUTES.CONDOMINIUM,
@@ -32,39 +39,34 @@ const navItems = [
     to: ROUTES.RESIDENCE,
     label: "Residências",
     icon: <HouseSimple size={20} />,
-    roles: ["Admin"],
-  },
-  {
-    to: ROUTES.RESIDENCE,
-    label: "Residências",
-    icon: <HouseSimple size={20} />,
-    roles: ["AdminCond"],
+    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario", "PrestadorServico"],
   },
   {
     to: ROUTES.NOTICE_BOARD,
     label: "Avisos",
     icon: <NotePencil size={20} />,
-    roles: ["Admin", "Usuario"],
+    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario", "Porteiro", "PrestadorServico"],
   },
   {
     to: ROUTES.VOTING_BOARD,
     label: "Votação",
     icon: <MicrosoftOutlookLogo size={20} />,
-    roles: ["Admin"],
+    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario"],
   },
   {
     to: ROUTES.PARCELS,
     label: "Encomendas",
     icon: <Package size={20} />,
-    roles: ["Admin","Porteiro", "Morador"],
+    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario", "Porteiro", "PrestadorServico"],
   },
   {
     to: ROUTES.FINES,
     label: "Multas",
     icon: <FileText size={20} />,
-    roles: ["Admin"],
+    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario"],
   },
 ];
+
 
 const Sidebar = () => {
   const { user } = useAuth();

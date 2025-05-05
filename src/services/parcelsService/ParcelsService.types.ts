@@ -3,4 +3,9 @@ type PostParcelRequestDTO = {
   residenciaId: number;
 };
 
-export type { PostParcelRequestDTO };
+type PatchPickupParcelRequestDTO = {
+  encomendaId: number;
+  retiradoPor: string;
+};
+
+export type { PostParcelRequestDTO, PatchPickupParcelRequestDTO };

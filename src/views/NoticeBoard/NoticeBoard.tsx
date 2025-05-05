@@ -13,15 +13,22 @@ import { NoticeCardOptions } from "./components";
 import { useGetCondosListQuery } from "../../services";
 import { useDebounce } from "use-debounce";
 import { NoticeResponseDTO } from "../../models";
+import { useAuth } from "../../providers";
+import Loading from "../../components/ui/loading";
 
 const NoticeBoard = () => {
+  const { user } = useAuth();
   const [openNoticeModal, setOpenNoticeModal] = useState(false);
   const [noticeFilter, setNoticeFilter] = useState<string>("");
   const [debouncedNoticeFilter] = useDebounce(noticeFilter, 1000);
   const [allNotices, setAllNotices] = useState<NoticeResponseDTO[] | undefined>();
 
   const { toast } = useToast();
-  const { data: notices } = useGetNoticesListQuery();
+  const { data: notices,
+    refetch: refetchNotices,
+    isLoading: isLoadingNotices,
+    isFetching: isFetchingNotices,
+  } = useGetNoticesListQuery();
   const { mutate: postNotice } = usePostCreateNoticeMutation();
   const { data: notice } = useGetNoticeQuery(Number(debouncedNoticeFilter));
 
@@ -40,7 +47,22 @@ const NoticeBoard = () => {
   const { register, handleSubmit, reset } = useForm<CreateNoticesRequestDTO>();
 
   const onSubmitNotice = (data: CreateNoticesRequestDTO) => {
-    postNotice(data, {
+    console.log(user);
+    if (!user?.condominioId) {
+      toast({
+        title: "Erro",
+        description: "Usuário não está vinculado a um condomínio.",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    const payload: CreateNoticesRequestDTO = {
+      ...data,
+      condominioId: Number(user.condominioId),
+    };
+  
+    postNotice(payload, {
       onSuccess: () => {
         toast({
           title: "Sucesso",
@@ -55,6 +77,15 @@ const NoticeBoard = () => {
 
   const { data: condosData } = useGetCondosListQuery({ pageNumber: 1, pageSize: 100 });
   const condominios = condosData?.data || [];
+
+  useEffect(() => {
+    refetchNotices();
+  }, []);
+
+  if (isLoadingNotices || isFetchingNotices) {
+    return <Loading />;
+  }
+  
 
   return (
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
@@ -132,23 +163,6 @@ const NoticeBoard = () => {
               {...register("mensagem", { required: true })}
               className="w-full px-3 py-2 border border-gray-300 rounded max-h-[30vh] outline-none"
             ></textarea>
-            <select
-              {...register("condominioId", { required: true })}
-              className="w-full px-3 py-2 border border-gray-300 rounded"
-            >
-              <option value="">Selecione um condomínio</option>
-              {condominios?.map((condominio) => (
-                <option key={condominio.id} value={condominio.id}>
-                  {condominio.nome}
-                </option>
-              ))}
-            </select>
-            <input
-              type="number"
-              placeholder="Condominio"
-              {...register("condominioId", { required: true })}
-              className="w-full px-3 py-2 border border-gray-300 rounded"
-            />
             <div className="flex justify-end gap-2 text-xs font-semibold">
               <button
                 type="button"

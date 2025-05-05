@@ -20,6 +20,7 @@ type GetParcelsResponseDTO = {
   residencia?: Residence;
   dataChegada: Date;
   dataRetirada: Date;
+  retiradorPor: string;
 };
 
 export type { GetParcelsResponseDTO };

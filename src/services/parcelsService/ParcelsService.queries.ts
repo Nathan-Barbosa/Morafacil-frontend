@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { APIError, GetParcelsResponseDTO, PaginatedResponse, ResponseDTO } from "../../models";
-import { PostParcelRequestDTO } from "./ParcelsService.types";
+import { PatchPickupParcelRequestDTO, PostParcelRequestDTO } from "./ParcelsService.types";
 import { ParcelsService } from "./ParcelsService";
 
 const parcelsKeys = {
@@ -32,16 +32,18 @@ const usePostParcelMutation = () => {
   });
 };
 
+
 const usePatchPickupParcelMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<ResponseDTO<GetParcelsResponseDTO>, APIError, number>({
+  return useMutation<ResponseDTO<GetParcelsResponseDTO>, APIError, PatchPickupParcelRequestDTO>({
     mutationKey: parcelsKeys.patchPickupParcel(),
-    mutationFn: (encomendaId: number) => ParcelsService.patchPickupParcel(encomendaId),
-    onSuccess: () =>
+    mutationFn: (data) => ParcelsService.patchPickupParcel(data),
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: parcelsKeys.lists(),
-      }),
+      });
+    },
   });
 };
 

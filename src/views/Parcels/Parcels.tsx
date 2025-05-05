@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -24,6 +24,8 @@ import { parcelsSchema } from "./Parcels.schemas";
 import { useToast } from "../../hooks/use-toast";
 import { ConfirmDialog } from "./components";
 import { GetParcelsResponseDTO } from "../../models";
+import { Package, Pencil } from "@phosphor-icons/react";
+import Loading from "../../components/ui/loading";
 
 const Parcels = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -43,7 +45,10 @@ const Parcels = () => {
 
   const { toast } = useToast();
 
-  const { data: parcels } = useGetParcelsListQuery();
+  const { data: parcels,    
+    refetch: refetchParcels,
+    isLoading: isLoadingParcels,
+    isFetching: isFetchingParcels, } = useGetParcelsListQuery();
 
   const { data: residences } = useGetResidencesListQuery({
     pageNumber: 1,
@@ -66,18 +71,30 @@ const Parcels = () => {
     });
   };
 
-  const handleConfirmPickup = (parcel: GetParcelsResponseDTO) => {
-    pickupParcel(parcel.id, {
-      onSuccess: () => {
-        toast({
-          title: "Sucesso",
-          description: "Encomenda retirada com sucesso!",
-          variant: "default",
-        });
-        setOpenModal(false);
-      },
-    });
+  const handleConfirmPickup = (encomendaId: number, retiradoPor: string) => {
+    pickupParcel(
+      { encomendaId, retiradoPor },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Sucesso",
+            description: "Encomenda retirada com sucesso!",
+            variant: "default",
+          });
+          setOpenDialog(false);
+        },
+      }
+    );
   };
+
+    useEffect(() => {
+      refetchParcels();
+    }, []);
+
+    if (isLoadingParcels || isFetchingParcels) {
+      return <Loading />;
+    }
+  
 
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
@@ -100,8 +117,9 @@ const Parcels = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nº</th>
-                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Número</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Bloco</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Número</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Unidade</th>
                 <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">
                   Recebimento
                 </th>
@@ -116,6 +134,7 @@ const Parcels = () => {
                 <tr key={parcel.id} className="hover:bg-gray-100 transition">
                   <td className="px-4 py-2 text-gray-600">{parcel.numeroEncomenda}</td>
                   <td className="px-4 py-2 text-gray-600">{parcel.residencia?.bloco}</td>
+                  <td className="px-4 py-2 text-gray-600">{parcel.residencia?.numero}</td>
                   <td className="px-4 py-2 text-gray-600">{parcel.residencia?.unidade}</td>
                   <td className="px-4 py-2 text-gray-600">
                     {new Date(parcel.dataChegada).toLocaleString()}
@@ -126,18 +145,24 @@ const Parcels = () => {
                       : "Não retirado"}
                   </td>
                   <td className="flex justify-end px-4 py-2 gap-2">
-                    <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
-                      Editar
-                    </button>
+                  <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
+                    <Pencil size={20} />
+                  </button>
+
+                  {!parcel.dataRetirada && (
                     <button
                       onClick={() => {
-                        setSelectedParcel(parcel), setOpenDialog(true);
+                        setSelectedParcel(parcel);
+                        setOpenDialog(true);
                       }}
                       className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+                      title="Retirar Encomenda"
                     >
-                      Retirar
+                      <i className="ph ph-package" />
+                      <Package size={20} />
                     </button>
-                  </td>
+                  )}
+                </td>
                 </tr>
               ))}
             </tbody>
@@ -153,7 +178,11 @@ const Parcels = () => {
         parcel={selectedParcel}
         open={openDialog}
         setOpen={setOpenDialog}
-        onConfirm={() => selectedParcel && handleConfirmPickup(selectedParcel)}
+        onConfirm={(retiradoPor) => {
+          if (selectedParcel) {
+            handleConfirmPickup(selectedParcel.id, retiradoPor);
+          }
+        }}
       />
 
       <Dialog open={openModal} onOpenChange={setOpenModal}>
@@ -198,7 +227,7 @@ const Parcels = () => {
                         <SelectContent className="bg-white rounded shadow-lg">
                           {residences?.data?.map((residence) => (
                             <SelectItem key={residence.id} value={residence.id.toString()}>
-                              {`${residence.endereco} - ${residence.numero}`}
+                              {`${residence.endereco} - ${residence.unidade}`}
                             </SelectItem>
                           ))}
                         </SelectContent>

@@ -9,7 +9,7 @@ import { CondoBuilderModal } from "./components";
 import { useToast } from "../../hooks/use-toast";
 import { GetCondominiumResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
-import { MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlass, Pencil, Trash } from "@phosphor-icons/react";
 
 const Condominium = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -136,9 +136,9 @@ const Condominium = () => {
                       onClick={() => handleEditCondo(condoItem)}
                       className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded transition"
                     >
-                      Editar
+                      <Pencil size={20} weight="duotone" className="text-white" />
                     </button>
-                    <button
+                    {/* <button
                       type="button"
                       onClick={() =>
                         handleUpdateCondoStatus(Number(condoItem.id), condoItem?.ativo)
@@ -150,13 +150,13 @@ const Condominium = () => {
                       }`}
                     >
                       {condoItem.ativo ? "Desabilitar" : "Habilitar"}
-                    </button>
+                    </button> */}
                     <button
                       type="button"
                       onClick={() => handleDeleteCondo(Number(condoItem.id))}
                       className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
                     >
-                      Remover
+                      <Trash size={20} weight="bold" />
                     </button>
                   </td>
                 </tr>

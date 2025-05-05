@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
 import { useToast } from "../../hooks/use-toast";
@@ -8,12 +8,16 @@ import { FinesCardOptions } from "./components";
 import { finesFormSchema } from "./fines.schemas";
 import { FineRequestDTO, useGetFinesQuery, usePostCreateFineMutation } from "../../services";
 import { FinesFormData, FineStatus } from "./Fines.types";
+import Loading from "../../components/ui/loading";
 
 const Fines = () => {
   const [openFineModal, setOpenFineModal] = useState(false);
   const { toast } = useToast();
 
-  const { data: fines } = useGetFinesQuery({ pageNumber: 1, pageSize: 10 });
+  const { data: fines,  refetch: refetchFines,
+    isLoading: isLoadingFines,
+    isFetching: isFetchingFines,} = useGetFinesQuery({ pageNumber: 1, pageSize: 10 });
+
   const { mutate: postFine } = usePostCreateFineMutation();
 
   const { control, handleSubmit, reset } = useForm<FinesFormData>({
@@ -43,6 +47,14 @@ const Fines = () => {
       },
     });
   };
+
+  useEffect(() => {
+    refetchFines();
+  }, []);
+
+  if (isLoadingFines || isFetchingFines) {
+    return <Loading />;
+  }
 
   return (
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">

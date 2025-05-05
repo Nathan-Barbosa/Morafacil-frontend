@@ -1,9 +1,27 @@
+import { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import { ConfirmDialogProps } from "./ConfirmDialog.types";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../../../../components";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "../../../../components";
 
 const ConfirmDialog = ({ open, setOpen, onConfirm, parcel }: ConfirmDialogProps) => {
-  const closeDialog = () => setOpen(false);
+  const [retiradoPor, setRetiradoPor] = useState("");
+
+  const closeDialog = () => {
+    setRetiradoPor("");
+    setOpen(false);
+  };
+
+  const handleConfirm = () => {
+    if (retiradoPor.trim()) {
+      onConfirm(retiradoPor);
+      closeDialog();
+    }
+  };
 
   return (
     <Dialog open={open}>
@@ -23,11 +41,24 @@ const ConfirmDialog = ({ open, setOpen, onConfirm, parcel }: ConfirmDialogProps)
           <span className="font-semibold"> {parcel?.numeroEncomenda}?</span>
         </DialogDescription>
 
+        {/* Campo para quem retirou */}
+        <input
+          type="text"
+          placeholder="Nome de quem retirou"
+          value={retiradoPor}
+          onChange={(e) => setRetiradoPor(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+        />
+
         <div className="flex justify-end gap-2 text-xs font-semibold">
           <button className="button-cancel" onClick={closeDialog}>
             Cancelar
           </button>
-          <button className="button-confirm" onClick={onConfirm}>
+          <button
+            className="button-confirm disabled:opacity-50"
+            onClick={handleConfirm}
+            disabled={!retiradoPor.trim()}
+          >
             Retirar
           </button>
         </div>
