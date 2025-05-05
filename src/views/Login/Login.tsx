@@ -1,11 +1,13 @@
-import { useNavigate } from "react-router-dom";
-import { usePostLoginMutation } from "../../services/loginService";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormData } from "./Login.types";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { loginSchema } from "./Login.schemas";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { usePostLoginMutation } from "../../services/loginService";
+import { loginSchema } from "./Login.schemas";
+import { LoginFormData } from "./Login.types";
 import imglogo from "../../assets/logo-morar-facil.png";
+import { motion } from "framer-motion";
 
 const clearAllCookies = () => {
   document.cookie.split(";").forEach((cookie) => {
@@ -20,16 +22,22 @@ const Login = () => {
 
   const methods = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
   });
 
-  const { handleSubmit, control, watch } = methods;
+  const { handleSubmit, control } = methods;
+
   const { mutate } = usePostLoginMutation();
 
   const onSubmit = (data: LoginFormData) => {
     mutate(data, {
       onSuccess: (response) => {
         if (response.code === 200) {
-          console.log("Login realizado com sucesso vou redirecionar");
+          console.log("Login realizado com sucesso. Redirecionando...");
           navigate("/");
         }
       },
@@ -40,98 +48,112 @@ const Login = () => {
     clearAllCookies();
   }, []);
 
-  console.log("form", watch());
-
   return (
-    <div className="flex items-center justify-center h-full w-full">
-      <div className="max-w-md mx-auto p-6 border rounded shadow w-full">
-        <div className="flex justify-center mb-4">
-          <img src={imglogo} alt="Logo Morar Fácil" className="h-34 w-auto" />
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="flex items-center justify-center h-screen w-full bg-gray-50"
+    >
+      <div className="max-w-md w-full bg-white p-6 border rounded shadow-md">
+        <div className="flex justify-center mb-6">
+          <img src={imglogo} alt="Logo Morar Fácil" className="h-20 w-auto" />
         </div>
 
         <FormProvider {...methods}>
-          <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
-          <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
-            <div className="mb-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <h2 className="text-2xl font-semibold text-center text-gray-800">Login</h2>
+
+            {/* Email */}
+            <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
               </label>
               <Controller
-                control={control}
                 name="email"
-                render={({ field: { value = "", onChange } }) => (
+                control={control}
+                render={({ field }) => (
                   <input
-                    className="mt-1 block w-full border p-2 rounded"
+                    id="email"
                     type="email"
-                    value={value || ""}
-                    onChange={onChange}
-                    placeholder="Insira o email"
+                    {...field}
+                    className="mt-1 block w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Insira seu email"
                   />
                 )}
               />
             </div>
 
-            <div className="mb-4">
+            {/* Senha */}
+            <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Senha
               </label>
               <Controller
-                control={control}
                 name="password"
-                render={({ field: { value = "", onChange } }) => (
+                control={control}
+                render={({ field }) => (
                   <input
-                    className="mt-1 block w-full border p-2 rounded"
+                    id="password"
                     type="password"
-                    value={value || ""}
-                    onChange={onChange}
+                    {...field}
+                    className="mt-1 block w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Insira sua senha"
                   />
                 )}
               />
             </div>
 
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => navigate("/register")}
-                className="w-full bg-blue-600 text-white p-2 rounded"
-              >
-                Cadastrar
-              </button>
-
-              <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">
-                Entrar
-              </button>
-            </div>
-
-            <div className="w-full flex justify-between p-1 ">
-              <div className="flex gap-2">
+            {/* Lembrar e Esqueceu senha */}
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
                 <Controller
-                  control={control}
                   name="rememberMe"
-                  defaultValue={false}
-                  render={({ field: { value, onChange } }) => (
+                  control={control}
+                  render={({ field }) => (
                     <input
-                      className="mt-1 block border p-2 rounded"
                       type="checkbox"
-                      checked={value}
-                      onChange={onChange}
+                      id="rememberMe"
+                      checked={field.value || false}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      ref={field.ref}
                     />
                   )}
                 />
-                <span>Lembrar de mim</span>
+                <label htmlFor="rememberMe" className="text-gray-700">
+                  Lembrar de mim
+                </label>
               </div>
+
               <button
-                className="cursor-pointer hover:text-blue-500 text-sm font-medium text-gray-700"
+                type="button"
                 onClick={() => navigate("/forgotPassword")}
+                className="text-blue-600 hover:underline"
               >
-                lembrar senha
+                Esqueceu a senha?
+              </button>
+            </div>
+
+            {/* Botões */}
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => navigate("/register")}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded border"
+              >
+                Cadastrar
+              </button>
+              <button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
+              >
+                Entrar
               </button>
             </div>
           </form>
         </FormProvider>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

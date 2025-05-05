@@ -20,24 +20,41 @@ import { Residence } from "../views/Residence";
 import { VotingBoard } from "../views/Voting";
 import { ROUTES } from "../constants";
 import { PendingApproval } from "../views/PendingApproval/PendingApproval";
+import { PageTransition } from "../components/ui/pageTransition";
 
 
 const routes = createBrowserRouter([
   {
     path: ROUTES.LOGIN,
-    element: <Login />,
+    element: (
+      <PageTransition>
+        <Login />
+      </PageTransition>
+    ),
   },
   {
     path: ROUTES.REGISTER,
-    element: <Register />,
+    element: (
+      <PageTransition>
+        <Register />
+      </PageTransition>
+    ),
   },
   {
     path: ROUTES.FORGOT_PASSWORD,
-    element: <ForgotPassword />,
+    element: (
+      <PageTransition>
+        <ForgotPassword />
+      </PageTransition>
+    ),
   },
   {
     path: ROUTES.EMAIL_CONFIRMED,
-    element: <ConfirmedEmail />,
+    element: (
+      <PageTransition>
+        <ConfirmedEmail />
+      </PageTransition>
+    ),
   },
   {
     element: (
