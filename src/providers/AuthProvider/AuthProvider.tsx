@@ -10,7 +10,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        const res = await fetch("http://api.phsouza.com.br/v1/identity/me", {
+        const res = await fetch("https://api.phsouza.com.br/v1/identity/me", {
           credentials: "include",
         });
         const json = await res.json();

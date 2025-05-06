@@ -55,11 +55,11 @@ const Condominium = () => {
     });
   };
 
-  const handleUpdateCondoStatus = (id: number, ativo?: boolean) => {
-    const updateData = {
-      id: id,
-      ativo: !ativo,
-    };
+  // const handleUpdateCondoStatus = (id: number, ativo?: boolean) => {
+  //   const updateData = {
+  //     id: id,
+  //     ativo: !ativo,
+  //   };
 
     updateCondoStatus(updateData, {
       onSuccess: () => {

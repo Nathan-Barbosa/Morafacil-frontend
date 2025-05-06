@@ -80,7 +80,7 @@ const NoticeBoard = () => {
   };
 
   const { data: condosData } = useGetCondosListQuery({ pageNumber: 1, pageSize: 100 });
-  const condominios = condosData?.data || [];
+  // const condominios = condosData?.data || [];
 
   useEffect(() => {
     refetchNotices();

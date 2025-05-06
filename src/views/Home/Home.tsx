@@ -1,5 +1,4 @@
 import {
-  useGetRolesListQuery,
   useGetCondosListQuery,
   useGetFinesQuery,
 } from "../../services";

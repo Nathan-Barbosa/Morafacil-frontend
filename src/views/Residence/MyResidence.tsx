@@ -12,7 +12,6 @@ import { ResidenceBuilderModal } from "./components";
 const MyResidence = () => {
   const { user } = useAuth();
   const isProprieario = user?.roles?.includes("Proprietario");
-  const { toast } = useToast();
   const [openModal, setOpenModal] = useState(false);
   const [editingResidence, setEditingResidence] = useState<ResidenceResponseDTO | null>(null);
   const [residenciasDoUsuario, setResidenciasDoUsuario] = useState<ResidenceResponseDTO[]>([]);
