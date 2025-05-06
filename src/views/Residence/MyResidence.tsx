@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   useGetResidencesListQuery,
 } from "../../services";
-import { useToast } from "../../providers/ToastProvider";
 import { ResidenceResponseDTO } from "../../models";
 import { MagnifyingGlass, Pencil } from "@phosphor-icons/react";
 import { useAuth } from "../../providers";
