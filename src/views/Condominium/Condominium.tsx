@@ -55,11 +55,11 @@ const Condominium = () => {
     });
   };
 
-  // const handleUpdateCondoStatus = (id: number, ativo?: boolean) => {
-  //   const updateData = {
-  //     id: id,
-  //     ativo: !ativo,
-  //   };
+  const handleUpdateCondoStatus = (id: number, ativo?: boolean) => {
+    const updateData = {
+      id: id,
+      ativo: !ativo,
+    };
 
     updateCondoStatus(updateData, {
       onSuccess: () => {
@@ -138,7 +138,7 @@ const Condominium = () => {
                     >
                       <Pencil size={20} weight="duotone" className="text-white" />
                     </button>
-                    {/* <button
+                    <button
                       type="button"
                       onClick={() =>
                         handleUpdateCondoStatus(Number(condoItem.id), condoItem?.ativo)
@@ -150,7 +150,7 @@ const Condominium = () => {
                       }`}
                     >
                       {condoItem.ativo ? "Desabilitar" : "Habilitar"}
-                    </button> */}
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleDeleteCondo(Number(condoItem.id))}
