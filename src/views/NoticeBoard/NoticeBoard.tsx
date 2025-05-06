@@ -16,8 +16,12 @@ import { NoticeResponseDTO } from "../../models";
 import { useAuth } from "../../providers";
 import Loading from "../../components/ui/loading";
 
+
 const NoticeBoard = () => {
   const { user } = useAuth();
+  const isAdmin = user?.roles?.includes("Admin");
+  const isAdminCond = user?.roles?.includes("AdminCond");
+  const podeGerenciar = isAdmin || isAdminCond;
   const [openNoticeModal, setOpenNoticeModal] = useState(false);
   const [noticeFilter, setNoticeFilter] = useState<string>("");
   const [debouncedNoticeFilter] = useDebounce(noticeFilter, 1000);
@@ -102,12 +106,14 @@ const NoticeBoard = () => {
             placeholder="Buscar por residência por id"
             className="px-3 py-2 border border-gray-300 rounded w-64"
           />
+          {podeGerenciar && (
           <button
             className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
             onClick={() => setOpenNoticeModal(true)}
           >
             Novo Aviso
           </button>
+          )}
         </div>
       </div>
 

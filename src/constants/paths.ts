@@ -14,6 +14,7 @@ const ROUTES = {
   EMAIL_CONFIRMED: "/emailConfirmed",
   FINES: "/fines",
   PENDING_APPROVAL: "/pendingApproval",
+  MYRESIDENCE : "/myResidence",
 };
 
 export { ROUTES };

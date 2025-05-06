@@ -25,8 +25,15 @@ import {
 } from "../../services";
 import { useToast } from "../../hooks/use-toast";
 import Loading from "../../components/ui/loading";
+import { useAuth } from "../../providers";
+
 
 export function Users() {
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes("Admin");
+  const isAdminCond = user?.roles?.includes("AdminCond");
+  const podeGerenciar = isAdmin || isAdminCond;
+
   const [filterField, setFilterField] = useState("name");
   const [filterValue, setFilterValue] = useState("");
   const [debouncedFilterValue] = useDebounce(filterValue, 300);
@@ -312,7 +319,7 @@ export function Users() {
                         ))}
                       </div>
                     </td>
-
+                    {podeGerenciar && (
                     <td className="px-4 py-2">
                       <div className="flex flex-wrap justify-end gap-2">
                       <button
@@ -364,6 +371,7 @@ export function Users() {
                         </button>
                       </div>
                     </td>
+                    )}
                   </tr>
                 );
               })}

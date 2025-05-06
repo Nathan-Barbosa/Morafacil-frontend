@@ -11,8 +11,13 @@ import { ResidenceResponseDTO } from "../../models";
 import { MagnifyingGlass, Pencil, Trash } from "@phosphor-icons/react";
 import { ResidenceBuilderModal } from "./components";
 import Loading from "../../components/ui/loading";
+import { useAuth } from "../../providers";
 
 const Residence = () => {
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes("Admin");
+  const isAdminCond = user?.roles?.includes("AdminCond");
+  const podeGerenciar = isAdmin || isAdminCond;
   const [openModal, setOpenModal] = useState(false);
   const [residenceFilter, setResidenceFilter] = useState<string>("");
   const [debouncedResidenceFilter] = useDebounce(residenceFilter, 1000);
@@ -87,13 +92,14 @@ const Residence = () => {
             placeholder="Buscar por residência por id"
             className="px-3 py-2 border border-gray-300 rounded w-64"
           />
-
+          {podeGerenciar && (
           <button
             onClick={() => setOpenModal(true)}
             className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
           >
             Nova Residência
           </button>
+          )}
         </div>
       </div>
 
@@ -124,6 +130,7 @@ const Residence = () => {
                   <td className="px-4 py-2 text-gray-600">{residence.bloco}</td>
                   <td className="px-4 py-2 text-gray-600">{residence.unidade}</td>
                   <td className="px-4 py-2 text-gray-600">{residence.situacao}</td>
+                  {podeGerenciar && (
                   <td className="flex px-4 py-2 gap-2 justify-end">
                     <button
                       type="button"
@@ -141,6 +148,7 @@ const Residence = () => {
                       <Trash size={20}/>
                     </button>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

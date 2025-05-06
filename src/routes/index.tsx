@@ -16,7 +16,7 @@ import {
 import { BaseLayout } from "../layout";
 import { ProtectedRoute } from "../components";
 import { AuthProvider } from "../providers";
-import { Residence } from "../views/Residence";
+import { MyResidence, Residence } from "../views/Residence";
 import { VotingBoard } from "../views/Voting";
 import { ROUTES } from "../constants";
 import { PendingApproval } from "../views/PendingApproval/PendingApproval";
@@ -82,6 +82,10 @@ const routes = createBrowserRouter([
           {
             path: ROUTES.RESIDENCE,
             element: <Residence />,
+          },
+          {
+            path: ROUTES.MYRESIDENCE,
+            element: <MyResidence />,
           },
           {
             path: ROUTES.NOTICE_BOARD,

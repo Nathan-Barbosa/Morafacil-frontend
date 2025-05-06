@@ -27,7 +27,7 @@ const navItems = [
     to: ROUTES.USERS,
     label: "Usuários",
     icon: <UserCircle size={20} />,
-    roles: ["Admin", "AdminCond", "Sindico"],
+    roles: ["Admin", "AdminCond", "Sindico", "Porteiro"],
   },
   {
     to: ROUTES.CONDOMINIUM,
@@ -39,7 +39,13 @@ const navItems = [
     to: ROUTES.RESIDENCE,
     label: "Residências",
     icon: <HouseSimple size={20} />,
-    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario", "PrestadorServico"],
+    roles: ["Admin", "AdminCond", "Sindico", "Proprietario", "Porteiro"],
+  },
+  {
+    to: ROUTES.MYRESIDENCE,
+    label: "Minhas Residências",
+    icon: <HouseSimple size={20} />,
+    roles: ["Admin","Morador","Proprietario",],
   },
   {
     to: ROUTES.NOTICE_BOARD,
