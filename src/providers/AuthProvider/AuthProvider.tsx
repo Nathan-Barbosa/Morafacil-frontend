@@ -10,7 +10,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        const res = await fetch("http://localhost:5068/v1/identity/me", {
+        const res = await fetch(`${import.meta.env.VITE_BASEUR}/v1/identity/me`, {
           credentials: "include",
         });
         const json = await res.json();
