@@ -45,13 +45,21 @@ const navItems = [
     to: ROUTES.MYRESIDENCE,
     label: "Minhas Residências",
     icon: <HouseSimple size={20} />,
-    roles: ["Admin","Morador","Proprietario",],
+    roles: ["Admin", "Morador", "Proprietario"],
   },
   {
     to: ROUTES.NOTICE_BOARD,
     label: "Avisos",
     icon: <NotePencil size={20} />,
-    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario", "Porteiro", "PrestadorServico"],
+    roles: [
+      "Admin",
+      "AdminCond",
+      "Sindico",
+      "Morador",
+      "Proprietario",
+      "Porteiro",
+      "PrestadorServico",
+    ],
   },
   {
     to: ROUTES.VOTING_BOARD,
@@ -63,7 +71,15 @@ const navItems = [
     to: ROUTES.PARCELS,
     label: "Encomendas",
     icon: <Package size={20} />,
-    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario", "Porteiro", "PrestadorServico"],
+    roles: [
+      "Admin",
+      "AdminCond",
+      "Sindico",
+      "Morador",
+      "Proprietario",
+      "Porteiro",
+      "PrestadorServico",
+    ],
   },
   {
     to: ROUTES.FINES,
@@ -71,8 +87,13 @@ const navItems = [
     icon: <FileText size={20} />,
     roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario"],
   },
+  {
+    to: ROUTES.MYFINES,
+    label: "Minhas multas",
+    icon: <FileText size={20} />,
+    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario"],
+  },
 ];
-
 
 const Sidebar = () => {
   const { user } = useAuth();

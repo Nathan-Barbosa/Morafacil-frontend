@@ -1,45 +1,31 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
 import { useToast } from "../../hooks/use-toast";
 import { MagnifyingGlass, DotsThreeVertical } from "@phosphor-icons/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FinesCardOptions } from "./components";
 import { finesFormSchema } from "./fines.schemas";
-import {
-  FineRequestDTO,
-  useGetFinesQuery,
-  useGetResidencesListQuery,
-  usePostCreateFineMutation,
-} from "../../services";
+import { FineRequestDTO, useGetFinesQuery, usePostCreateFineMutation } from "../../services";
 import { FinesFormData, FineStatus } from "./Fines.types";
-import Loading from "../../components/ui/loading";
+// import Loading from "../../components/ui/loading";
+import { useAuth } from "../../providers";
+import { FinesResponseDTO } from "../../models";
 
-const Fines = () => {
+const MyFines = () => {
+  const { user } = useAuth();
+  const [userFines, setUserFines] = useState<FinesResponseDTO[]>([]);
+
+  console.log(userFines);
   const [openFineModal, setOpenFineModal] = useState(false);
   const { toast } = useToast();
 
   const {
     data: fines,
-    refetch: refetchFines,
-    isLoading: isLoadingFines,
-    isFetching: isFetchingFines,
-  } = useGetFinesQuery({ pageNumber: 1, pageSize: 10 });
-
-  const { data: residences } = useGetResidencesListQuery({
-    pageNumber: 1,
-    pageSize: 10,
-  });
+    // refetch: refetchFines,
+    // isLoading: isLoadingFines,
+    // isFetching: isFetchingFines,
+  } = useGetFinesQuery({ pageNumber: 1, pageSize: 50 });
 
   const { mutate: postFine } = usePostCreateFineMutation();
 
@@ -71,13 +57,22 @@ const Fines = () => {
     });
   };
 
-  useEffect(() => {
-    refetchFines();
-  }, []);
+  // useEffect(() => {
+  //   refetchFines();
+  // }, []);
 
-  if (isLoadingFines || isFetchingFines) {
-    return <Loading />;
-  }
+  useEffect(() => {
+    if (user && fines?.data) {
+      const filtered = fines.data.filter((resFines) =>
+        resFines.residencia?.usuariosIds.includes(user.id),
+      );
+      setUserFines(filtered);
+    }
+  }, [user, fines]);
+
+  // if (isLoadingFines || isFetchingFines) {
+  //   return <Loading />;
+  // }
 
   return (
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
@@ -95,9 +90,9 @@ const Fines = () => {
       </div>
 
       <div className="flex h-full flex-col gap-y-4 overflow-auto">
-        {fines?.data && fines.data.length > 0 && (
+        {userFines && userFines.length > 0 && (
           <section className="flex flex-row flex-wrap gap-2 w-full">
-            {fines.data.map((fine) => {
+            {userFines.map((fine) => {
               const isPending = Number(fine.status) === 0;
               const isPaid = Number(fine.status) === 1;
               const isCanceled = Number(fine.status) === 2;
@@ -159,28 +154,6 @@ const Fines = () => {
                   />
                   {error && <p className="text-xs text-red-500">{error.message}</p>}
                 </>
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="residenciaId"
-              render={({ field }) => (
-                <Select
-                  value={field.value?.toString()}
-                  onValueChange={(value) => field.onChange(Number(value))}
-                >
-                  <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
-                    <SelectValue placeholder="Selecione uma residência" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white rounded shadow-lg">
-                    {residences?.data?.map((residence) => (
-                      <SelectItem key={residence.id} value={residence.id.toString()}>
-                        {`${residence.endereco} - ${residence.unidade}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               )}
             />
 
@@ -265,4 +238,4 @@ const Fines = () => {
   );
 };
 
-export { Fines };
+export { MyFines };

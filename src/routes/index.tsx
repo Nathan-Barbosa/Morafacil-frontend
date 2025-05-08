@@ -8,6 +8,7 @@ import {
   ForgotPassword,
   Home,
   Login,
+  MyFines,
   NoticeBoard,
   Parcels,
   Register,
@@ -21,7 +22,6 @@ import { VotingBoard } from "../views/Voting";
 import { ROUTES } from "../constants";
 import { PendingApproval } from "../views/PendingApproval/PendingApproval";
 import { PageTransition } from "../components/ui/pageTransition";
-
 
 const routes = createBrowserRouter([
   {
@@ -102,6 +102,10 @@ const routes = createBrowserRouter([
           {
             path: ROUTES.FINES,
             element: <Fines />,
+          },
+          {
+            path: ROUTES.MYFINES,
+            element: <MyFines />,
           },
           {
             path: ROUTES.PENDING_APPROVAL,

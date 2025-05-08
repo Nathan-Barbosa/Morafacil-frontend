@@ -143,7 +143,7 @@ const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
             />
 
             <input
-              type="number"
+              type="text"
               placeholder="Valor da multa"
               {...register("valor", { required: true, valueAsNumber: true })}
               className="w-full px-3 py-2 border border-gray-300 rounded"
@@ -152,28 +152,20 @@ const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
             <Controller
               name="data"
               control={control}
-              render={({ field, fieldState: { error } }) => {
-                const stringValue = field.value
-                  ? new Date(field.value).toISOString().split("T")[0]
-                  : "";
-                return (
-                  <>
-                    <input
-                      type="date"
-                      name={field.name}
-                      placeholder="Data"
-                      className="w-full px-3 py-2 border border-gray-300 rounded"
-                      value={stringValue}
-                      onChange={(e) => {
-                        field.onChange(new Date(e.target.value));
-                      }}
-                      onBlur={field.onBlur}
-                      ref={field.ref}
-                    />
-                    {error && <p className="text-xs text-red-500">{error.message}</p>}
-                  </>
-                );
-              }}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <input
+                    type="date"
+                    name={field.name}
+                    className="w-full px-3 py-2 border border-gray-300 rounded"
+                    value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                    onChange={(e) => field.onChange(e.target.value || "")}
+                    onBlur={field.onBlur}
+                    ref={field.ref}
+                  />
+                  {error && <p className="text-xs text-red-500">{error.message}</p>}
+                </>
+              )}
             />
 
             <div className="flex justify-end gap-2 text-xs font-semibold">

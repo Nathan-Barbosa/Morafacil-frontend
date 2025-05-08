@@ -13,8 +13,9 @@ const ROUTES = {
   FORGOT_PASSWORD: "/forgotPassword",
   EMAIL_CONFIRMED: "/emailConfirmed",
   FINES: "/fines",
+  MYFINES: "/myFines",
   PENDING_APPROVAL: "/pendingApproval",
-  MYRESIDENCE : "/myResidence",
+  MYRESIDENCE: "/myResidence",
 };
 
 export { ROUTES };
