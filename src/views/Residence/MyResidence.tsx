@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   useGetResidencesListQuery,
 } from "../../services";
-import { useToast } from "../../providers/ToastProvider";
 import { ResidenceResponseDTO } from "../../models";
 import { MagnifyingGlass, Pencil } from "@phosphor-icons/react";
 import { useAuth } from "../../providers";
@@ -12,7 +11,6 @@ import { ResidenceBuilderModal } from "./components";
 const MyResidence = () => {
   const { user } = useAuth();
   const isProprieario = user?.roles?.includes("Proprietario");
-  const { toast } = useToast();
   const [openModal, setOpenModal] = useState(false);
   const [editingResidence, setEditingResidence] = useState<ResidenceResponseDTO | null>(null);
   const [residenciasDoUsuario, setResidenciasDoUsuario] = useState<ResidenceResponseDTO[]>([]);

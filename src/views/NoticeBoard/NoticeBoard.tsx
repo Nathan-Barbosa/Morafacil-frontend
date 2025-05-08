@@ -10,7 +10,6 @@ import {
 import { useToast } from "../../hooks/use-toast";
 import { MagnifyingGlass, DotsThreeVertical } from "@phosphor-icons/react";
 import { NoticeCardOptions } from "./components";
-import { useGetCondosListQuery } from "../../services";
 import { useDebounce } from "use-debounce";
 import { NoticeResponseDTO } from "../../models";
 import { useAuth } from "../../providers";
@@ -79,8 +78,8 @@ const NoticeBoard = () => {
     });
   };
 
-  const { data: condosData } = useGetCondosListQuery({ pageNumber: 1, pageSize: 100 });
-  const condominios = condosData?.data || [];
+  // const { data: condosData } = useGetCondosListQuery({ pageNumber: 1, pageSize: 100 });
+  // const condominios = condosData?.data || [];
 
   useEffect(() => {
     refetchNotices();
