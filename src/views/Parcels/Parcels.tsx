@@ -45,10 +45,12 @@ const Parcels = () => {
 
   const { toast } = useToast();
 
-  const { data: parcels,    
+  const {
+    data: parcels,
     refetch: refetchParcels,
     isLoading: isLoadingParcels,
-    isFetching: isFetchingParcels, } = useGetParcelsListQuery();
+    isFetching: isFetchingParcels,
+  } = useGetParcelsListQuery();
 
   const { data: residences } = useGetResidencesListQuery({
     pageNumber: 1,
@@ -83,19 +85,19 @@ const Parcels = () => {
           });
           setOpenDialog(false);
         },
-      }
+      },
     );
   };
 
-    useEffect(() => {
-      refetchParcels();
-    }, []);
+  useEffect(() => {
+    refetchParcels();
+  }, []);
 
-    if (isLoadingParcels || isFetchingParcels) {
-      return <Loading />;
-    }
-  
+  if (isLoadingParcels || isFetchingParcels) {
+    return <Loading />;
+  }
 
+  console.log("Parcels: ", parcels);
   return (
     <div className="p-6 space-y-6 h-full w-full flex flex-col">
       <div className="flex justify-between items-center">
@@ -130,41 +132,45 @@ const Parcels = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {parcels.data.map((parcel) => (
-                <tr key={parcel.id} className="hover:bg-gray-100 transition">
-                  <td className="px-4 py-2 text-gray-600">{parcel.numeroEncomenda}</td>
-                  <td className="px-4 py-2 text-gray-600">{parcel.residencia?.bloco}</td>
-                  <td className="px-4 py-2 text-gray-600">{parcel.residencia?.numero}</td>
-                  <td className="px-4 py-2 text-gray-600">{parcel.residencia?.unidade}</td>
-                  <td className="px-4 py-2 text-gray-600">
-                    {new Date(parcel.dataChegada).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-2 text-gray-600">
-                    {parcel.dataRetirada
-                      ? new Date(parcel.dataRetirada).toLocaleString()
-                      : "Não retirado"}
-                  </td>
-                  <td className="flex justify-end px-4 py-2 gap-2">
-                  <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
-                    <Pencil size={20} />
-                  </button>
+              {parcels.data.map((parcel) => {
+                console.log(parcel);
 
-                  {!parcel.dataRetirada && (
-                    <button
-                      onClick={() => {
-                        setSelectedParcel(parcel);
-                        setOpenDialog(true);
-                      }}
-                      className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
-                      title="Retirar Encomenda"
-                    >
-                      <i className="ph ph-package" />
-                      <Package size={20} />
-                    </button>
-                  )}
-                </td>
-                </tr>
-              ))}
+                return (
+                  <tr key={parcel.id} className="hover:bg-gray-100 transition">
+                    <td className="px-4 py-2 text-gray-600">{parcel.numeroEncomenda}</td>
+                    <td className="px-4 py-2 text-gray-600">{parcel.residencia?.bloco}</td>
+                    <td className="px-4 py-2 text-gray-600">{parcel.residencia?.numero}</td>
+                    <td className="px-4 py-2 text-gray-600">{parcel.residencia?.unidade}</td>
+                    <td className="px-4 py-2 text-gray-600">
+                      {new Date(parcel.dataChegada).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-2 text-gray-600">
+                      {parcel.dataRetirada
+                        ? `Retirado por ${parcel.retiradoPor} em ${new Date(parcel.dataRetirada).toLocaleString()}`
+                        : "Não retirado"}
+                    </td>
+                    <td className="flex justify-end px-4 py-2 gap-2">
+                      <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
+                        <Pencil size={20} />
+                      </button>
+
+                      {!parcel.dataRetirada && (
+                        <button
+                          onClick={() => {
+                            setSelectedParcel(parcel);
+                            setOpenDialog(true);
+                          }}
+                          className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+                          title="Retirar Encomenda"
+                        >
+                          <i className="ph ph-package" />
+                          <Package size={20} />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (
