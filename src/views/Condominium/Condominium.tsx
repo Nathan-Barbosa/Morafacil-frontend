@@ -10,6 +10,7 @@ import { useToast } from "../../hooks/use-toast";
 import { GetCondominiumResponseDTO } from "../../models";
 import { useDebounce } from "use-debounce";
 import { MagnifyingGlass, Pencil, Trash } from "@phosphor-icons/react";
+import Pagination from "../../components/ui/pagination";
 
 const Condominium = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -18,12 +19,14 @@ const Condominium = () => {
   const [condoFilter, setCondoFilter] = useState<string>("");
   const [debouncedCondoFilter] = useDebounce(condoFilter, 1000);
   const [allCondos, setAllCondos] = useState<GetCondominiumResponseDTO[] | undefined>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const { toast } = useToast();
 
   const { data: condos } = useGetCondosListQuery({
-    pageNumber: 1,
-    pageSize: 10,
+    pageNumber: currentPage,
+    pageSize,
   });
 
   const { mutate: deleteCondo } = useDeleteCondoMutation();
@@ -170,6 +173,14 @@ const Condominium = () => {
           </div>
         )}
       </div>
+
+      {!debouncedCondoFilter && condos && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil((condos.totalCount ?? 0) / pageSize)}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
 
       {openModal && (
         <CondoBuilderModal

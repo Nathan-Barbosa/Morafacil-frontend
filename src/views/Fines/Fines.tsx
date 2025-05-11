@@ -24,10 +24,13 @@ import {
 } from "../../services";
 import { FinesFormData, FineStatus } from "./Fines.types";
 import Loading from "../../components/ui/loading";
+import Pagination from "../../components/ui/pagination";
 
 const Fines = () => {
   const [openFineModal, setOpenFineModal] = useState(false);
   const { toast } = useToast();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const {
     data: fines,
@@ -37,8 +40,8 @@ const Fines = () => {
   } = useGetFinesQuery({ pageNumber: 1, pageSize: 10 });
 
   const { data: residences } = useGetResidencesListQuery({
-    pageNumber: 1,
-    pageSize: 10,
+    pageNumber: currentPage,
+    pageSize,
   });
 
   const { mutate: postFine } = usePostCreateFineMutation();
@@ -138,6 +141,14 @@ const Fines = () => {
           </div>
         )}
       </div>
+
+      {fines && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((fines.totalCount ?? 0) / pageSize)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
 
       <Dialog open={openFineModal} onOpenChange={setOpenFineModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">

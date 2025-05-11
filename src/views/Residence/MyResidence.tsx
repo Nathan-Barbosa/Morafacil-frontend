@@ -7,6 +7,7 @@ import { MagnifyingGlass, Pencil } from "@phosphor-icons/react";
 import { useAuth } from "../../providers";
 import Loading from "../../components/ui/loading";
 import { ResidenceBuilderModal } from "./components";
+import Pagination from "../../components/ui/pagination";
 
 const MyResidence = () => {
   const { user } = useAuth();
@@ -14,6 +15,8 @@ const MyResidence = () => {
   const [openModal, setOpenModal] = useState(false);
   const [editingResidence, setEditingResidence] = useState<ResidenceResponseDTO | null>(null);
   const [residenciasDoUsuario, setResidenciasDoUsuario] = useState<ResidenceResponseDTO[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const {
     data: residences,
@@ -21,8 +24,8 @@ const MyResidence = () => {
     isFetching,
     refetch: refetchResidences,
   } = useGetResidencesListQuery({
-    pageNumber: 1,
-    pageSize: 100,
+    pageNumber: currentPage,
+    pageSize,
   });
 
   useEffect(() => {
@@ -99,6 +102,14 @@ const MyResidence = () => {
           </div>
         )}
       </div>
+
+      {!isFetching && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((residences?.totalCount ?? 0) / pageSize)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
 
       <ResidenceBuilderModal
         open={openModal}

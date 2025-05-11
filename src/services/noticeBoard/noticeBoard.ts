@@ -6,15 +6,23 @@ import { CreateNoticesRequestDTO, UpdateNoticeRequestDTO } from "./noticeBoard.t
 class NoticeBoardService {
   public static readonly url = "/v1/aviso";
 
-  public static async getNotices(): Promise<PaginatedResponse<NoticeResponseDTO[]>> {
+  public static async getNotices({
+    pageNumber,
+    pageSize,
+  }: {
+    pageNumber: number;
+    pageSize: number;
+  }): Promise<PaginatedResponse<NoticeResponseDTO[]>> {
     return apiErrorHandler(() =>
       api
         .get<PaginatedResponse<NoticeResponseDTO[]>>(NoticeBoardService.url, {
+          params: { pageNumber, pageSize },
           withCredentials: true,
         })
         .then((response) => response.data),
     );
   }
+  
 
   public static async getNotice(id: number): Promise<ResponseDTO<NoticeResponseDTO>> {
     return apiErrorHandler(() =>

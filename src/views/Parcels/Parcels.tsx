@@ -26,11 +26,15 @@ import { ConfirmDialog } from "./components";
 import { GetParcelsResponseDTO } from "../../models";
 import { Package, Pencil } from "@phosphor-icons/react";
 import Loading from "../../components/ui/loading";
+import Pagination from "../../components/ui/pagination";
+
 
 const Parcels = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedParcel, setSelectedParcel] = useState<GetParcelsResponseDTO>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const methods = useForm<ParcelsFormData>({
     resolver: zodResolver(parcelsSchema),
@@ -53,8 +57,8 @@ const Parcels = () => {
   } = useGetParcelsListQuery();
 
   const { data: residences } = useGetResidencesListQuery({
-    pageNumber: 1,
-    pageSize: 10,
+    pageNumber: currentPage,
+    pageSize,
   });
 
   const { mutate: createParcel } = usePostParcelMutation();
@@ -179,6 +183,14 @@ const Parcels = () => {
           </div>
         )}
       </div>
+
+      {parcels && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((parcels.totalCount ?? 0) / pageSize)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
 
       <ConfirmDialog
         parcel={selectedParcel}

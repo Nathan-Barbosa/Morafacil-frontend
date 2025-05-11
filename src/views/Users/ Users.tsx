@@ -26,6 +26,7 @@ import {
 import { useToast } from "../../hooks/use-toast";
 import Loading from "../../components/ui/loading";
 import { useAuth } from "../../providers";
+import Pagination from "../../components/ui/pagination";
 
 
 export function Users() {
@@ -42,6 +43,8 @@ export function Users() {
   const [openRoleModal, setOpenRoleModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserResponseDTO | undefined>(undefined);
   const [openCondominiumModal, setOpenCondominiumModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const { toast } = useToast();
 
@@ -55,8 +58,8 @@ export function Users() {
   const { data: roles } = useGetRolesListQuery();
 
   const { data: residences } = useGetResidencesListQuery({
-    pageNumber: 1,
-    pageSize: 10,
+    pageNumber: currentPage,
+    pageSize: pageSize,
   });
 
   useEffect(() => {
@@ -386,6 +389,14 @@ export function Users() {
         </div>
       )}
 
+    {!debouncedFilterValue && usersResponse && (
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil((usersResponse?.data?.length ?? 0) / pageSize)}
+        onPageChange={(page) => setCurrentPage(page)}
+      />
+    )}
+
       <Dialog open={openResidenceModal} onOpenChange={setOpenResidenceModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
           <DialogHeader>
@@ -572,5 +583,6 @@ export function Users() {
       </Dialog>
 
     </div>
+    
   );
 }

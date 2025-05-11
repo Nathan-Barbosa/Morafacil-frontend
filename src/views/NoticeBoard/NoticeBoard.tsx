@@ -14,6 +14,7 @@ import { useDebounce } from "use-debounce";
 import { NoticeResponseDTO } from "../../models";
 import { useAuth } from "../../providers";
 import Loading from "../../components/ui/loading";
+import Pagination from "../../components/ui/pagination";
 
 
 const NoticeBoard = () => {
@@ -25,13 +26,18 @@ const NoticeBoard = () => {
   const [noticeFilter, setNoticeFilter] = useState<string>("");
   const [debouncedNoticeFilter] = useDebounce(noticeFilter, 1000);
   const [allNotices, setAllNotices] = useState<NoticeResponseDTO[] | undefined>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const { toast } = useToast();
   const { data: notices,
     refetch: refetchNotices,
     isLoading: isLoadingNotices,
     isFetching: isFetchingNotices,
-  } = useGetNoticesListQuery();
+  } = useGetNoticesListQuery({
+    pageNumber: currentPage,
+    pageSize,
+  });
   const { mutate: postNotice } = usePostCreateNoticeMutation();
   const { data: notice } = useGetNoticeQuery(Number(debouncedNoticeFilter));
 
@@ -149,6 +155,14 @@ const NoticeBoard = () => {
           </div>
         )}
       </div>
+
+      {!debouncedNoticeFilter && notices && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((notices.totalCount ?? 0) / pageSize)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
 
       <Dialog open={openNoticeModal} onOpenChange={setOpenNoticeModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">

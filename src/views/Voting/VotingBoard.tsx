@@ -8,17 +8,20 @@ import { VotingCardOptions } from "./components";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { votingFormSchema } from "./VotingBoard.schemas";
 import Loading from "../../components/ui/loading";
+import Pagination from "../../components/ui/pagination";
 
 type VotingFormInput = Omit<VotingRequestDTO, "mensagem"> & {
   mensagemText: string;
 };
 const VotingBoard = () => {
   const [openVotingModal, setOpenVotingModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const { toast } = useToast();
 
   const { data: votings,    refetch: refetchVoting,
     isLoading: isLoadingVoting,
-    isFetching: isFetchingVoting,} = useGetVotingsQuery({ pageNumber: 1, pageSize: 10 });
+    isFetching: isFetchingVoting,} = useGetVotingsQuery({ pageNumber: currentPage, pageSize });
   const { mutate: postVoting } = usePostCreateVotingMutation();
 
   const { control, handleSubmit, reset } = useForm<VotingFormInput>({
@@ -112,6 +115,14 @@ const VotingBoard = () => {
           </div>
         )}
       </div>
+
+      {votings && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((votings.totalCount ?? 0) / pageSize)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
 
       <Dialog open={openVotingModal} onOpenChange={setOpenVotingModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">

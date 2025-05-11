@@ -13,10 +13,16 @@ const noticeBoardsKeys = {
   deleteNotice: () => [...noticeBoardsKeys.all, "deleteNotice"] as const,
 };
 
-const useGetNoticesListQuery = () => {
+const useGetNoticesListQuery = ({
+  pageNumber,
+  pageSize,
+}: {
+  pageNumber: number;
+  pageSize: number;
+}) => {
   return useQuery<PaginatedResponse<NoticeResponseDTO[]>, APIError>({
-    queryKey: noticeBoardsKeys.lists(),
-    queryFn: () => NoticeBoardService.getNotices(),
+    queryKey: [...noticeBoardsKeys.lists(), pageNumber, pageSize],
+    queryFn: () => NoticeBoardService.getNotices({ pageNumber, pageSize }),
   });
 };
 
