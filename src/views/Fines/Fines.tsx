@@ -37,7 +37,7 @@ const Fines = () => {
     refetch: refetchFines,
     isLoading: isLoadingFines,
     isFetching: isFetchingFines,
-  } = useGetFinesQuery({ pageNumber: 1, pageSize: 10 });
+  } = useGetFinesQuery({ pageNumber: currentPage, pageSize });
 
   const { data: residences } = useGetResidencesListQuery({
     pageNumber: currentPage,
@@ -52,6 +52,7 @@ const Fines = () => {
       status: "Pendente",
     },
   });
+
   const onSubmitFine = (data: FinesFormData) => {
     const finePayload: FineRequestDTO = {
       motivo: data.motivo,
@@ -70,13 +71,14 @@ const Fines = () => {
         });
         setOpenFineModal(false);
         reset();
+        refetchFines();
       },
     });
   };
 
   useEffect(() => {
     refetchFines();
-  }, []);
+  }, [currentPage]);
 
   if (isLoadingFines || isFetchingFines) {
     return <Loading />;
@@ -98,7 +100,7 @@ const Fines = () => {
       </div>
 
       <div className="flex h-full flex-col gap-y-4 overflow-auto">
-        {fines?.data && fines.data.length > 0 && (
+        {fines?.data && fines.data.length > 0 ? (
           <section className="flex flex-row flex-wrap gap-2 w-full">
             {fines.data.map((fine) => {
               const isPending = Number(fine.status) === 0;
@@ -113,7 +115,7 @@ const Fines = () => {
                   <div className="ml-auto absolute self-end">
                     <FinesCardOptions fine={fine}>
                       <button
-                        className={`right-4 flex rounded outline-none hover:bg-blue-400 ${isPending && " hover:bg-red-500"} `}
+                        className={`right-4 flex rounded outline-none hover:bg-blue-400 ${isPending && " hover:bg-red-500"}`}
                       >
                         <DotsThreeVertical className="size-6" weight="bold" />
                       </button>
@@ -133,11 +135,10 @@ const Fines = () => {
               );
             })}
           </section>
-        )}
-        {!fines?.data.length && (
+        ) : (
           <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
             <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
-            <span className="mt-2 text-gray-600">Nenhuma votação encontrada</span>
+            <span className="mt-2 text-gray-600">Nenhuma multa encontrada</span>
           </div>
         )}
       </div>
@@ -224,7 +225,7 @@ const Fines = () => {
                     placeholder="valor da multa"
                     {...field}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
-                  ></input>
+                  />
                   {error && <p className="text-xs text-red-500">{error.message}</p>}
                 </>
               )}

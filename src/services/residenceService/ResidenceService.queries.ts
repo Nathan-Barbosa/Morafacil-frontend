@@ -76,6 +76,14 @@ const useGetResidenceQuery = (id: number) => {
   });
 };
 
+const useGetResidencesByMeQuery = () => {
+  return useQuery<ResponseDTO<ResidenceResponseDTO[]>, APIError>({
+    queryKey: ["residences", "byme"],
+    queryFn: () => ResidenceService.getResidencesByMe(),
+  });
+};
+
+
 const useDeleteResidenceMutation = () => {
   const queryClient = useQueryClient();
 
@@ -112,4 +120,5 @@ export {
   useGetResidenceQuery,
   useDeleteResidenceMutation,
   usePutResidenceMutation,
+  useGetResidencesByMeQuery, 
 };

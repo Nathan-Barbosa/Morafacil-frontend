@@ -6,15 +6,16 @@ import { ParcelsService } from "./ParcelsService";
 
 const parcelsKeys = {
   all: ["parcels"] as const,
+  list: (params: { pageNumber: number; pageSize: number }) => [...parcelsKeys.lists(), params] as const,
   lists: () => [...parcelsKeys.all, "list"] as const,
   postParcel: () => [...parcelsKeys.all, "postParcel"] as const,
   patchPickupParcel: () => [...parcelsKeys.all, "patchPickupParcel"] as const,
 };
 
-const useGetParcelsListQuery = () => {
+const useGetParcelsListQuery = (params: { pageNumber: number; pageSize: number }) => {
   return useQuery<PaginatedResponse<GetParcelsResponseDTO[]>, APIError>({
-    queryKey: parcelsKeys.lists(),
-    queryFn: () => ParcelsService.getParcels(),
+    queryKey: parcelsKeys.list(params), // se tiver cache com base nos parâmetros
+    queryFn: () => ParcelsService.getParcels(params),
   });
 };
 
@@ -47,4 +48,12 @@ const usePatchPickupParcelMutation = () => {
   });
 };
 
-export { usePostParcelMutation, useGetParcelsListQuery, usePatchPickupParcelMutation };
+const useGetParcelsByMeQuery = (params: { pageNumber: number; pageSize: number }) => {
+  return useQuery<PaginatedResponse<GetParcelsResponseDTO[]>, APIError>({
+    queryKey: [...parcelsKeys.all, "byme", params],
+    queryFn: () => ParcelsService.getParcelsByMe(params),
+  });
+};
+
+
+export { usePostParcelMutation, useGetParcelsListQuery, usePatchPickupParcelMutation, useGetParcelsByMeQuery };

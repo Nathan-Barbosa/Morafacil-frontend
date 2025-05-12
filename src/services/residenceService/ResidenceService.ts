@@ -89,6 +89,17 @@ class ResidenceService {
         .then((response) => response.data),
     );
   }
+
+    public static async getResidencesByMe(): Promise<ResponseDTO<ResidenceResponseDTO[]>> {
+    return apiErrorHandler(() =>
+      api
+        .get<ResponseDTO<ResidenceResponseDTO[]>>(`${ResidenceService.url}/me`, {
+          withCredentials: true,
+        })
+        .then((res) => res.data)
+    );
+  }
 }
+
 
 export { ResidenceService };

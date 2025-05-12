@@ -6,6 +6,7 @@ const ROUTES = {
   RESIDENCE: "/residence",
   NOTICE_BOARD: "/noticeBoard",
   PARCELS: "/parcels",
+  MYPARCELS: "/myparcels",
   VOTING_BOARD: "/votingBoard",
   HOME: "/",
   LOGIN: "/login",

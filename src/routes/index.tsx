@@ -22,6 +22,7 @@ import { VotingBoard } from "../views/Voting";
 import { ROUTES } from "../constants";
 import { PendingApproval } from "../views/PendingApproval/PendingApproval";
 import { PageTransition } from "../components/ui/pageTransition";
+import { MyParcels } from "../views/Parcels/MyParcels";
 
 const routes = createBrowserRouter([
   {
@@ -94,6 +95,10 @@ const routes = createBrowserRouter([
           {
             path: ROUTES.PARCELS,
             element: <Parcels />,
+          },
+          {
+            path: ROUTES.MYPARCELS,
+            element: <MyParcels />,
           },
           {
             path: ROUTES.VOTING_BOARD,

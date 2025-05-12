@@ -7,10 +7,13 @@ import { PatchPickupParcelRequestDTO, PostParcelRequestDTO } from "./ParcelsServ
 class ParcelsService {
   public static readonly url = "/v1/encomenda";
 
-  public static async getParcels(): Promise<PaginatedResponse<GetParcelsResponseDTO[]>> {
+  public static async getParcels(params?: { pageNumber?: number; pageSize?: number }): Promise<PaginatedResponse<GetParcelsResponseDTO[]>> {
     return apiErrorHandler(() =>
       api
-        .get<PaginatedResponse<GetParcelsResponseDTO[]>>(ParcelsService.url,{ withCredentials: true })
+        .get<PaginatedResponse<GetParcelsResponseDTO[]>>(ParcelsService.url, {
+          params,
+          withCredentials: true,
+        })
         .then((response) => response.data),
     );
   }
@@ -29,6 +32,17 @@ class ParcelsService {
         .then((response) => response.data),
     );
   }
+
+  public static async getParcelsByMe(params?: { pageNumber?: number; pageSize?: number }): Promise<PaginatedResponse<GetParcelsResponseDTO[]>> {
+  return apiErrorHandler(() =>
+    api
+      .get<PaginatedResponse<GetParcelsResponseDTO[]>>(`${ParcelsService.url}/me`, {
+        params,
+        withCredentials: true,
+      })
+      .then((response) => response.data)
+  );
+}
 }
 
 export { ParcelsService };

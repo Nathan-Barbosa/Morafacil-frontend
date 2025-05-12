@@ -1,3 +1,5 @@
+// Atualização do MyFines com getFinesByMe e paginação correta
+
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
@@ -6,26 +8,25 @@ import { MagnifyingGlass, DotsThreeVertical } from "@phosphor-icons/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FinesCardOptions } from "./components";
 import { finesFormSchema } from "./fines.schemas";
-import { FineRequestDTO, useGetFinesQuery, usePostCreateFineMutation } from "../../services";
+import { FineRequestDTO, useGetFinesByMeQuery, usePostCreateFineMutation } from "../../services";
 import { FinesFormData, FineStatus } from "./Fines.types";
-// import Loading from "../../components/ui/loading";
 import { useAuth } from "../../providers";
 import { FinesResponseDTO } from "../../models";
+import Pagination from "../../components/ui/pagination";
 
 const MyFines = () => {
   const { user } = useAuth();
-  const [userFines, setUserFines] = useState<FinesResponseDTO[]>([]);
-
-  console.log(userFines);
   const [openFineModal, setOpenFineModal] = useState(false);
   const { toast } = useToast();
 
+  const pageSize = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
   const {
     data: fines,
-    // refetch: refetchFines,
-    // isLoading: isLoadingFines,
-    // isFetching: isFetchingFines,
-  } = useGetFinesQuery({ pageNumber: 1, pageSize: 50 });
+    isLoading,
+    isFetching,
+  } = useGetFinesByMeQuery({ pageNumber: currentPage, pageSize });
 
   const { mutate: postFine } = usePostCreateFineMutation();
 
@@ -35,6 +36,7 @@ const MyFines = () => {
       status: "Pendente",
     },
   });
+
   const onSubmitFine = (data: FinesFormData) => {
     const finePayload: FineRequestDTO = {
       motivo: data.motivo,
@@ -57,29 +59,21 @@ const MyFines = () => {
     });
   };
 
-  // useEffect(() => {
-  //   refetchFines();
-  // }, []);
+  const paginatedFines = fines?.data?.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  ) || [];
 
-  useEffect(() => {
-    if (user && fines?.data) {
-      const filtered = fines.data.filter((resFines) =>
-        resFines.residencia?.usuariosIds.includes(user.id),
-      );
-      setUserFines(filtered);
-    }
-  }, [user, fines]);
-
-  // if (isLoadingFines || isFetchingFines) {
-  //   return <Loading />;
-  // }
+  if (isLoading || isFetching) {
+    return <p>Carregando multas...</p>;
+  }
 
   return (
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Quadro de Multas</h1>
-          <p className="text-gray-600 font-semibold">Lista de multas recentes</p>
+          <p className="text-gray-600 font-semibold">Multas vinculadas ao seu usuário</p>
         </div>
         <button
           className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
@@ -90,23 +84,20 @@ const MyFines = () => {
       </div>
 
       <div className="flex h-full flex-col gap-y-4 overflow-auto">
-        {userFines && userFines.length > 0 && (
+        {paginatedFines.length > 0 ? (
           <section className="flex flex-row flex-wrap gap-2 w-full">
-            {userFines.map((fine) => {
+            {paginatedFines.map((fine) => {
               const isPending = Number(fine.status) === 0;
               const isPaid = Number(fine.status) === 1;
               const isCanceled = Number(fine.status) === 2;
               return (
                 <li
                   key={fine.id}
-                  className={`relative group flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3  ${isPending && "bg-red-200 hover:bg-red-400"} ${isCanceled && "bg-gray-200 hover:bg-gray-400"}
-                  ${isPaid && "bg-green-200 hover:bg-green-400"}`}
+                  className={`relative group flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3  ${isPending && "bg-red-200 hover:bg-red-400"} ${isCanceled && "bg-gray-200 hover:bg-gray-400"} ${isPaid && "bg-green-200 hover:bg-green-400"}`}
                 >
                   <div className="ml-auto absolute self-end">
                     <FinesCardOptions fine={fine}>
-                      <button
-                        className={`right-4 flex rounded outline-none hover:bg-blue-400 ${isPending && " hover:bg-red-500"} `}
-                      >
+                      <button className={`right-4 flex rounded outline-none hover:bg-blue-400 ${isPending && " hover:bg-red-500"}`}>
                         <DotsThreeVertical className="size-6" weight="bold" />
                       </button>
                     </FinesCardOptions>
@@ -114,25 +105,28 @@ const MyFines = () => {
                   <h2 className="text-sm font-semibold">{fine.motivo}</h2>
                   <p className="text-gray-600">R$: {fine.valor}</p>
                   <div className="flex justify-between">
-                    <p className="text-sm text-gray-400">
-                      Data: {new Date(fine.data).toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      Status: {FineStatus[Number(fine.status)]}
-                    </p>
+                    <p className="text-sm text-gray-400">Data: {new Date(fine.data).toLocaleDateString()}</p>
+                    <p className="text-sm text-gray-400">Status: {FineStatus[Number(fine.status)]}</p>
                   </div>
                 </li>
               );
             })}
           </section>
-        )}
-        {!fines?.data.length && (
+        ) : (
           <div className="flex flex-col items-center justify-center top-1/2 text-center h-full w-full">
             <MagnifyingGlass size={150} weight="duotone" className="text-gray-400" />
-            <span className="mt-2 text-gray-600">Nenhuma votação encontrada</span>
+            <span className="mt-2 text-gray-600">Nenhuma multa encontrada</span>
           </div>
         )}
       </div>
+
+      {fines?.data && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((fines.data.length ?? 0) / pageSize)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
 
       <Dialog open={openFineModal} onOpenChange={setOpenFineModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
@@ -186,7 +180,7 @@ const MyFines = () => {
                     placeholder="valor da multa"
                     {...field}
                     className="w-full px-3 py-2 border border-gray-300 rounded"
-                  ></input>
+                  />
                   {error && <p className="text-xs text-red-500">{error.message}</p>}
                 </>
               )}
@@ -196,9 +190,7 @@ const MyFines = () => {
               name="data"
               control={control}
               render={({ field, fieldState: { error } }) => {
-                const stringValue = field.value
-                  ? new Date(field.value).toISOString().split("T")[0]
-                  : "";
+                const stringValue = field.value ? new Date(field.value).toISOString().split("T")[0] : "";
                 return (
                   <>
                     <input
@@ -207,9 +199,7 @@ const MyFines = () => {
                       placeholder="Data"
                       className="w-full px-3 py-2 border border-gray-300 rounded"
                       value={stringValue}
-                      onChange={(e) => {
-                        field.onChange(new Date(e.target.value));
-                      }}
+                      onChange={(e) => field.onChange(new Date(e.target.value))}
                       onBlur={field.onBlur}
                       ref={field.ref}
                     />

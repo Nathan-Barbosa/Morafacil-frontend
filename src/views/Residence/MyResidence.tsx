@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  useGetResidencesListQuery,
-} from "../../services";
+import { useGetResidencesByMeQuery } from "../../services";
 import { ResidenceResponseDTO } from "../../models";
 import { MagnifyingGlass, Pencil } from "@phosphor-icons/react";
 import { useAuth } from "../../providers";
@@ -14,32 +12,27 @@ const MyResidence = () => {
   const isProprieario = user?.roles?.includes("Proprietario");
   const [openModal, setOpenModal] = useState(false);
   const [editingResidence, setEditingResidence] = useState<ResidenceResponseDTO | null>(null);
-  const [residenciasDoUsuario, setResidenciasDoUsuario] = useState<ResidenceResponseDTO[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
+  // Hook usando a nova rota /byme
   const {
-    data: residences,
+    data: myResidences,
     isLoading,
     isFetching,
     refetch: refetchResidences,
-  } = useGetResidencesListQuery({
-    pageNumber: currentPage,
-    pageSize,
-  });
+  } = useGetResidencesByMeQuery();
 
+  // Refetch inicial
   useEffect(() => {
     refetchResidences();
   }, []);
 
-  useEffect(() => {
-    if (user && residences?.data) {
-      const filtradas = residences.data.filter((res) =>
-        res.usuariosIds.includes(user.id)
-      );
-      setResidenciasDoUsuario(filtradas);
-    }
-  }, [user, residences]);
+  // Paginação em memória (frontend)
+  const paginatedResidences = myResidences?.data?.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  ) || [];
 
   const handleEdit = (res: ResidenceResponseDTO) => {
     setEditingResidence(res);
@@ -58,7 +51,7 @@ const MyResidence = () => {
       </div>
 
       <div className="overflow-x-auto">
-        {residenciasDoUsuario.length > 0 ? (
+        {paginatedResidences.length > 0 ? (
           <table className="min-w-full divide-y divide-gray-200 shadow-sm rounded-lg">
             <thead className="bg-gray-50">
               <tr>
@@ -72,7 +65,7 @@ const MyResidence = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {residenciasDoUsuario.map((res) => (
+              {paginatedResidences.map((res) => (
                 <tr key={res.id} className="hover:bg-gray-100 transition">
                   <td className="px-4 py-2 text-gray-600">{res.id}</td>
                   <td className="px-4 py-2 text-gray-600">{res.endereco}</td>
@@ -81,15 +74,15 @@ const MyResidence = () => {
                   <td className="px-4 py-2 text-gray-600">{res.unidade}</td>
                   <td className="px-4 py-2 text-gray-600">{res.situacao}</td>
                   <td className="flex justify-end px-4 py-2 gap-2">
-                  {isProprieario && (
-                    <button
-                      onClick={() => handleEdit(res)}
-                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
-                      title="Editar residência"
-                    >
-                      <Pencil size={20} />
-                    </button>
-                  )}
+                    {isProprieario && (
+                      <button
+                        onClick={() => handleEdit(res)}
+                        className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                        title="Editar residência"
+                      >
+                        <Pencil size={20} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -106,8 +99,8 @@ const MyResidence = () => {
       {!isFetching && (
         <Pagination
           currentPage={currentPage}
-          totalPages={Math.ceil((residences?.totalCount ?? 0) / pageSize)}
-          onPageChange={(page) => setCurrentPage(page)}
+          totalPages={Math.ceil((myResidences?.data.length ?? 0) / pageSize)}
+          onPageChange={setCurrentPage}
         />
       )}
 

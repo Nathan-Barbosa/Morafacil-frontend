@@ -75,9 +75,16 @@ const navItems = [
       "Admin",
       "AdminCond",
       "Sindico",
+      "Porteiro"
+    ],
+  },
+    {
+    to: ROUTES.MYPARCELS,
+    label: "Minhas Encomendas",
+    icon: <Package size={20} />,
+    roles: [
+      "Admin",
       "Morador",
-      "Proprietario",
-      "Porteiro",
       "PrestadorServico",
     ],
   },
@@ -85,13 +92,13 @@ const navItems = [
     to: ROUTES.FINES,
     label: "Multas",
     icon: <FileText size={20} />,
-    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario"],
+    roles: ["Admin", "AdminCond", "Sindico"],
   },
   {
     to: ROUTES.MYFINES,
     label: "Minhas multas",
     icon: <FileText size={20} />,
-    roles: ["Admin", "AdminCond", "Sindico", "Morador", "Proprietario"],
+    roles: ["Admin", "AdminCond", "Morador", "Proprietario"],
   },
 ];
 

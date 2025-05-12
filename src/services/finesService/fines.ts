@@ -62,6 +62,21 @@ class FinesService {
         .then((response) => response.data),
     );
   }
+
+  
+  public static async getFinesByMe({
+    pageNumber,
+    pageSize,
+  }: GetFinesRequestDTO): Promise<PaginatedResponse<FinesResponseDTO[]>> {
+    return apiErrorHandler(() =>
+      api
+        .get<PaginatedResponse<FinesResponseDTO[]>>(`${FinesService.url}/me`, {
+          params: { pageNumber, pageSize },
+          withCredentials: true,
+        })
+        .then((response) => response.data),
+    );
+  }
 }
 
 export { FinesService };

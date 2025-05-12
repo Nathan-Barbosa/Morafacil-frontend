@@ -50,11 +50,14 @@ const Parcels = () => {
   const { toast } = useToast();
 
   const {
-    data: parcels,
-    refetch: refetchParcels,
-    isLoading: isLoadingParcels,
-    isFetching: isFetchingParcels,
-  } = useGetParcelsListQuery();
+  data: parcels,
+  refetch: refetchParcels,
+  isLoading: isLoadingParcels,
+  isFetching: isFetchingParcels,
+  } = useGetParcelsListQuery({
+    pageNumber: currentPage,
+    pageSize,
+  });
 
   const { data: residences } = useGetResidencesListQuery({
     pageNumber: currentPage,

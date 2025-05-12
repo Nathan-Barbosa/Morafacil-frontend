@@ -66,10 +66,18 @@ const useDeleteFineMutation = () => {
   });
 };
 
+const useGetFinesByMeQuery = (params: GetFinesRequestDTO) => {
+  return useQuery<PaginatedResponse<FinesResponseDTO[]>, APIError>({
+    queryKey: [...finesKeys.lists(), "byme", params],
+    queryFn: () => FinesService.getFinesByMe(params),
+  });
+};
+
 export {
   useGetFinesQuery,
   usePostCreateFineMutation,
   useDeleteFineMutation,
   usePutUpdateFineMutation,
   useGetFineQuery,
+  useGetFinesByMeQuery,
 };
