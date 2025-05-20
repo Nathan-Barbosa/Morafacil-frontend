@@ -6,6 +6,12 @@ type Options = {
   votosUsuarios: number[];
 };
 
+type OptionsResponseDTO = {
+  id: number;
+  descricao: string;
+  quantidadeVotos: number;
+};
+
 type VotingResponseDTO = {
   id?: number;
   titulo: string;
@@ -18,6 +24,16 @@ type VotingResponseDTO = {
   opcoes: Options;
 };
 
+type GetVotingByIdResponseDTO = {
+  id?: number;
+  titulo: string;
+  descricao: string;
+  dataInicio: Date;
+  dataFim: Date;
+  encerrada: boolean;
+  opcoes: OptionsResponseDTO[];
+};
+
 type GetVotingResponseDTO = {
   id?: number;
   titulo: string;
@@ -27,4 +43,4 @@ type GetVotingResponseDTO = {
   encerrada: boolean;
 };
 
-export type { VotingResponseDTO, GetVotingResponseDTO };
+export type { VotingResponseDTO, GetVotingResponseDTO, GetVotingByIdResponseDTO };

@@ -1,9 +1,10 @@
 import {
+  GetVotingByIdResponseDTO,
   GetVotingResponseDTO,
   PaginatedResponse,
   ResponseDTO,
   VotingResponseDTO,
-} from "../../models/index.ts";
+} from "../../models";
 import { apiErrorHandler } from "../../utils/index.ts";
 import { api } from "../api.ts";
 import { GetVotingsRequestDTO, VotingRequestDTO } from "./votingBoard.types.ts";
@@ -37,17 +38,13 @@ class VotingBoardService {
     );
   }
 
-  // public static async updateVoting(
-  //   data: UpdateNoticeRequestDTO,
-  // ): Promise<ResponseDTO<NoticeResponseDTO>> {
-  //   return apiErrorHandler(() =>
-  //     api
-  //       .put<ResponseDTO<NoticeResponseDTO>>(`${VotingBoardService.url}/${data.id}`, data, {
-  //         withCredentials: true,
-  //       })
-  //       .then((response) => response.data),
-  //   );
-  // }
+  public static async getVoting(id: string): Promise<ResponseDTO<GetVotingByIdResponseDTO>> {
+    return apiErrorHandler(() =>
+      api
+        .get<ResponseDTO<GetVotingByIdResponseDTO>>(`${VotingBoardService.url}/${id}`)
+        .then((response) => response.data),
+    );
+  }
 
   public static async closeVoting(id: number): Promise<ResponseDTO<boolean>> {
     return apiErrorHandler(() =>

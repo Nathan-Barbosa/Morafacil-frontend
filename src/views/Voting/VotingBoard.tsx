@@ -19,9 +19,12 @@ const VotingBoard = () => {
   const pageSize = 10;
   const { toast } = useToast();
 
-  const { data: votings,    refetch: refetchVoting,
+  const {
+    data: votings,
+    refetch: refetchVoting,
     isLoading: isLoadingVoting,
-    isFetching: isFetchingVoting,} = useGetVotingsQuery({ pageNumber: currentPage, pageSize });
+    isFetching: isFetchingVoting,
+  } = useGetVotingsQuery({ pageNumber: currentPage, pageSize });
   const { mutate: postVoting } = usePostCreateVotingMutation();
 
   const { control, handleSubmit, reset } = useForm<VotingFormInput>({
@@ -35,7 +38,7 @@ const VotingBoard = () => {
       dataInicio: data.dataInicio,
       dataFim: data.dataFim,
       criadoPorId: data.criadoPorId,
-      mensagem: data.mensagemText.split(",").map((option) => option.trim()),
+      opcoes: data.mensagemText.split(",").map((option) => option.trim()),
     };
 
     postVoting(votingPayload, {
@@ -51,14 +54,14 @@ const VotingBoard = () => {
     });
   };
 
-    useEffect(() => {
-      refetchVoting();
-    }, []);
+  useEffect(() => {
+    refetchVoting();
+  }, []);
 
   if (isLoadingVoting || isFetchingVoting) {
     return <Loading />;
   }
-    
+
   return (
     <div className="space-y-6 w-full flex flex-col overflow-auto h-full">
       <div className="flex justify-between items-center">

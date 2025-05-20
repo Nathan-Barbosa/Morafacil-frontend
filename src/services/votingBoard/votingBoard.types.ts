@@ -7,7 +7,7 @@ type VotingRequestDTO = {
   dataInicio: Date;
   dataFim: Date;
   criadoPorId: number;
-  mensagem: Options;
+  opcoes: Options;
 };
 
 type GetVotingsRequestDTO = {

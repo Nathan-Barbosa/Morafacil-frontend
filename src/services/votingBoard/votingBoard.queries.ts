@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   APIError,
+  GetVotingByIdResponseDTO,
   GetVotingResponseDTO,
   PaginatedResponse,
   ResponseDTO,
@@ -14,6 +15,7 @@ const votingBoardsKeys = {
   all: ["votings"] as const,
   lists: () => [...votingBoardsKeys.all, "list"] as const,
   list: (role: string) => [...votingBoardsKeys.lists(), role] as const,
+  voting: () => [...votingBoardsKeys.all, "voting"] as const,
   createVoting: () => [...votingBoardsKeys.all, "createVoting"] as const,
   updateVoting: () => [...votingBoardsKeys.all, "updateVoting"] as const,
   closeVoting: () => [...votingBoardsKeys.all, "closeVoting"] as const,
@@ -23,6 +25,14 @@ const useGetVotingsQuery = (params: GetVotingsRequestDTO) => {
   return useQuery<PaginatedResponse<GetVotingResponseDTO[]>, APIError>({
     queryKey: votingBoardsKeys.lists(),
     queryFn: () => VotingBoardService.getVotings(params),
+  });
+};
+
+const useGetVotingByIDQuery = (id: string, enabled: boolean) => {
+  return useQuery<ResponseDTO<GetVotingByIdResponseDTO>, APIError>({
+    queryKey: votingBoardsKeys.voting(),
+    queryFn: () => VotingBoardService.getVoting(id),
+    enabled: enabled,
   });
 };
 
@@ -69,5 +79,5 @@ export {
   useGetVotingsQuery,
   usePostCreateVotingMutation,
   useCloseVotingMutation,
-  // usePutUpdateNoticeMutation,
+  useGetVotingByIDQuery,
 };

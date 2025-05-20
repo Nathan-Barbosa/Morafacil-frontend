@@ -4,6 +4,7 @@ import { useToast } from "../../../../hooks/use-toast";
 import {
   UpdateNoticeRequestDTO,
   useCloseVotingMutation,
+  useGetVotingByIDQuery,
   usePutUpdateNoticeMutation,
 } from "../../../../services";
 import {
@@ -15,20 +16,50 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "../../../../components";
 
 import { ConfirmDialog } from "../ConfirmDialog";
 import { useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
+
+type VoteFormData = {
+  opcaoId: number;
+};
 
 const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+  const [openVotingModal, setOpenVotingModal] = useState<boolean>(false);
 
   const { register, handleSubmit, reset } = useForm<UpdateNoticeRequestDTO>();
+  const { control: voteControl, handleSubmit: handleSubmitVote } = useForm<VoteFormData>({
+    defaultValues: {
+      opcaoId: undefined,
+    },
+  });
 
   const { toast } = useToast();
   const { mutate: closeVoting } = useCloseVotingMutation();
-  const { mutate: editNotice } = usePutUpdateNoticeMutation();
+  const { mutate: editNotice } = usePutUpdateNoticeMutation(); //TODO: editar votação
+
+  const votingId = voting.id?.toString() ?? "";
+  const { data: votingData, refetch: fetchVotingData } = useGetVotingByIDQuery(votingId, false);
+
+  useEffect(() => {
+    if (votingData) {
+      console.log("Dados da votação carregados:", votingData);
+    }
+  }, [votingData]);
+
+  const onVote = async () => {
+    await fetchVotingData();
+    setOpenVotingModal(true);
+  };
 
   const onEdit = () => setOpenEditModal(true);
   const onCloseVoting = () => setOpenDialog(true);
@@ -60,7 +91,12 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
     });
   };
 
+  const onSubmitVote = (data: VoteFormData) => {
+    console.log(data);
+  };
+
   const menuItems: MenuItem[] = [
+    { label: "Votar", callback: onVote },
     { label: "Editar", callback: onEdit },
     voting.encerrada ? null : { label: "Encerrar", callback: onCloseVoting },
   ].filter(Boolean) as MenuItem[];
@@ -70,7 +106,6 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
       reset({
         id: voting.id,
         titulo: voting.titulo,
-        // mensagem: voting.mensagem,
       });
     }
   }, [openEditModal, voting, reset]);
@@ -127,6 +162,53 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
               </button>
               <button className="button-confirm" type="submit">
                 Editar
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/*VOTAÇÃO*/}
+      <Dialog open={openVotingModal} onOpenChange={setOpenVotingModal}>
+        <DialogContent className="bg-white p-6 rounded shadow-lg">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold">{votingData?.data.titulo}</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitVote(onSubmitVote)} className="space-y-4">
+            <Controller
+              control={voteControl}
+              name="opcaoId"
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  onValueChange={(val) => field.onChange(Number(val))}
+                  value={field.value?.toString()}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione uma opção para votar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {votingData?.data.opcoes.map((opcao) => (
+                      <SelectItem key={opcao.id} value={opcao.id.toString()}>
+                        {opcao.descricao}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+
+            <div className="flex justify-end gap-2 text-xs font-semibold">
+              <button
+                type="button"
+                className="button-cancel"
+                onClick={() => setOpenVotingModal(false)}
+              >
+                Cancelar
+              </button>
+              <button className="button-confirm" type="submit">
+                Votar
               </button>
             </div>
           </form>

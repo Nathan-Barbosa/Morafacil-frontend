@@ -18,13 +18,25 @@ import { useToast } from "../../../../providers/ToastProvider";
 import { ResidenceFormData } from "../../Residence.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { residenceSchema } from "../../Residence.schemas";
-import { PutUpdateResidenceRequestDTO, usePostCreateResidenceMutation, usePutResidenceMutation } from "../../../../services";
+import {
+  PutUpdateResidenceRequestDTO,
+  useGetCondosListQuery,
+  usePostCreateResidenceMutation,
+  usePutResidenceMutation,
+} from "../../../../services";
 import { useEffect, useMemo } from "react";
 
 const ResidenceBuilderModal = ({ open, setOpenModal, initialData }: ResidenceBuilderModalProps) => {
   const editData = useMemo(() => {
     return initialData ? mapResidenceResponseToFormData(initialData) : null;
   }, [initialData]);
+
+  const pageSize = 10;
+
+  const { data: condos } = useGetCondosListQuery({
+    pageNumber: 1,
+    pageSize,
+  });
 
   const methods = useForm<ResidenceFormData>({
     resolver: zodResolver(residenceSchema),
@@ -201,17 +213,23 @@ const ResidenceBuilderModal = ({ open, setOpenModal, initialData }: ResidenceBui
                   control={control}
                   name="condominioId"
                   render={({ field }) => (
-                    <input
-                      type="number"
-                      className="mt-1 block w-full border p-2 rounded"
-                      placeholder="ID do Condomínio"
-                      {...field}
-                    />
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={(val) => field.onChange(Number(val))}
+                    >
+                      <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded">
+                        <SelectValue placeholder="Selecione o condomínio" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white rounded shadow-lg">
+                        {condos?.data?.map((condo) => (
+                          <SelectItem key={condo.id} value={condo?.id?.toString() || ""}>
+                            {condo.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
                 />
-                {errors.condominioId && (
-                  <p className="text-red-500 text-sm">{errors.condominioId.message}</p>
-                )}
               </div>
             </div>
 

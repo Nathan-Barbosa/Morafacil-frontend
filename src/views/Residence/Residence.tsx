@@ -30,8 +30,9 @@ const Residence = () => {
 
   const { toast } = useToast();
 
-  const { data: residences, 
-    refetch: refetchResidences, 
+  const {
+    data: residences,
+    refetch: refetchResidences,
     isLoading: isLoadingResidence,
     isFetching: isFetchingResidence,
   } = useGetResidencesListQuery({
@@ -53,8 +54,6 @@ const Residence = () => {
     } else if (residences?.data) {
       setAllResidences(residences.data);
     }
-
-    
   }, [debouncedResidenceFilter, residence, residences]);
 
   useEffect(() => {
@@ -99,12 +98,12 @@ const Residence = () => {
             className="px-3 py-2 border border-gray-300 rounded w-64"
           />
           {podeGerenciar && (
-          <button
-            onClick={() => setOpenModal(true)}
-            className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
-          >
-            Nova Residência
-          </button>
+            <button
+              onClick={() => setOpenModal(true)}
+              className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+            >
+              Nova Residência
+            </button>
           )}
         </div>
       </div>
@@ -137,23 +136,23 @@ const Residence = () => {
                   <td className="px-4 py-2 text-gray-600">{residence.unidade}</td>
                   <td className="px-4 py-2 text-gray-600">{residence.situacao}</td>
                   {podeGerenciar && (
-                  <td className="flex px-4 py-2 gap-2 justify-end">
-                    <button
-                      type="button"
-                      onClick={() => handleEditResidence(residence)}
-                      className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
-                    >
-                      <Pencil size={20}/>
-                    </button>
+                    <td className="flex px-4 py-2 gap-2 justify-end">
+                      <button
+                        type="button"
+                        onClick={() => handleEditResidence(residence)}
+                        className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition"
+                      >
+                        <Pencil size={20} />
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteResidence(residence.id)}
-                      className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
-                    >
-                      <Trash size={20}/>
-                    </button>
-                  </td>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteResidence(residence.id)}
+                        className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
+                      >
+                        <Trash size={20} />
+                      </button>
+                    </td>
                   )}
                 </tr>
               ))}
@@ -176,6 +175,7 @@ const Residence = () => {
       )}
 
       <ResidenceBuilderModal
+        key={openModal ? (editingResidence?.id ?? "new") : "closed"}
         open={openModal}
         setOpenModal={setOpenModal}
         initialData={editingResidence}
