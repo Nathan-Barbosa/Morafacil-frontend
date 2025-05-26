@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { MenuItem, VotingCardOptionsProps } from "./VotingCardOptions.types";
 import { useToast } from "../../../../hooks/use-toast";
 import {
-  UpdateNoticeRequestDTO,
   useCloseVotingMutation,
   useGetVotingByIDQuery,
-  usePutUpdateNoticeMutation,
+  usePostVoteMutation,
 } from "../../../../services";
 import {
   Dialog,
@@ -26,6 +25,7 @@ import {
 import { ConfirmDialog } from "../ConfirmDialog";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
+import { useAuth } from "../../../../providers";
 
 type VoteFormData = {
   opcaoId: number;
@@ -33,19 +33,20 @@ type VoteFormData = {
 
 const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
   const [openVotingModal, setOpenVotingModal] = useState<boolean>(false);
 
-  const { register, handleSubmit, reset } = useForm<UpdateNoticeRequestDTO>();
+  const { user } = useAuth();
   const { control: voteControl, handleSubmit: handleSubmitVote } = useForm<VoteFormData>({
     defaultValues: {
       opcaoId: undefined,
     },
   });
 
+  const userId = user?.id;
+
   const { toast } = useToast();
   const { mutate: closeVoting } = useCloseVotingMutation();
-  const { mutate: editNotice } = usePutUpdateNoticeMutation(); //TODO: editar votação
+  const { mutate: toVote } = usePostVoteMutation();
 
   const votingId = voting.id?.toString() ?? "";
   const { data: votingData, refetch: fetchVotingData } = useGetVotingByIDQuery(votingId, false);
@@ -61,10 +62,9 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
     setOpenVotingModal(true);
   };
 
-  const onEdit = () => setOpenEditModal(true);
   const onCloseVoting = () => setOpenDialog(true);
 
-  const onSuccess = () => {
+  const onCloseSuccess = () => {
     toast({
       title: "Sucesso",
       description: `Votação encerrado com sucesso!`,
@@ -72,43 +72,31 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
     });
     setOpenDialog(false);
   };
-
-  const handleConfirmCloseVoting = async () => {
-    closeVoting(Number(voting?.id), { onSuccess });
+  const onVoteSuccess = () => {
+    toast({
+      title: "Sucesso",
+      description: `Voto realizado com sucesso!`,
+      variant: "default",
+    });
+    setOpenDialog(false);
   };
 
-  const onSubmitUpdateNotice = (data: UpdateNoticeRequestDTO) => {
-    editNotice(data, {
-      onSuccess: () => {
-        toast({
-          title: "Sucesso",
-          description: "Votação alterada com sucesso!",
-          variant: "default",
-        });
-        setOpenEditModal(false);
-        reset();
-      },
-    });
+  const handleConfirmCloseVoting = async () => {
+    closeVoting(Number(voting?.id), { onSuccess: onCloseSuccess });
   };
 
   const onSubmitVote = (data: VoteFormData) => {
-    console.log(data);
+    const payload = {
+      usuarioId: userId,
+      opcaoVotacaoId: data.opcaoId,
+    };
+    toVote(payload, { onSuccess: onVoteSuccess });
   };
 
   const menuItems: MenuItem[] = [
     { label: "Votar", callback: onVote },
-    { label: "Editar", callback: onEdit },
     voting.encerrada ? null : { label: "Encerrar", callback: onCloseVoting },
   ].filter(Boolean) as MenuItem[];
-
-  useEffect(() => {
-    if (openEditModal) {
-      reset({
-        id: voting.id,
-        titulo: voting.titulo,
-      });
-    }
-  }, [openEditModal, voting, reset]);
 
   return (
     <>
@@ -133,40 +121,6 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
         setOpen={setOpenDialog}
         onConfirm={handleConfirmCloseVoting}
       />
-
-      <Dialog open={openEditModal} onOpenChange={setOpenEditModal}>
-        <DialogContent className="bg-white p-6 rounded shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Editar Votação</DialogTitle>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit(onSubmitUpdateNotice)} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Título"
-              {...register("titulo", { required: true })}
-              className="w-full px-3 py-2 border border-gray-300 rounded"
-            />
-            <textarea
-              placeholder="Conteúdo do aviso"
-              {...register("mensagem", { required: true })}
-              className="w-full px-3 py-2 border border-gray-300 rounded max-h-[30vh] outline-none"
-            ></textarea>
-            <div className="flex justify-end gap-2 text-xs font-semibold">
-              <button
-                type="button"
-                className="button-cancel"
-                onClick={() => setOpenEditModal(false)}
-              >
-                Cancelar
-              </button>
-              <button className="button-confirm" type="submit">
-                Editar
-              </button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       {/*VOTAÇÃO*/}
       <Dialog open={openVotingModal} onOpenChange={setOpenVotingModal}>

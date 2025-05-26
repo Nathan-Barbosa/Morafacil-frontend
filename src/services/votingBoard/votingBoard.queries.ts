@@ -9,7 +9,7 @@ import {
   VotingResponseDTO,
 } from "../../models";
 import { VotingBoardService } from "./votingBoard";
-import { GetVotingsRequestDTO, VotingRequestDTO } from "./votingBoard.types";
+import { GetVotingsRequestDTO, PostVoteRequestDTO, VotingRequestDTO } from "./votingBoard.types";
 
 const votingBoardsKeys = {
   all: ["votings"] as const,
@@ -17,6 +17,7 @@ const votingBoardsKeys = {
   list: (role: string) => [...votingBoardsKeys.lists(), role] as const,
   voting: () => [...votingBoardsKeys.all, "voting"] as const,
   createVoting: () => [...votingBoardsKeys.all, "createVoting"] as const,
+  toVote: () => [...votingBoardsKeys.all, "toVote"] as const,
   updateVoting: () => [...votingBoardsKeys.all, "updateVoting"] as const,
   closeVoting: () => [...votingBoardsKeys.all, "closeVoting"] as const,
 };
@@ -49,18 +50,18 @@ const usePostCreateVotingMutation = () => {
   });
 };
 
-// const usePutUpdateNoticeMutation = () => {
-//   const queryClient = useQueryClient();
+const usePostVoteMutation = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation<ResponseDTO<VotingRequestDTO>, APIError, UpdateNoticeRequestDTO>({
-//     mutationKey: votingBoardsKeys.updateVoting(),
-//     mutationFn: (data: UpdateNoticeRequestDTO) => VotingBoardService.updateVoting(data),
-//     onSuccess: () =>
-//       queryClient.invalidateQueries({
-//         queryKey: votingBoardsKeys.lists(),
-//       }),
-//   });
-// };
+  return useMutation<ResponseDTO<string>, APIError, PostVoteRequestDTO>({
+    mutationKey: votingBoardsKeys.toVote(),
+    mutationFn: (data: PostVoteRequestDTO) => VotingBoardService.toVote(data),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: votingBoardsKeys.lists(),
+      }),
+  });
+};
 
 const useCloseVotingMutation = () => {
   const queryClient = useQueryClient();
@@ -80,4 +81,5 @@ export {
   usePostCreateVotingMutation,
   useCloseVotingMutation,
   useGetVotingByIDQuery,
+  usePostVoteMutation,
 };

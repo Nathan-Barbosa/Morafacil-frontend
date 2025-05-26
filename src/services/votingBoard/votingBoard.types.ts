@@ -15,4 +15,9 @@ type GetVotingsRequestDTO = {
   pageSize?: number;
 };
 
-export type { VotingRequestDTO, GetVotingsRequestDTO };
+type PostVoteRequestDTO = {
+  usuarioId?: number;
+  opcaoVotacaoId?: number;
+};
+
+export type { VotingRequestDTO, GetVotingsRequestDTO, PostVoteRequestDTO };

@@ -7,7 +7,7 @@ import {
 } from "../../models";
 import { apiErrorHandler } from "../../utils/index.ts";
 import { api } from "../api.ts";
-import { GetVotingsRequestDTO, VotingRequestDTO } from "./votingBoard.types.ts";
+import { GetVotingsRequestDTO, PostVoteRequestDTO, VotingRequestDTO } from "./votingBoard.types.ts";
 
 class VotingBoardService {
   public static readonly url = "/v1/votacao";
@@ -51,6 +51,17 @@ class VotingBoardService {
       api
         .patch<ResponseDTO<boolean>>(`${VotingBoardService.url}/${id}/encerrar`, {
           withCredentials: true,
+        })
+        .then((response) => response.data),
+    );
+  }
+
+  public static async toVote(data: PostVoteRequestDTO): Promise<ResponseDTO<string>> {
+    return apiErrorHandler(() =>
+      api
+        .post<ResponseDTO<string>>(`${VotingBoardService.url}/votar`, {
+          usuarioId: data.usuarioId,
+          opcaoVotacaoId: data.opcaoVotacaoId,
         })
         .then((response) => response.data),
     );
