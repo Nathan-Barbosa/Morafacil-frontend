@@ -14,12 +14,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  DropdownMenuTrigger
 } from "../../../../components";
 
 import { ConfirmDialog } from "../ConfirmDialog";

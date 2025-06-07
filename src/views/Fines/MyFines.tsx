@@ -1,6 +1,6 @@
 // Atualização do MyFines com getFinesByMe e paginação correta
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components";
 import { useToast } from "../../hooks/use-toast";
@@ -11,7 +11,6 @@ import { finesFormSchema } from "./fines.schemas";
 import { FineRequestDTO, useGetFinesByMeQuery, usePostCreateFineMutation } from "../../services";
 import { FinesFormData, FineStatus } from "./Fines.types";
 import { useAuth } from "../../providers";
-import { FinesResponseDTO } from "../../models";
 import Pagination from "../../components/ui/pagination";
 
 const MyFines = () => {

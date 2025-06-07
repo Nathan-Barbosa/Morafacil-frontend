@@ -24,7 +24,7 @@ import { parcelsSchema } from "./Parcels.schemas";
 import { useToast } from "../../hooks/use-toast";
 import { ConfirmDialog } from "./components";
 import { GetParcelsResponseDTO } from "../../models";
-import { Package, Pencil } from "@phosphor-icons/react";
+import { Package } from "@phosphor-icons/react";
 import Loading from "../../components/ui/loading";
 import Pagination from "../../components/ui/pagination";
 
