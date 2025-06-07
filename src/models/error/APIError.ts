@@ -1,5 +1,4 @@
 import { AxiosError } from "axios";
-
 import { APIErrorProps, ErrorResponseDTO } from "./error.types";
 
 class APIError extends Error {
@@ -13,20 +12,17 @@ class APIError extends Error {
 
   constructor({ message, statusCode }: APIErrorProps) {
     super(message);
-
     this.message = message;
     this.statusCode = statusCode;
   }
 
   public static fromAxiosError(error: AxiosError<ErrorResponseDTO>): APIError {
-    return new APIError(
-      error.response?.data
-        ? {
-            message: error.response.data.errors[0],
-            statusCode: error.response.status,
-          }
-        : APIError.defaultErrorObj,
-    );
+    const defaultError = APIError.defaultErrorObj;
+
+    const statusCode = error.response?.status || defaultError.statusCode;
+    const message = error.response?.data?.message || defaultError.message;
+
+    return new APIError({ message, statusCode });
   }
 }
 

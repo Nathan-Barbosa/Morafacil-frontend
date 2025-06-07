@@ -130,13 +130,15 @@ const NoticeBoard = () => {
                 key={notice.id}
                 className="hover:bg-blue-100 relative flex max-w-96 w-full flex-col justify-between rounded-xl border border-gray4 p-3 bg-blue-50"
               >
-                <div className="ml-auto absolute self-end">
-                  <NoticeCardOptions notice={notice}>
-                    <button className="right-4 flex rounded bg-transparent  outline-none hover:bg-blue-400">
-                      <DotsThreeVertical className="size-6" weight="bold" />
-                    </button>
-                  </NoticeCardOptions>
-                </div>
+                {podeGerenciar && (
+                  <div className="ml-auto absolute self-end">
+                    <NoticeCardOptions notice={notice}>
+                      <button className="right-4 flex rounded bg-transparent outline-none hover:bg-blue-400">
+                        <DotsThreeVertical className="size-6" weight="bold" />
+                      </button>
+                    </NoticeCardOptions>
+                  </div>
+                )}
                 <h2 className="text-sm font-semibold">{notice.titulo}</h2>
                 <p className="text-gray-600">{notice.mensagem}</p>
                 <div className="flex justify-between">

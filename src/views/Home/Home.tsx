@@ -1,8 +1,8 @@
-import {
-  useGetCondosListQuery,
-  useGetFinesQuery,
-} from "../../services";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // para redirecionamento opcional
+import { useGetCondosListQuery, useGetFinesQuery } from "../../services";
+import { useGetUsersListQuery } from "../../services/UsersService";
+import { useAuth } from "../../providers"; // <-- seu hook/contexto de autenticação
 import {
   ResponsiveContainer,
   PieChart,
@@ -18,11 +18,13 @@ import {
   Line,
   Legend,
 } from "recharts";
-import { useGetUsersListQuery } from "../../services/UsersService";
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00C49F"];
 
 const Home = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const { data: usersData } = useGetUsersListQuery();
   const { data: condosData } = useGetCondosListQuery({ pageNumber: 1, pageSize: 100 });
   const { data: finesData } = useGetFinesQuery({ pageNumber: 1, pageSize: 100 });
@@ -31,8 +33,19 @@ const Home = () => {
   const [fineStatusStats, setFineStatusStats] = useState<{ status: string; total: number }[]>([]);
   const [finesPerMonth, setFinesPerMonth] = useState<{ month: string; total: number }[]>([]);
 
+  const allowedRoles = ["Admin", "AdminCond"];
+  const userHasAccess = user?.roles?.some((role) => allowedRoles.includes(role));
+
   useEffect(() => {
-    // Distribuição de perfis (roles)
+    // Se não tiver permissão, redireciona ou mostra aviso
+    if (!userHasAccess) {
+      navigate("/noticeBoard"); // ou qualquer rota padrão permitida
+    }
+  }, [userHasAccess, navigate]);
+
+  useEffect(() => {
+    if (!userHasAccess) return;
+
     if (usersData?.data) {
       const rolesCount: Record<string, number> = {};
       usersData.data.forEach((user) => {
@@ -43,14 +56,13 @@ const Home = () => {
       setRoleStats(Object.entries(rolesCount).map(([name, value]) => ({ name, value })));
     }
 
-    // Multas por status
     if (finesData?.data) {
       const statusCount: Record<number, number> = {};
       finesData.data.forEach((fine) => {
         const status = fine.status ?? 0;
         statusCount[+status] = (statusCount[+status] || 0) + 1;
       });
-    
+
       const statusLabels: Record<number, string> = {
         0: "Pendente",
         1: "Pago",

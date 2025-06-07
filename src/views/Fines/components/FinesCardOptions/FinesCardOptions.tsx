@@ -18,10 +18,17 @@ import {
   DropdownMenuTrigger,
 } from "../../../../components";
 
+import { useAuth } from "../../../../providers";
 import { ConfirmDialog } from "../ConfirmDialog";
 import { Controller, useForm } from "react-hook-form";
 
 const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
+
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes("Admin");
+  const isAdminCond = user?.roles?.includes("AdminCond");
+  const podeGerenciar = isAdmin || isAdminCond;
+
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
 
@@ -88,20 +95,22 @@ const FinesCardOptions = ({ children, fine }: FinesCardOptionsProps) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-        <DropdownMenuContent className="w-40" side="bottom" align="end">
-          {menuItems.map((item, index) => (
-            <DropdownMenuItem
-              key={index}
-              className="border-gray4 bg-blue-100 hover:bg-blue-200"
-              onClick={item.callback}
-            >
-              {item.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {podeGerenciar && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
+          <DropdownMenuContent className="w-40" side="bottom" align="end">
+            {menuItems.map((item, index) => (
+              <DropdownMenuItem
+                key={index}
+                className="border-gray4 bg-blue-100 hover:bg-blue-200"
+                onClick={item.callback}
+              >
+                {item.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       <ConfirmDialog
         fine={fine}

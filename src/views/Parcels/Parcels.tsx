@@ -157,10 +157,6 @@ const Parcels = () => {
                         : "Não retirado"}
                     </td>
                     <td className="flex justify-end px-4 py-2 gap-2">
-                      <button className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-sm rounded transition">
-                        <Pencil size={20} />
-                      </button>
-
                       {!parcel.dataRetirada && (
                         <button
                           onClick={() => {

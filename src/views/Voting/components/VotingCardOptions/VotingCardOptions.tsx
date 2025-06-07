@@ -34,8 +34,10 @@ type VoteFormData = {
 const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [openVotingModal, setOpenVotingModal] = useState<boolean>(false);
+  
 
   const { user } = useAuth();
+  const userRole = user?.roles;
   const { control: voteControl, handleSubmit: handleSubmitVote } = useForm<VoteFormData>({
     defaultValues: {
       opcaoId: undefined,
@@ -93,10 +95,19 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
     toVote(payload, { onSuccess: onVoteSuccess });
   };
 
-  const menuItems: MenuItem[] = [
-    { label: "Votar", callback: onVote },
-    voting.encerrada ? null : { label: "Encerrar", callback: onCloseVoting },
-  ].filter(Boolean) as MenuItem[];
+  const menuItems: MenuItem[] = [];
+
+  const isAdminCond = userRole?.includes("AdminCond") || userRole?.includes("Admin");
+
+  if (!voting.encerrada) {
+    menuItems.push({ label: "Votar", callback: onVote });
+
+    if (isAdminCond) {
+      menuItems.push({ label: "Encerrar", callback: onCloseVoting });
+    }
+  } else {
+    menuItems.push({ label: "Visualizar resultado", callback: onVote });
+  }
 
   return (
     <>
@@ -125,48 +136,86 @@ const VotingCardOptions = ({ children, voting }: VotingCardOptionsProps) => {
       {/*VOTAÇÃO*/}
       <Dialog open={openVotingModal} onOpenChange={setOpenVotingModal}>
         <DialogContent className="bg-white p-6 rounded shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">{votingData?.data.titulo}</DialogTitle>
-          </DialogHeader>
+  <DialogHeader>
+    <DialogTitle className="text-lg font-semibold">
+      {votingData?.data.titulo}
+    </DialogTitle>
+  </DialogHeader>
 
-          <form onSubmit={handleSubmitVote(onSubmitVote)} className="space-y-4">
-            <Controller
-              control={voteControl}
-              name="opcaoId"
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Select
-                  onValueChange={(val) => field.onChange(Number(val))}
-                  value={field.value?.toString()}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione uma opção para votar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {votingData?.data.opcoes.map((opcao) => (
-                      <SelectItem key={opcao.id} value={opcao.id.toString()}>
-                        {opcao.descricao}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
+  {/* Se estiver encerrada, exibe resultados */}
+  {votingData?.data.encerrada ? (
+    <div className="space-y-4 mt-4">
+      {votingData?.data.opcoes.map((opcao) => {
+        const totalVotos = votingData.data.opcoes.reduce(
+          (acc, o) => acc + o.quantidadeVotos,
+          0
+        );
+        const percentual =
+          totalVotos > 0
+            ? ((opcao.quantidadeVotos / totalVotos) * 100).toFixed(1)
+            : "0";
 
-            <div className="flex justify-end gap-2 text-xs font-semibold">
-              <button
-                type="button"
-                className="button-cancel"
-                onClick={() => setOpenVotingModal(false)}
-              >
-                Cancelar
-              </button>
-              <button className="button-confirm" type="submit">
-                Votar
-              </button>
+        return (
+          <div key={opcao.id}>
+            <div className="flex justify-between text-sm font-medium">
+              <span>{opcao.descricao}</span>
+              <span>{percentual}%</span>
             </div>
-          </form>
-        </DialogContent>
+            <div className="w-full bg-gray-200 h-2 rounded">
+              <div
+                className="bg-blue-600 h-2 rounded"
+                style={{ width: `${percentual}%` }}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  ) : (
+    // Se não estiver encerrada, exibe o formulário de voto
+    <form onSubmit={handleSubmitVote(onSubmitVote)} className="space-y-4 mt-4">
+      <Controller
+        control={voteControl}
+        name="opcaoId"
+        rules={{ required: true }}
+        render={({ field }) => (
+          <div className="space-y-2">
+            {votingData?.data.opcoes.map((opcao) => {
+              const isSelected = field.value === opcao.id;
+              return (
+                <button
+                  key={opcao.id}
+                  type="button"
+                  onClick={() => field.onChange(opcao.id)}
+                  className={`w-full border rounded px-4 py-2 text-left transition-all
+                    ${isSelected ? "border-blue-600 bg-blue-100" : "border-gray-300 hover:bg-gray-100"}
+                  `}
+                >
+                  {opcao.descricao}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      />
+
+
+      <div className="flex justify-end gap-2 text-xs font-semibold">
+        <button
+          type="button"
+          className="button-cancel"
+          onClick={() => setOpenVotingModal(false)}
+        >
+          Cancelar
+        </button>
+        <button className="button-confirm" type="submit">
+          Votar
+        </button>
+      </div>
+    </form>
+  )}
+</DialogContent>
+
       </Dialog>
     </>
   );

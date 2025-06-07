@@ -16,6 +16,10 @@ import Pagination from "../../components/ui/pagination";
 
 const MyFines = () => {
   const { user } = useAuth();
+  const isAdmin = user?.roles?.includes("Admin");
+  const isAdminCond = user?.roles?.includes("AdminCond");
+  const podeGerenciar = isAdmin || isAdminCond;
+  
   const [openFineModal, setOpenFineModal] = useState(false);
   const { toast } = useToast();
 
@@ -75,12 +79,14 @@ const MyFines = () => {
           <h1 className="text-2xl font-bold text-gray-800">Quadro de Multas</h1>
           <p className="text-gray-600 font-semibold">Multas vinculadas ao seu usuário</p>
         </div>
-        <button
-          className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
-          onClick={() => setOpenFineModal(true)}
-        >
-          Nova Multa
-        </button>
+        {podeGerenciar && (
+          <button
+            className="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+            onClick={() => setOpenFineModal(true)}
+          >
+            Nova Multa
+          </button>
+        )}
       </div>
 
       <div className="flex h-full flex-col gap-y-4 overflow-auto">
